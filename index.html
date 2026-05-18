@@ -133,8 +133,8 @@
                         <div><strong class="block text-sm">Nessuna Soluzione Pronta</strong>Se commetti un errore, verrai guidato nel processo per risolverlo da solo.</div>
                     </div>
                     <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
-                        <i class="fas fa-list-ol text-blue-500 mt-1"></i>
-                        <div><strong class="block text-sm">10 Esercizi Progressivi</strong>Gemini genererà sempre una batteria mirata di 10 quesiti a difficoltà crescente.</div>
+                        <i class="fas fa-route text-blue-500 mt-1"></i>
+                        <div><strong class="block text-sm">Risoluzione Guidata WBS</strong>Isola un singolo esercizio e affrontalo passo dopo passo con il tutor.</div>
                     </div>
                 </div>
                 <p class="mt-8 text-sm text-gray-500">Seleziona un capitolo dalla barra laterale e inserisci la tua API Key per iniziare.</p>
@@ -164,11 +164,67 @@
                     </div>
                 </div>
 
+                <!-- Guided Step-by-Step Resolution Panel -->
+                <div id="guided-resolution-container" class="hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-xl shadow-md border border-slate-700 flex flex-col gap-4">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                        <h3 class="text-lg font-bold flex items-center gap-2 text-blue-400">
+                            <i class="fas fa-route"></i> Risoluzione Guidata (WBS)
+                        </h3>
+                        <button onclick="closeGuidedResolution()" class="text-slate-400 hover:text-white transition-colors">
+                            <i class="fas fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div id="guided-setup-step" class="flex flex-col gap-3">
+                        <p class="text-sm text-slate-300">Quale esercizio (1-10) del blocco corrente vuoi analizzare e scomporre nel dettaglio?</p>
+                        <div class="flex gap-2">
+                            <select id="guided-exercise-select" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                <option value="1">Esercizio 1</option>
+                                <option value="2">Esercizio 2</option>
+                                <option value="3">Esercizio 3</option>
+                                <option value="4">Esercizio 4</option>
+                                <option value="5">Esercizio 5</option>
+                                <option value="6">Esercizio 6</option>
+                                <option value="7">Esercizio 7</option>
+                                <option value="8">Esercizio 8</option>
+                                <option value="9">Esercizio 9</option>
+                                <option value="10">Esercizio 10</option>
+                            </select>
+                            <button onclick="startGuidedSession()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded transition-colors">
+                                Avvia Analisi Passaggi
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Guide Chat Area -->
+                    <div id="guided-chat-step" class="hidden flex-col gap-4">
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 max-h-80 overflow-y-auto flex flex-col gap-3" id="guided-chat-history">
+                            <!-- Messages dynamically inserted here -->
+                        </div>
+                        
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs text-slate-400 font-semibold uppercase">Il tuo prossimo passaggio / risposta:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="guided-user-input" placeholder="Scrivi la tua risposta o deduzione logica..." class="flex-grow bg-slate-700 border border-slate-600 text-white text-sm rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                <button onclick="sendGuidedStep()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2 rounded transition-colors flex items-center gap-1.5">
+                                    <i class="fas fa-paper-plane"></i> Invia
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- User Input Area -->
                 <div id="user-input-container" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
-                        <i class="fas fa-pen-to-square text-blue-600"></i> Le Tue Risposte
-                    </h3>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fas fa-pen-to-square text-blue-600"></i> Le Tue Risposte
+                        </h3>
+                        <!-- Guided Resolution Activation Trigger -->
+                        <button onclick="activateGuidedResolutionPanel()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-all shadow-xs">
+                            <i class="fas fa-route text-blue-400"></i> Attiva Risoluzione Guidata
+                        </button>
+                    </div>
                     <p class="text-sm text-gray-500 mb-4">Inserisci lo svolgimento o il risultato finale di ciascun esercizio (es: "1) x = 5", "2) S = (1, 3]"). Fornisci i passaggi per un controllo di qualità accurato.</p>
                     <textarea id="user-answers" rows="6" class="w-full border border-gray-300 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y font-mono text-sm" placeholder="Scrivi qui i passaggi delle tue risposte..."></textarea>
                     <div class="mt-4 flex justify-between items-center">
@@ -238,6 +294,13 @@
         let currentExercisesContext = "";
         let completedModules = new Set();
         
+        // Guided Resolution Session State
+        let guidedState = {
+            active: false,
+            exerciseNum: null,
+            chatHistory: [] // Array format: {role: 'tutor'|'user', text: string}
+        };
+
         // Operations stats in session memory
         let stats = {
             generated: 0,
@@ -252,7 +315,7 @@ REGOLE TASSATIVE DA RISPETTARE:
 1. Devi generare SEMPRE ESATTAMENTE 10 ESERCIZI di difficoltà progressiva (da 1 a 10). Non uno in meno, non uno in più.
 2. NON FORNIRE MAI I RISULTATI O LE SOLUZIONI DURANTE LA GENERAZIONE DEGLI ESERCIZI.
 3. Se l'utente commette un errore nelle sue risposte, SPIEGA il concetto e il punto procedurale in cui è avvenuto il collo di bottiglia, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
-4. Ogni tanto usa metafore legate alla logistica, all'ottimizzazione dei processi (colli di bottiglia, throughput, lead time) per spiegare concetti matematici astratti.
+4. Ogni tanto usa metafore legate alla logistica, all'ottimizzazione dei processi (colli di bottiglia, throughput, lead time, WBS) per spiegare concetti matematici astratti.
 5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$).`;
 
         // --- APP STARTUP & STORAGE ---
@@ -262,7 +325,6 @@ REGOLE TASSATIVE DA RISPETTARE:
         };
 
         function loadSavedApiKey() {
-            // Retrieve safely from localStorage (standard frontend setup for private keys on GitHub pages)
             const savedKey = localStorage.getItem('tutor_gemini_api_key');
             if (savedKey) {
                 document.getElementById('api-key-input').value = savedKey;
@@ -329,6 +391,7 @@ REGOLE TASSATIVE DA RISPETTARE:
         function selectTopic(topic, btnElement) {
             currentTopic = topic;
             currentExercisesContext = ""; 
+            closeGuidedResolution();
             
             // Close mobile menu if open
             if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
@@ -483,6 +546,7 @@ REGOLE TASSATIVE DA RISPETTARE:
             showLoading("Generazione di 10 esercizi personalizzati a difficoltà crescente...");
             document.getElementById('feedback-container').classList.add('hidden');
             document.getElementById('user-answers').value = '';
+            closeGuidedResolution();
             
             const prompt = `Genera esattamente 10 esercizi di difficoltà crescente (da 1 a 10) sull'argomento: "${currentTopic}". 
 Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Solo il testo degli esercizi numerati.`;
@@ -534,11 +598,10 @@ Fornisci feedback dettagliato. Se un esercizio è errato, spiega chiaramente il 
             const response = await callGemini(prompt);
             if (!response) return;
 
-            // Simple heuristics to evaluate performance metrics
             if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("corretto")) {
                 updateKPIs('correct');
             } else {
-                updateKPIs('attempt'); // tracks total submissions
+                updateKPIs('attempt'); 
             }
 
             const fbContent = document.getElementById('feedback-content');
@@ -553,6 +616,114 @@ Fornisci feedback dettagliato. Se un esercizio è errato, spiega chiaramente il 
             document.getElementById('feedback-container').classList.remove('hidden');
             hideLoading();
             document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- STEP-BY-STEP GUIDED RESOLUTION LOGIC ---
+        function activateGuidedResolutionPanel() {
+            if (!currentExercisesContext) {
+                alert("Genera prima una batteria di esercizi per attivare la guida personalizzata.");
+                return;
+            }
+            const panel = document.getElementById('guided-resolution-container');
+            panel.classList.remove('hidden');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeGuidedResolution() {
+            document.getElementById('guided-resolution-container').classList.add('hidden');
+            document.getElementById('guided-setup-step').classList.remove('hidden');
+            document.getElementById('guided-chat-step').classList.add('hidden');
+            document.getElementById('guided-chat-history').innerHTML = '';
+            guidedState = { active: false, exerciseNum: null, chatHistory: [] };
+        }
+
+        async function startGuidedSession() {
+            const exNum = document.getElementById('guided-exercise-select').value;
+            guidedState.active = true;
+            guidedState.exerciseNum = exNum;
+            guidedState.chatHistory = [];
+
+            showLoading(`Inizializzazione scomposizione WBS per l'Esercizio ${exNum}...`);
+
+            const prompt = `Lo studente ha chiesto di avviare una "Risoluzione Guidata Step-by-Step" (scomposizione in passaggi operativi) per l'Esercizio numero ${exNum} del seguente set:
+<SetEsercizi>
+${currentExercisesContext}
+</SetEsercizi>
+
+Isola l'Esercizio ${exNum} e individua la prima micro-fase procedurale (es. identificazione delle Condizioni di Esistenza, semplificazione immediata, o raccoglimento).
+Poni una domanda precisa sullo Step 1 e spiega allo studente quale output logico ti aspetti per procedere, impostando un tono di coaching operativo.
+NON svelare mai la soluzione completa né i risultati intermedi prima che l'utente provi.`;
+
+            const response = await callGemini(prompt, `Sei in modalità 'Risoluzione Guidata WBS'. Devi scomporre l'esercizio in sotto-processi e guidare lo studente un passo alla volta senza mai anticipare calcoli o soluzioni finali.`);
+            if (!response) return;
+
+            guidedState.chatHistory.push({ role: 'tutor', text: response });
+            
+            document.getElementById('guided-setup-step').classList.add('hidden');
+            document.getElementById('guided-chat-step').classList.remove('hidden');
+            
+            renderGuidedChat();
+            hideLoading();
+        }
+
+        async function sendGuidedStep() {
+            const inputEl = document.getElementById('guided-user-input');
+            const userResponse = inputEl.value.trim();
+            if (!userResponse) return;
+
+            guidedState.chatHistory.push({ role: 'user', text: userResponse });
+            inputEl.value = '';
+            renderGuidedChat();
+
+            showLoading("Analisi del passaggio logico in corso...");
+
+            // Prepare conversation logs for context
+            let logs = guidedState.chatHistory.map(h => `${h.role === 'tutor' ? 'Tutor' : 'Studente'}: ${h.text}`).join('\n\n');
+
+            const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} tramite Risoluzione Guidata.
+Ecco lo storico dell'interazione logica fino a questo momento:
+${logs}
+
+Valuta l'ultima risposta fornita dallo studente.
+- Se il passaggio logico è corretto, convalida la fase procedimentale e formula la domanda per lo STEP SUCCESSIVO della scomposizione operativa dell'esercizio.
+- Se c'è un errore o un'inesattezza (un collo di bottiglia nel processo), spiega perché è errato in modo concreto e stimola lo studente a ricalcolare proprio quel singolo passaggio, senza svelare il risultato esatto.
+Continua a mantenere la formattazione rigorosa in LaTeX per i passaggi algebrici.`;
+
+            const response = await callGemini(prompt, `Sei in modalità 'Risoluzione Guidata WBS'. Procedi un solo passo alla volta. Non rivelare mai l'output finale prima che lo studente lo ricavi autonomamente.`);
+            if (!response) return;
+
+            guidedState.chatHistory.push({ role: 'tutor', text: response });
+            renderGuidedChat();
+            hideLoading();
+        }
+
+        function renderGuidedChat() {
+            const historyEl = document.getElementById('guided-chat-history');
+            historyEl.innerHTML = '';
+
+            guidedState.chatHistory.forEach(msg => {
+                const bubble = document.createElement('div');
+                if (msg.role === 'tutor') {
+                    bubble.className = "bg-slate-900 border border-slate-800 p-3 rounded-lg text-xs md:text-sm text-slate-100 tex2jax_process math-content";
+                    bubble.innerHTML = `<span class="font-bold text-blue-400 block mb-1"><i class="fas fa-chalkboard-user"></i> Tutor:</span> ${marked.parse(msg.text)}`;
+                } else {
+                    bubble.className = "bg-slate-800 border border-slate-700 p-3 rounded-lg text-xs md:text-sm text-slate-200 self-end w-5/6";
+                    bubble.innerHTML = `<span class="font-bold text-emerald-400 block mb-1"><i class="fas fa-user-pen"></i> Tu:</span> ${msg.text}`;
+                }
+                historyEl.appendChild(bubble);
+            });
+
+            // MathJax translation on the fly inside guided resolution chat
+            if (window.MathJax) {
+                MathJax.typesetPromise([historyEl]).catch(function (err) {
+                    console.warn('MathJax chat typesetting warning: ' + err.message);
+                });
+            }
+
+            // Auto-scroll to the bottom of chat history
+            setTimeout(() => {
+                historyEl.scrollTop = historyEl.scrollHeight;
+            }, 100);
         }
     </script>
 </body>
