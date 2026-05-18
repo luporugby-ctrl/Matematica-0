@@ -1,2 +1,2 @@
 # Matematica-0
-Esercitazioni dii Matematica basate su unita diidattiche
+Esercitazioni di Matematica basate su unita didattiche
