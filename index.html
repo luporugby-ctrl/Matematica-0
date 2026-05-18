@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Matematica 0 - Ingegneria Gestionale L-9</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- MathJax for rendering beautiful LaTeX formulas -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .math-content p { margin-bottom: 1rem; line-height: 1.6; }
+        .math-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .math-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .math-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col md:flex-row overflow-hidden font-sans text-gray-800">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-30">
+        <h1 class="text-lg font-bold flex items-center gap-2">
+            <i class="fas fa-square-root-variable"></i> Matematica 0
+        </h1>
+        <button id="mobile-menu-btn" onclick="toggleSidebar()" class="text-white focus:outline-none text-xl">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar / Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-white border-r border-gray-200 flex flex-col h-full shadow-lg z-40 transform -translate-x-full md:translate-x-0 md:relative md:shadow-sm transition-transform duration-300 ease-in-out">
+        <div class="p-6 border-b border-gray-200 bg-blue-600 text-white hidden md:block">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-square-root-variable"></i>
+                Matematica 0
+            </h1>
+            <p class="text-xs text-blue-100 mt-1">Preparazione Analisi 1 (L-9)</p>
+        </div>
+        
+        <!-- API Key Setup Block (Local Storage helper for GitHub Pages hosting) -->
+        <div class="p-4 bg-amber-50 border-b border-amber-200">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                    <i class="fas fa-key"></i> Gemini API Key
+                </span>
+                <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-800">Mancante</span>
+            </div>
+            <div class="flex gap-2">
+                <input type="password" id="api-key-input" placeholder="Incolla qui la tua API Key..." class="w-full text-xs px-2 py-1.5 border border-amber-300 rounded focus:ring-1 focus:ring-amber-500 outline-none">
+                <button onclick="saveApiKey()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors">
+                    Salva
+                </button>
+            </div>
+            <p class="text-[10px] text-amber-700 mt-1">La chiave viene salvata solo nel tuo browser locale.</p>
+        </div>
+
+        <div class="p-3 bg-gray-50 text-xs text-gray-500 uppercase font-bold tracking-wider flex justify-between items-center">
+            <span>Programma (27 Moduli)</span>
+            <span id="modules-progress" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">0 / 27</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-2" id="sidebar-topics">
+            <!-- Topics injected by JS -->
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden transition-opacity"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full bg-gray-50 relative overflow-hidden">
+        
+        <!-- Desktop Header & Operations Dashboard -->
+        <header class="bg-white p-6 border-b border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 z-10">
+            <div>
+                <h2 id="current-topic-title" class="text-2xl font-bold text-gray-800">Seleziona un argomento</h2>
+                <p class="text-gray-500 text-sm mt-1">Nessuna fretta: domina ogni passaggio logico al 100%.</p>
+            </div>
+            
+            <!-- Operations KPIs -->
+            <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-lg border border-gray-100 self-stretch sm:self-auto justify-around">
+                <div class="text-center px-2 border-r border-gray-200">
+                    <span class="block text-xs text-gray-400 uppercase font-semibold">Esercizi Generati</span>
+                    <span id="kpi-generated" class="text-sm font-bold text-blue-600">0</span>
+                </div>
+                <div class="text-center px-2 border-r border-gray-200">
+                    <span class="block text-xs text-gray-400 uppercase font-semibold">Tentativi Corretti</span>
+                    <span id="kpi-correct" class="text-sm font-bold text-green-600">0</span>
+                </div>
+                <div class="text-center px-2">
+                    <span class="block text-xs text-gray-400 uppercase font-semibold">Efficienza</span>
+                    <span id="kpi-efficiency" class="text-sm font-bold text-amber-600">0%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth" id="main-content-area">
+            
+            <!-- Welcome / Intro Screen -->
+            <div id="welcome-screen" class="max-w-3xl mx-auto text-center mt-12 md:mt-20 px-4">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-6">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Ottimizza la tua preparazione in Analisi 1</h3>
+                <p class="text-gray-600 mb-6 max-w-xl mx-auto">
+                    Questo simulatore interattivo è configurato per i 27 capitoli di Matematica 0. Pensa a ogni capitolo come a una linea di produzione logistica da ottimizzare: non si passa alla fase successiva finché lo standard non è perfetto.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
+                        <i class="fas fa-cubes text-blue-500 mt-1"></i>
+                        <div><strong class="block text-sm">Nessuna Soluzione Pronta</strong>Se commetti un errore, verrai guidato nel processo per risolverlo da solo.</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
+                        <i class="fas fa-list-ol text-blue-500 mt-1"></i>
+                        <div><strong class="block text-sm">10 Esercizi Progressivi</strong>Gemini genererà sempre una batteria mirata di 10 quesiti a difficoltà crescente.</div>
+                    </div>
+                </div>
+                <p class="mt-8 text-sm text-gray-500">Seleziona un capitolo dalla barra laterale e inserisci la tua API Key per iniziare.</p>
+            </div>
+
+            <!-- Workspace -->
+            <div id="workspace" class="max-w-4xl mx-auto hidden flex-col gap-6 px-2">
+                
+                <!-- Action Controls -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-left">
+                        <h4 class="font-bold text-gray-800 text-lg">Mettiti alla prova</h4>
+                        <p class="text-sm text-gray-500">Gemini formulerà un set di 10 problemi unici basati sulle dispense ufficiali.</p>
+                    </div>
+                    <button id="btn-generate" onclick="generateExercises()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 w-full md:w-auto">
+                        <i class="fas fa-wand-magic-sparkles"></i> Genera Esercizi
+                    </button>
+                </div>
+
+                <!-- Exercises Container -->
+                <div id="exercises-container" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-bold border-b pb-3 mb-4 flex items-center gap-2">
+                        <i class="fas fa-clipboard-list text-blue-600"></i> I Tuoi Esercizi
+                    </h3>
+                    <div id="exercises-content" class="math-content text-gray-700 min-h-[100px] tex2jax_process">
+                        <!-- Math content dynamically injected -->
+                    </div>
+                </div>
+
+                <!-- User Input Area -->
+                <div id="user-input-container" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                        <i class="fas fa-pen-to-square text-blue-600"></i> Le Tue Risposte
+                    </h3>
+                    <p class="text-sm text-gray-500 mb-4">Inserisci lo svolgimento o il risultato finale di ciascun esercizio (es: "1) x = 5", "2) S = (1, 3]"). Fornisci i passaggi per un controllo di qualità accurato.</p>
+                    <textarea id="user-answers" rows="6" class="w-full border border-gray-300 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y font-mono text-sm" placeholder="Scrivi qui i passaggi delle tue risposte..."></textarea>
+                    <div class="mt-4 flex justify-between items-center">
+                        <button onclick="toggleCompletedMark()" id="btn-mark-complete" class="text-sm font-semibold text-gray-500 hover:text-blue-600 flex items-center gap-1.5 transition-colors">
+                            <i class="far fa-circle-check"></i> Segna Modulo come Completato
+                        </button>
+                        <button id="btn-submit" onclick="checkAnswers()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2">
+                            <i class="fas fa-check-double"></i> Verifica Risposte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="feedback-container" class="hidden bg-blue-50 p-6 rounded-xl border border-blue-200">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chalkboard-user"></i> Feedback del Tutor
+                    </h3>
+                    <div id="feedback-content" class="math-content text-gray-800 tex2jax_process">
+                        <!-- AI Feedback with inline latex -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Global Loading Overlay -->
+        <div id="loading-overlay" class="absolute inset-0 bg-white/85 backdrop-blur-xs hidden flex-col items-center justify-center z-50">
+            <div class="animate-spin rounded-full h-14 w-14 border-b-4 border-blue-600 mb-4"></div>
+            <p id="loading-text" class="text-lg font-semibold text-gray-700">Elaborazione...</p>
+        </div>
+
+    </main>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const syllabus = [
+            "01_Logica e linguaggio matematico",
+            "02_Numeri naturali, MCD, mcm",
+            "03_Operazioni con i numeri interi",
+            "04_Operazioni con le frazioni",
+            "05_Le potenze",
+            "06_Monomi e polinomi",
+            "07_Prodotti notevoli di polinomi",
+            "08_Scomposizione di polinomi",
+            "09_Scomposizioni di polinomi con il metodo di Ruffini",
+            "10_Le equazioni di primo grado intere",
+            "11_Le frazioni algebriche",
+            "12_Le equazioni di primo grado fratte",
+            "13_I sistemi lineari",
+            "14_Le disequazioni di primo grado",
+            "15_I radicali",
+            "16_Insiemi, numeri reali e piano cartesiano",
+            "17_Le funzioni",
+            "18_Le funzioni reali nel piano cartesiano",
+            "19_La retta nel piano cartesiano",
+            "20_Le equazioni di secondo grado",
+            "21_Disequazioni di secondo grado",
+            "22_Funzione esponenziale equazioni e disequazioni",
+            "23_I logaritmi proprietà, equazioni e disequazioni",
+            "24_Introduzione alla goniometria",
+            "25_Equazioni e disequazioni goniometriche",
+            "26_Altri tipi di equazioni e disequazioni",
+            "27_Introduzione allo studio di funzione"
+        ];
+
+        let currentTopic = "";
+        let currentExercisesContext = "";
+        let completedModules = new Set();
+        
+        // Operations stats in session memory
+        let stats = {
+            generated: 0,
+            correct: 0,
+            totalSubmissions: 0
+        };
+
+        const baseSystemInstruction = `Sei un Tutor avanzato di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9) alla Mercatorum. 
+Lo studente lavora come Sr Operation Specialist (Logistica/Zalando) e ha un diploma alberghiero. Ha bisogno di concretezza, logica organizzata e processi chiari.
+
+REGOLE TASSATIVE DA RISPETTARE:
+1. Devi generare SEMPRE ESATTAMENTE 10 ESERCIZI di difficoltà progressiva (da 1 a 10). Non uno in meno, non uno in più.
+2. NON FORNIRE MAI I RISULTATI O LE SOLUZIONI DURANTE LA GENERAZIONE DEGLI ESERCIZI.
+3. Se l'utente commette un errore nelle sue risposte, SPIEGA il concetto e il punto procedurale in cui è avvenuto il collo di bottiglia, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
+4. Ogni tanto usa metafore legate alla logistica, all'ottimizzazione dei processi (colli di bottiglia, throughput, lead time) per spiegare concetti matematici astratti.
+5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$).`;
+
+        // --- APP STARTUP & STORAGE ---
+        window.onload = () => {
+            renderSidebar();
+            loadSavedApiKey();
+        };
+
+        function loadSavedApiKey() {
+            // Retrieve safely from localStorage (standard frontend setup for private keys on GitHub pages)
+            const savedKey = localStorage.getItem('tutor_gemini_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-input').value = savedKey;
+                updateKeyStatus(true);
+            }
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if (key) {
+                localStorage.setItem('tutor_gemini_api_key', key);
+                updateKeyStatus(true);
+                showToast("API Key salvata con successo!");
+            } else {
+                localStorage.removeItem('tutor_gemini_api_key');
+                updateKeyStatus(false);
+                showToast("API Key rimossa.");
+            }
+        }
+
+        function updateKeyStatus(hasKey) {
+            const statusEl = document.getElementById('key-status');
+            if (hasKey) {
+                statusEl.innerText = "Configurata";
+                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-green-100 text-green-800";
+            } else {
+                statusEl.innerText = "Mancante";
+                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-800";
+            }
+        }
+
+        function getApiKey() {
+            return document.getElementById('api-key-input').value.trim();
+        }
+
+        // --- SIDEBAR & VIEW CONTROLS ---
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-topics');
+            container.innerHTML = '';
+            syllabus.forEach((topic, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors hover:bg-blue-50 text-gray-700 flex items-center justify-between border border-transparent';
+                
+                const numMatch = topic.match(/^(\d+)_/);
+                const num = numMatch ? numMatch[1] : index + 1;
+                const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
+
+                const isCompleted = completedModules.has(topic);
+                const checkIcon = isCompleted ? '<i class="fas fa-circle-check text-green-500"></i>' : '<i class="far fa-circle text-gray-300"></i>';
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 truncate">
+                        <span class="flex-shrink-0 w-6 h-6 rounded bg-gray-100 text-gray-500 flex items-center justify-center text-[10px] font-bold">${num}</span>
+                        <span class="truncate text-xs md:text-sm" title="${cleanName}">${cleanName}</span>
+                    </div>
+                    <span class="ml-2 flex-shrink-0">${checkIcon}</span>
+                `;
+                btn.onclick = () => selectTopic(topic, btn);
+                container.appendChild(btn);
+            });
+            updateProgressCounters();
+        }
+
+        function selectTopic(topic, btnElement) {
+            currentTopic = topic;
+            currentExercisesContext = ""; 
+            
+            // Close mobile menu if open
+            if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
+            // Update UI
+            const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
+            document.getElementById('current-topic-title').innerText = cleanName;
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('workspace').classList.remove('hidden');
+            document.getElementById('exercises-container').classList.add('hidden');
+            document.getElementById('user-input-container').classList.add('hidden');
+            document.getElementById('feedback-container').classList.add('hidden');
+            document.getElementById('user-answers').value = '';
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Genera Esercizi';
+
+            // Active State UI Highlight
+            document.querySelectorAll('#sidebar-topics button').forEach(b => {
+                b.classList.remove('bg-blue-50', 'border-blue-200', 'text-blue-700');
+            });
+            btnElement.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-700');
+
+            updateCompleteButtonUI();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- INTERACTION & REWARDS ---
+        function toggleCompletedMark() {
+            if (!currentTopic) return;
+            if (completedModules.has(currentTopic)) {
+                completedModules.delete(currentTopic);
+                showToast("Modulo rimosso dai completati.");
+            } else {
+                completedModules.add(currentTopic);
+                showToast("Grande lavoro! Modulo convalidato.");
+            }
+            renderSidebar();
+            updateCompleteButtonUI();
+        }
+
+        function updateCompleteButtonUI() {
+            const btn = document.getElementById('btn-mark-complete');
+            if (completedModules.has(currentTopic)) {
+                btn.innerHTML = '<i class="fas fa-circle-check text-green-600"></i> Modulo Completato!';
+                btn.className = "text-sm font-semibold text-green-600 flex items-center gap-1.5 transition-colors";
+            } else {
+                btn.innerHTML = '<i class="far fa-circle-check"></i> Segna Modulo come Completato';
+                btn.className = "text-sm font-semibold text-gray-500 hover:text-blue-600 flex items-center gap-1.5 transition-colors";
+            }
+        }
+
+        function updateProgressCounters() {
+            document.getElementById('modules-progress').innerText = `${completedModules.size} / 27`;
+        }
+
+        function updateKPIs(action) {
+            if (action === 'generate') {
+                stats.generated += 10;
+            } else if (action === 'correct') {
+                stats.correct += 1;
+            }
+            stats.totalSubmissions++;
+
+            document.getElementById('kpi-generated').innerText = stats.generated;
+            document.getElementById('kpi-correct').innerText = stats.correct;
+            
+            const efficiency = stats.generated > 0 ? Math.round((stats.correct / stats.totalSubmissions) * 100) : 0;
+            document.getElementById('kpi-efficiency').innerText = `${efficiency}%`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-2.5 rounded-lg text-sm shadow-xl z-50 animate-bounce flex items-center gap-2";
+            toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // --- GEMINI API ENGINE ---
+        async function callGemini(userPrompt, systemPromptExtension = "") {
+            const activeKey = getApiKey();
+            if (!activeKey) {
+                hideLoading();
+                alert("Attenzione: Inserisci la tua Gemini API Key nel pannello a sinistra per abilitare il tutor intelligente.");
+                return null;
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: baseSystemInstruction + "\n" + systemPromptExtension }] }
+            };
+
+            let retries = 5;
+            let delay = 1000;
+
+            while (retries > 0) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso.";
+                } catch (error) {
+                    console.error("Gemini call failed, retrying...", error);
+                    retries--;
+                    if (retries === 0) {
+                        return "Si è verificato un errore di connessione. Controlla che la tua API Key sia corretta e attiva.";
+                    }
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        function showLoading(text) {
+            document.getElementById('loading-text').innerText = text;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('flex');
+        }
+
+        // --- WORKFLOW EXECUTION ---
+        async function generateExercises() {
+            if (!currentTopic) return;
+            
+            showLoading("Generazione di 10 esercizi personalizzati a difficoltà crescente...");
+            document.getElementById('feedback-container').classList.add('hidden');
+            document.getElementById('user-answers').value = '';
+            
+            const prompt = `Genera esattamente 10 esercizi di difficoltà crescente (da 1 a 10) sull'argomento: "${currentTopic}". 
+Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Solo il testo degli esercizi numerati.`;
+            
+            const response = await callGemini(prompt);
+            if (!response) return;
+
+            currentExercisesContext = response; 
+            updateKPIs('generate');
+
+            const exContent = document.getElementById('exercises-content');
+            exContent.innerHTML = marked.parse(response);
+            
+            // Typeset LaTeX math formatting
+            if (window.MathJax) {
+                MathJax.typesetPromise([exContent]).catch(function (err) {
+                    console.warn('MathJax typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('exercises-container').classList.remove('hidden');
+            document.getElementById('user-input-container').classList.remove('hidden');
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-rotate"></i> Rigenera Esercizi';
+            
+            hideLoading();
+            document.getElementById('exercises-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function checkAnswers() {
+            const userAnswers = document.getElementById('user-answers').value.trim();
+            if (!userAnswers) {
+                alert("Fornisci almeno un tentativo di risposta o spiegazione dei passaggi.");
+                return;
+            }
+
+            showLoading("Verifica dei passaggi e controllo di qualità...");
+
+            const prompt = `Lo studente ha svolto il set di esercizi. Valuta ciascuno singolarmente.
+<EserciziRichiesti>
+${currentExercisesContext}
+</EserciziRichiesti>
+
+<RisposteFornite>
+${userAnswers}
+</RisposteFornite>
+
+Fornisci feedback dettagliato. Se un esercizio è errato, spiega chiaramente il passaggio errato o il collo di bottiglia concettuale, ma non scrivere la risposta corretta. Invita lo studente a ricalcolare. Se sono tutti corretti, congratulati formalmente.`;
+
+            const response = await callGemini(prompt);
+            if (!response) return;
+
+            // Simple heuristics to evaluate performance metrics
+            if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("corretto")) {
+                updateKPIs('correct');
+            } else {
+                updateKPIs('attempt'); // tracks total submissions
+            }
+
+            const fbContent = document.getElementById('feedback-content');
+            fbContent.innerHTML = marked.parse(response);
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([fbContent]).catch(function (err) {
+                    console.warn('MathJax feedback typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('feedback-container').classList.remove('hidden');
+            hideLoading();
+            document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
