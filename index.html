@@ -58,21 +58,27 @@
             <p class="text-xs text-blue-100 mt-1">Preparazione Analisi 1 (L-9)</p>
         </div>
         
-        <!-- API Key Setup Block (Local Storage helper for GitHub Pages hosting) -->
-        <div class="p-4 bg-amber-50 border-b border-amber-200">
+        <!-- API Key Setup Block with Diagnostic Tool -->
+        <div class="p-4 bg-slate-900 text-white border-b border-slate-800">
             <div class="flex items-center justify-between mb-1">
-                <span class="text-xs font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wide flex items-center gap-1">
                     <i class="fas fa-key"></i> Gemini API Key
                 </span>
-                <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-800">Mancante</span>
+                <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300">Mancante</span>
             </div>
-            <div class="flex gap-2">
-                <input type="password" id="api-key-input" placeholder="Incolla qui la tua API Key..." class="w-full text-xs px-2 py-1.5 border border-amber-300 rounded focus:ring-1 focus:ring-amber-500 outline-none">
-                <button onclick="saveApiKey()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors">
+            <div class="flex gap-2 mb-2">
+                <input type="password" id="api-key-input" placeholder="Incolla qui la chiave AI Studio..." class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
+                <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors">
                     Salva
                 </button>
             </div>
-            <p class="text-[10px] text-amber-700 mt-1">La chiave viene salvata solo nel tuo browser locale.</p>
+            <div class="flex justify-between items-center">
+                <p class="text-[10px] text-slate-400">Salvata solo nel tuo browser</p>
+                <button onclick="testApiConnection()" class="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                    <i class="fas fa-vial"></i> Testa Connessione
+                </button>
+            </div>
+            <div id="connection-test-result" class="text-[10px] mt-2 hidden p-1.5 rounded bg-slate-850 border border-slate-800"></div>
         </div>
 
         <div class="p-3 bg-gray-50 text-xs text-gray-500 uppercase font-bold tracking-wider flex justify-between items-center">
@@ -184,7 +190,7 @@
                                 <option value="3">Esercizio 3</option>
                                 <option value="4">Esercizio 4</option>
                                 <option value="5">Esercizio 5</option>
-                                <option value="6">Esercizio 6</option>
+                                <option value="6">Eserc6zio 6</option>
                                 <option value="7">Esercizio 7</option>
                                 <option value="8">Esercizio 8</option>
                                 <option value="9">Esercizio 9</option>
@@ -205,7 +211,7 @@
                         <div class="flex flex-col gap-2">
                             <label class="text-xs text-slate-400 font-semibold uppercase">Il tuo prossimo passaggio / risposta:</label>
                             <div class="flex gap-2">
-                                <input type="text" id="guided-user-input" placeholder="Scrivi la tua risposta o deduzione logica..." class="flex-grow bg-slate-700 border border-slate-600 text-white text-sm rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                <input type="text" id="guided-user-input" placeholder="Scrivi la tua risposta o deduzione logica..." class="flex-grow bg-slate-700 border border-slate-600 text-white text-sm rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500" onkeydown="if(event.key === 'Enter') sendGuidedStep()">
                                 <button onclick="sendGuidedStep()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2 rounded transition-colors flex items-center gap-1.5">
                                     <i class="fas fa-paper-plane"></i> Invia
                                 </button>
@@ -349,10 +355,10 @@ REGOLE TASSATIVE DA RISPETTARE:
             const statusEl = document.getElementById('key-status');
             if (hasKey) {
                 statusEl.innerText = "Configurata";
-                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-green-100 text-green-800";
+                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-green-900/50 text-green-300";
             } else {
                 statusEl.innerText = "Mancante";
-                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-800";
+                statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300";
             }
         }
 
@@ -483,7 +489,7 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         // --- GEMINI API ENGINE ---
-        async function callGemini(userPrompt, systemPromptExtension = "") {
+        async function callGemini(userPrompt, systemPromptExtension = "", targetModel = "gemini-2.5-flash") {
             const activeKey = getApiKey();
             if (!activeKey) {
                 hideLoading();
@@ -491,14 +497,14 @@ REGOLE TASSATIVE DA RISPETTARE:
                 return null;
             }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${activeKey}`;
             
             const payload = {
                 contents: [{ parts: [{ text: userPrompt }] }],
                 systemInstruction: { parts: [{ text: baseSystemInstruction + "\n" + systemPromptExtension }] }
             };
 
-            let retries = 5;
+            let retries = 3;
             let delay = 1000;
 
             while (retries > 0) {
@@ -509,22 +515,116 @@ REGOLE TASSATIVE DA RISPETTARE:
                         body: JSON.stringify(payload)
                     });
 
-                    if (!response.ok) {
+                    // Immediate interruption on Authentication / Bad request errors (User Experience upgrade)
+                    if (response.status === 400 || response.status === 403 || response.status === 401) {
                         const errorData = await response.json();
-                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                        const errMsg = errorData.error?.message || "Chiave non valida o non abilitata.";
+                        
+                        // If gemini-2.5-flash failed and we haven't tried gemini-1.5-flash, fallback immediately!
+                        if (targetModel === "gemini-2.5-flash") {
+                            console.warn("Model gemini-2.5-flash failed or restricted. Retrying with gemini-1.5-flash fallback...");
+                            return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
+                        }
+                        
+                        throw new Error(`Errore API (${response.status}): ${errMsg}`);
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`Errore di connessione server (${response.status})`);
                     }
 
                     const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso.";
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso dal server.";
                 } catch (error) {
-                    console.error("Gemini call failed, retrying...", error);
+                    console.error("Gemini call failed:", error);
+                    
+                    // Stop immediately if it's an authorization/validation error
+                    if (error.message.includes("403") || error.message.includes("401") || error.message.includes("400")) {
+                        hideLoading();
+                        alert(`Errore di Connessione: ${error.message}\n\nSuggerimento: Verifica la correttezza della chiave API Google AI Studio.`);
+                        return null;
+                    }
+
                     retries--;
                     if (retries === 0) {
-                        return "Si è verificato un errore di connessione. Controlla che la tua API Key sia corretta e attiva.";
+                        // Attempt fallback to 1.5-flash if 2.5 failed completely on generic network error
+                        if (targetModel === "gemini-2.5-flash") {
+                            return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
+                        }
+                        return "Errore di connessione persistente. Riprova tra qualche istante.";
                     }
                     await new Promise(res => setTimeout(res, delay));
                     delay *= 2;
                 }
+            }
+        }
+
+        // Diagnostic Connection Tester
+        async function testApiConnection() {
+            const resultEl = document.getElementById('connection-test-result');
+            resultEl.classList.remove('hidden', 'bg-green-900/40', 'text-green-300', 'bg-red-900/40', 'text-red-300');
+            resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-slate-800 text-slate-300";
+            resultEl.innerText = "Verifica in corso...";
+            
+            const activeKey = getApiKey();
+            if (!activeKey) {
+                resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
+                resultEl.innerText = "Errore: Inserisci prima la chiave API!";
+                return;
+            }
+
+            // Test using stable gemini-2.5-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: "Rispondi solo con OK." }] }]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
+                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Connessione riuscita! Il modello gemini-2.5-flash è attivo e pronto.`;
+                } else {
+                    const errorData = await response.json();
+                    const errMsg = errorData.error?.message || "Errore sconosciuto.";
+                    
+                    // Fallback check
+                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-amber-900/40 text-amber-300 border border-amber-800";
+                    resultEl.innerText = "Gemini 2.5 Fallito. Prova a testare il modulo 1.5...";
+                    
+                    testFallbackConnection(activeKey, resultEl);
+                }
+            } catch (err) {
+                resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
+                resultEl.innerText = `Errore di rete: ${err.message}`;
+            }
+        }
+
+        async function testFallbackConnection(activeKey, resultEl) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`;
+            const payload = { contents: [{ parts: [{ text: "OK" }] }] };
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) {
+                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
+                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Connessione riuscita tramite Fallback (gemini-1.5-flash). Funzionamento garantito!`;
+                } else {
+                    const errorData = await response.json();
+                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
+                    resultEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Fallito: ${errorData.error?.message || "Chiave API errata"}`;
+                }
+            } catch (err) {
+                resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
+                resultEl.innerText = `Errore di rete: ${err.message}`;
             }
         }
 
