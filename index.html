@@ -115,7 +115,7 @@
                     <span id="kpi-correct" class="text-sm font-bold text-green-600">0</span>
                 </div>
                 <div class="text-center px-2">
-                    <span class="block text-xs text-gray-400 uppercase font-semibold">Efficienza</span>
+                    <span class="block text-xs text-gray-400 uppercase font-semibold">Precisione</span>
                     <span id="kpi-efficiency" class="text-sm font-bold text-amber-600">0%</span>
                 </div>
             </div>
@@ -127,20 +127,20 @@
             <!-- Welcome / Intro Screen -->
             <div id="welcome-screen" class="max-w-3xl mx-auto text-center mt-12 md:mt-20 px-4">
                 <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-6">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-book-open"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-4">Ottimizza la tua preparazione in Analisi 1</h3>
+                <h3 class="text-2xl font-bold mb-4">Costruisci le tue basi matematiche da zero</h3>
                 <p class="text-gray-600 mb-6 max-w-xl mx-auto">
-                    Questo simulatore interattivo è configurato per i 27 capitoli di Matematica 0. Pensa a ogni capitolo come a una linea di produzione logistica da ottimizzare: non si passa alla fase successiva finché lo standard non è perfetto.
+                    Questo simulatore interattivo è configurato per i 27 capitoli di Matematica 0. Affronteremo ogni capitolo con calma e semplicità. Costruiremo la tua conoscenza un mattoncino alla volta: non passeremo all'argomento successivo finché non avrai capito tutto perfettamente.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                     <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
                         <i class="fas fa-cubes text-blue-500 mt-1"></i>
-                        <div><strong class="block text-sm">Nessuna Soluzione Pronta</strong>Se commetti un errore, verrai guidato nel processo per risolverlo da solo.</div>
+                        <div><strong class="block text-sm">Nessuna Soluzione Pronta</strong>Se commetti un errore, ti spiegherò il concetto in modo elementare per farti arrivare da solo alla soluzione.</div>
                     </div>
                     <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
                         <i class="fas fa-route text-blue-500 mt-1"></i>
-                        <div><strong class="block text-sm">Risoluzione Guidata WBS</strong>Isola un singolo esercizio e affrontalo passo dopo passo con il tutor.</div>
+                        <div><strong class="block text-sm">Risoluzione Passo-Passo</strong>Isola un singolo esercizio e affrontalo un passettino alla volta insieme al tutor.</div>
                     </div>
                 </div>
                 <p class="mt-8 text-sm text-gray-500">Seleziona un capitolo dalla barra laterale e inserisci la tua API Key per iniziare.</p>
@@ -174,7 +174,7 @@
                 <div id="guided-resolution-container" class="hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-xl shadow-md border border-slate-700 flex flex-col gap-4">
                     <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                         <h3 class="text-lg font-bold flex items-center gap-2 text-blue-400">
-                            <i class="fas fa-route"></i> Risoluzione Guidata (WBS)
+                            <i class="fas fa-route"></i> Guida Passo-Passo
                         </h3>
                         <button onclick="closeGuidedResolution()" class="text-slate-400 hover:text-white transition-colors">
                             <i class="fas fa-xmark text-xl"></i>
@@ -182,7 +182,7 @@
                     </div>
 
                     <div id="guided-setup-step" class="flex flex-col gap-3">
-                        <p class="text-sm text-slate-300">Quale esercizio (1-10) del blocco corrente vuoi analizzare e scomporre nel dettaglio?</p>
+                        <p class="text-sm text-slate-300">Quale esercizio (1-10) vuoi affrontare insieme passo dopo passo?</p>
                         <div class="flex gap-2">
                             <select id="guided-exercise-select" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="1">Esercizio 1</option>
@@ -197,7 +197,7 @@
                                 <option value="10">Esercizio 10</option>
                             </select>
                             <button onclick="startGuidedSession()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded transition-colors">
-                                Avvia Analisi Passaggi
+                                Avvia Guida Passo-Passo
                             </button>
                         </div>
                     </div>
@@ -314,14 +314,14 @@
             totalSubmissions: 0
         };
 
-        const baseSystemInstruction = `Sei un Tutor avanzato di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9) alla Mercatorum. 
-Lo studente lavora come Sr Operation Specialist (Logistica/Zalando) e ha un diploma alberghiero. Ha bisogno di concretezza, logica organizzata e processi chiari.
+        const baseSystemInstruction = `Sei un Tutor empatico, paziente e chiarissimo di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9). 
+Lo studente ha un diploma alberghiero e sta ricominciando la matematica da zero (Matematica 0). Ha bisogno di spiegazioni PURE, SEMPLICI e MOLTO SEMPLIFICATE. Niente gergo tecnico o aziendale.
 
 REGOLE TASSATIVE DA RISPETTARE:
 1. Devi generare SEMPRE ESATTAMENTE 10 ESERCIZI di difficoltà progressiva (da 1 a 10). Non uno in meno, non uno in più.
 2. NON FORNIRE MAI I RISULTATI O LE SOLUZIONI DURANTE LA GENERAZIONE DEGLI ESERCIZI.
-3. Se l'utente commette un errore nelle sue risposte, SPIEGA il concetto e il punto procedurale in cui è avvenuto il collo di bottiglia, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
-4. Ogni tanto usa metafore legate alla logistica, all'ottimizzazione dei processi (colli di bottiglia, throughput, lead time, WBS) per spiegare concetti matematici astratti.
+3. Se l'utente commette un errore nelle sue risposte, SPIEGA il concetto in modo elementare, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
+4. Abbandona l'approccio "aziendale/operativo". Usa parole semplici, metafore di vita quotidiana molto basilari (come dividere una torta, o i pesi su una bilancia a due piatti) e spezzetta i concetti difficili in mattoncini facili da capire.
 5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$).`;
 
         // --- APP STARTUP & STORAGE ---
@@ -682,7 +682,7 @@ Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Sol
                 return;
             }
 
-            showLoading("Verifica dei passaggi e controllo di qualità...");
+            showLoading("Lettura e correzione in corso...");
 
             const prompt = `Lo studente ha svolto il set di esercizi. Valuta ciascuno singolarmente.
 <EserciziRichiesti>
@@ -693,7 +693,7 @@ ${currentExercisesContext}
 ${userAnswers}
 </RisposteFornite>
 
-Fornisci feedback dettagliato. Se un esercizio è errato, spiega chiaramente il passaggio errato o il collo di bottiglia concettuale, ma non scrivere la risposta corretta. Invita lo studente a ricalcolare. Se sono tutti corretti, congratulati formalmente.`;
+Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere la risposta corretta. Invita lo studente a riprovare usando parole di incoraggiamento. Se sono tutti corretti, fagli dei complimenti semplici e sinceri.`;
 
             const response = await callGemini(prompt);
             if (!response) return;
@@ -743,18 +743,18 @@ Fornisci feedback dettagliato. Se un esercizio è errato, spiega chiaramente il 
             guidedState.exerciseNum = exNum;
             guidedState.chatHistory = [];
 
-            showLoading(`Inizializzazione scomposizione WBS per l'Esercizio ${exNum}...`);
+            showLoading(`Preparazione della guida per l'Esercizio ${exNum}...`);
 
-            const prompt = `Lo studente ha chiesto di avviare una "Risoluzione Guidata Step-by-Step" (scomposizione in passaggi operativi) per l'Esercizio numero ${exNum} del seguente set:
+            const prompt = `Lo studente ha chiesto di avviare una "Guida Passo-Passo" per l'Esercizio numero ${exNum} del seguente set:
 <SetEsercizi>
 ${currentExercisesContext}
 </SetEsercizi>
 
-Isola l'Esercizio ${exNum} e individua la prima micro-fase procedurale (es. identificazione delle Condizioni di Esistenza, semplificazione immediata, o raccoglimento).
-Poni una domanda precisa sullo Step 1 e spiega allo studente quale output logico ti aspetti per procedere, impostando un tono di coaching operativo.
-NON svelare mai la soluzione completa né i risultati intermedi prima che l'utente provi.`;
+Isola l'Esercizio ${exNum} e individua il primissimo, piccolo passo da fare (es. trovare il denominatore comune, isolare la x, ecc.).
+Poni una domanda molto semplice sullo Step 1 e aspetta che lo studente risponda. Tono amichevole e rassicurante.
+NON svelare mai la soluzione completa né i calcoli successivi.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Risoluzione Guidata WBS'. Devi scomporre l'esercizio in sotto-processi e guidare lo studente un passo alla volta senza mai anticipare calcoli o soluzioni finali.`);
+            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi. Niente paroloni.`);
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
@@ -775,21 +775,21 @@ NON svelare mai la soluzione completa né i risultati intermedi prima che l'uten
             inputEl.value = '';
             renderGuidedChat();
 
-            showLoading("Analisi del passaggio logico in corso...");
+            showLoading("Sto leggendo la tua risposta...");
 
             // Prepare conversation logs for context
             let logs = guidedState.chatHistory.map(h => `${h.role === 'tutor' ? 'Tutor' : 'Studente'}: ${h.text}`).join('\n\n');
 
-            const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} tramite Risoluzione Guidata.
-Ecco lo storico dell'interazione logica fino a questo momento:
+            const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} passo dopo passo.
+Ecco lo storico dell'interazione fino a questo momento:
 ${logs}
 
-Valuta l'ultima risposta fornita dallo studente.
-- Se il passaggio logico è corretto, convalida la fase procedimentale e formula la domanda per lo STEP SUCCESSIVO della scomposizione operativa dell'esercizio.
-- Se c'è un errore o un'inesattezza (un collo di bottiglia nel processo), spiega perché è errato in modo concreto e stimola lo studente a ricalcolare proprio quel singolo passaggio, senza svelare il risultato esatto.
-Continua a mantenere la formattazione rigorosa in LaTeX per i passaggi algebrici.`;
+Valuta l'ultima risposta fornita dallo studente in modo facilissimo.
+- Se il passaggio è corretto, rassicuralo e fagli fare il prossimo passettino.
+- Se ha sbagliato qualcosa, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
+Usa termini quotidiani, no gergo. Continua a mantenere la formattazione in LaTeX.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Risoluzione Guidata WBS'. Procedi un solo passo alla volta. Non rivelare mai l'output finale prima che lo studente lo ricavi autonomamente.`);
+            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Solo un passettino piccolissimo alla volta. Sii molto paziente e chiaro.`);
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
