@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Matematica 0 - Ingegneria Gestionale L-9</title>
+    <title>Tutor Matematica 0 e Analisi 1 - L-9</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -41,7 +41,7 @@
     <!-- Mobile Header -->
     <header class="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-30">
         <h1 class="text-lg font-bold flex items-center gap-2">
-            <i class="fas fa-square-root-variable"></i> Matematica 0
+            <i class="fas fa-square-root-variable"></i> Matematica & Analisi
         </h1>
         <button id="mobile-menu-btn" onclick="toggleSidebar()" class="text-white focus:outline-none text-xl">
             <i class="fas fa-bars"></i>
@@ -53,29 +53,38 @@
         <div class="p-6 border-b border-gray-200 bg-blue-600 text-white hidden md:block">
             <h1 class="text-xl font-bold flex items-center gap-2">
                 <i class="fas fa-square-root-variable"></i>
-                Matematica 0
+                Matematica 0 & 1
             </h1>
             <p class="text-xs text-blue-100 mt-1">Preparazione Analisi 1 (L-9)</p>
         </div>
         
-        <!-- API Key Setup Block with Diagnostic Tool -->
+        <!-- API Key & Model Setup Block -->
         <div class="p-4 bg-slate-900 text-white border-b border-slate-800">
             <div class="flex items-center justify-between mb-1">
                 <span class="text-xs font-bold text-blue-400 uppercase tracking-wide flex items-center gap-1">
-                    <i class="fas fa-key"></i> Gemini API Key
+                    <i class="fas fa-key"></i> Configurazione Gemini
                 </span>
                 <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300">Mancante</span>
             </div>
-            <div class="flex gap-2 mb-2">
+            <div class="flex flex-col gap-2 mb-2">
                 <input type="password" id="api-key-input" placeholder="Incolla qui la chiave AI Studio..." class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
-                <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors">
-                    Salva
+                
+                <!-- NEW: Model Selector to fix API Issues -->
+                <select id="api-model-select" class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
+                    <option value="gemini-1.5-flash">Motore Consigliato (gemini-1.5-flash)</option>
+                    <option value="gemini-pro">Motore Compatibile (gemini-pro)</option>
+                    <option value="gemini-1.5-pro">Motore Avanzato (gemini-1.5-pro)</option>
+                    <option value="gemini-2.5-flash">Motore Sperimentale (gemini-2.5-flash)</option>
+                </select>
+
+                <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors w-full">
+                    Salva Impostazioni
                 </button>
             </div>
-            <div class="flex justify-between items-center">
-                <p class="text-[10px] text-slate-400">Salvata solo nel tuo browser</p>
+            <div class="flex justify-between items-center mt-2">
+                <p class="text-[10px] text-slate-400">Salvata nel browser</p>
                 <button onclick="testApiConnection()" class="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
-                    <i class="fas fa-vial"></i> Testa Connessione
+                    <i class="fas fa-vial"></i> Testa Modello
                 </button>
             </div>
             <div id="connection-test-result" class="text-[10px] mt-2 hidden p-1.5 rounded bg-slate-850 border border-slate-800"></div>
@@ -97,14 +106,13 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-full bg-gray-50 relative overflow-hidden">
         
-        <!-- Desktop Header & Operations Dashboard -->
+        <!-- Desktop Header & Progress Dashboard -->
         <header class="bg-white p-6 border-b border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 z-10">
             <div>
                 <h2 id="current-topic-title" class="text-2xl font-bold text-gray-800">Seleziona un argomento</h2>
-                <p class="text-gray-500 text-sm mt-1">Nessuna fretta: domina ogni passaggio logico al 100%.</p>
+                <p class="text-gray-500 text-sm mt-1">Costruiamo le tue basi un mattoncino alla volta, senza fretta.</p>
             </div>
             
-            <!-- Operations KPIs -->
             <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-lg border border-gray-100 self-stretch sm:self-auto justify-around">
                 <div class="text-center px-2 border-r border-gray-200">
                     <span class="block text-xs text-gray-400 uppercase font-semibold">Esercizi Generati</span>
@@ -131,16 +139,23 @@
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Costruisci le tue basi matematiche da zero</h3>
                 <p class="text-gray-600 mb-6 max-w-xl mx-auto">
-                    Questo simulatore interattivo è configurato per i 29 capitoli di Matematica 0. Affronteremo ogni capitolo con calma e semplicità. Costruiremo la tua conoscenza un mattoncino alla volta: non passeremo all'argomento successivo finché non avrai capito tutto perfettamente.
+                    Affronteremo l'intero programma di Matematica 0 (più i nuovi moduli di Analisi 1) con calma e semplicità. Niente paroloni: capirai la logica pura dietro ogni numero.
                 </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
-                        <i class="fas fa-cubes text-blue-500 mt-1"></i>
-                        <div><strong class="block text-sm">Nessuna Soluzione Pronta</strong>Se commetti un errore, ti spiegherò il concetto in modo elementare per farti arrivare da solo alla soluzione.</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-2">
+                        <i class="fas fa-lightbulb text-amber-500 text-xl"></i>
+                        <strong class="block text-sm">Spiegazioni Semplici</strong>
+                        <span class="text-xs text-gray-500">Usa la nuova funzione "Spiegami la Teoria" per capire i concetti prima di calcolare.</span>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
-                        <i class="fas fa-route text-blue-500 mt-1"></i>
-                        <div><strong class="block text-sm">Risoluzione Passo-Passo</strong>Isola un singolo esercizio e affrontalo un passettino alla volta insieme al tutor.</div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-2">
+                        <i class="fas fa-cubes text-blue-500 text-xl"></i>
+                        <strong class="block text-sm">Nessuna Soluzione Pronta</strong>
+                        <span class="text-xs text-gray-500">Se commetti un errore, ti guiderò io in modo elementare per arrivarci da solo.</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-2">
+                        <i class="fas fa-route text-emerald-500 text-xl"></i>
+                        <strong class="block text-sm">Guida Passo-Passo</strong>
+                        <span class="text-xs text-gray-500">Isola un singolo esercizio e affrontalo un passettino alla volta insieme al tutor.</span>
                     </div>
                 </div>
                 <p class="mt-8 text-sm text-gray-500">Seleziona un capitolo dalla barra laterale e inserisci la tua API Key per iniziare.</p>
@@ -149,154 +164,30 @@
             <!-- Workspace -->
             <div id="workspace" class="max-w-4xl mx-auto hidden flex-col gap-6 px-2">
                 
-                <!-- Formulas Reference Panel (Dynamically Visible for Module 28 and 29) -->
-                <div id="formulas-reference-container" class="hidden bg-white p-6 rounded-xl shadow-sm border border-blue-200">
-                    
-                    <!-- Modulo 28: Limiti Esponenziali e Logaritmici -->
-                    <div id="table-limiti-exp" class="hidden">
-                        <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-table"></i> Tabella dei Limiti Notevoli ed Esponenziali
-                        </h3>
-                        <div class="overflow-x-auto text-sm">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-blue-50 text-blue-900 border-b border-blue-200 font-bold">
-                                        <th class="p-2.5">Limite Fondamentale</th>
-                                        <th class="p-2.5">Condizioni / Descrizione</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 text-gray-700">
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}a^{x} = +\infty$</td>
-                                        <td class="p-2.5">se $a > 1$ ($\lim_{x\rightarrow+\infty}e^{x}=+\infty$)</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}a^{x} = 0$</td>
-                                        <td class="p-2.5">se $0 < a < 1$ ($\lim_{x\rightarrow-\infty}e^{x}=0$)</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\frac{\log_{a}x}{x^{b}} = 0$</td>
-                                        <td class="p-2.5">per $a>0, a\ne1$ e $b>0$ (Gerarchia degli infiniti)</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\frac{x^{b}}{a^{x}} = 0$</td>
-                                        <td class="p-2.5">per $a>1$ e $b>0$ (L'esponenziale vince sulle potenze)</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0^{+}}x \log_{a}x = 0$</td>
-                                        <td class="p-2.5">Forma indeterminata $0 \cdot \infty$ ricondotta tramite cambio $y=1/x$</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow\pm\infty}\left(1+\frac{1}{x}\right)^{x} = e$</td>
-                                        <td class="p-2.5">Definizione base del Numero di Nepero</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow\pm\infty}\left(1+\frac{a}{x}\right)^{x} = e^{a}$</td>
-                                        <td class="p-2.5">Generalizzazione tramite sostituzione della variabile $y = x/a$</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}(1+ax)^{\frac{1}{x}} = e^{a}$</td>
-                                        <td class="p-2.5">Forma esponenziale limite notevole del numero $e$</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\log_{a}(1+x)}{x} = \frac{1}{\log a}$</td>
-                                        <td class="p-2.5">Vale $1$ se la base è naturale ($a = e$)</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{a^{x}-1}{x} = \log a$</td>
-                                        <td class="p-2.5">Vale $1$ se la base è naturale ($a = e$)</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{(1+x)^{a}-1}{x} = a$</td>
-                                        <td class="p-2.5">Limite notevole della potenza binomiale</td>
-                                    </tr>
-                                    <tr class="bg-blue-50/30 font-semibold">
-                                        <td class="p-2.5 font-mono">$\lim_{x \to x_0} \frac{\log(1+f(x))}{f(x)} = 1$</td>
-                                        <td class="p-2.5 text-blue-900">Forma composta generalizzata: valida per qualsiasi $f(x) \to 0$</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <!-- Action Controls -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-left flex-1">
+                        <h4 class="font-bold text-gray-800 text-lg">Come vuoi procedere?</h4>
+                        <p class="text-sm text-gray-500">Scegli se ripassare la teoria in modo elementare o se metterti subito alla prova con gli esercizi.</p>
                     </div>
-
-                    <!-- Modulo 29: Limiti Trigonometrici -->
-                    <div id="table-limiti-trig" class="hidden">
-                        <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-wave-square"></i> Tabella dei Limiti Notevoli Trigonometrici
-                        </h3>
-                        <div class="overflow-x-auto text-sm">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-blue-50 text-blue-900 border-b border-blue-200 font-bold">
-                                        <th class="p-2.5">Limite Fondamentale</th>
-                                        <th class="p-2.5">Condizioni / Descrizione</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 text-gray-700">
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\sin x = 0$</td>
-                                        <td class="p-2.5">Dedotto dal corrispettivo limite di successione.</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\cos x = 1$</td>
-                                        <td class="p-2.5">Dedotto dal corrispettivo limite di successione.</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\sin x}{x} = 1$</td>
-                                        <td class="p-2.5">Limite notevole fondamentale trigonometrico.</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\sin x$ e $\lim_{x\rightarrow\pm\infty}\cos x$</td>
-                                        <td class="p-2.5">Non esistono (le successioni non convergono a un unico limite).</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{1-\cos x}{x^{2}} = \frac{1}{2}$</td>
-                                        <td class="p-2.5">Dimostrato moltiplicando per $(1+\cos x)$.</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{1-\cos x}{x} = 0$</td>
-                                        <td class="p-2.5">Corollario dedotto dal limite precedente.</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\tan x}{x} = 1$</td>
-                                        <td class="p-2.5">Deriva dalla definizione $\tan x = \frac{\sin x}{\cos x}$.</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\arcsin x}{x} = 1$</td>
-                                        <td class="p-2.5">Tramite cambio di variabile $y = \arcsin x$.</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\arctan x}{x} = 1$</td>
-                                        <td class="p-2.5">Tramite cambio di variabile $y = \arctan x$.</td>
-                                    </tr>
-                                    <tr class="bg-gray-50/50">
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\frac{\sin x}{x} = 0$</td>
-                                        <td class="p-2.5">Prodotto tra funzione limitata (seno) e infinitesima.</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-2.5 font-mono">$\lim_{x\rightarrow\pi}\frac{\sin x}{x-\pi} = -1$</td>
-                                        <td class="p-2.5">Tramite cambio di variabile $y = x - \pi$.</td>
-                                    </tr>
-                                    <tr class="bg-blue-50/30 font-semibold">
-                                        <td class="p-2.5 font-mono">$\lim_{x \to x_0} \frac{\sin f(x)}{f(x)} = 1$</td>
-                                        <td class="p-2.5 text-blue-900">Forma composta generalizzata, a condizione che $f(x) \to 0$.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <button id="btn-theory" onclick="explainTheory()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-book-reader"></i> Spiegami la Teoria
+                        </button>
+                        <button id="btn-generate" onclick="generateExercises()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-wand-magic-sparkles"></i> Genera 10 Esercizi
+                        </button>
                     </div>
-
                 </div>
 
-                <!-- Action Controls -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="text-left">
-                        <h4 class="font-bold text-gray-800 text-lg">Mettiti alla prova</h4>
-                        <p class="text-sm text-gray-500">Gemini formulerà un set di 10 problemi unici basati sulle dispense ufficiali.</p>
+                <!-- Theory Container -->
+                <div id="theory-container" class="hidden bg-amber-50 p-6 rounded-xl border border-amber-200 shadow-sm">
+                    <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2 border-b border-amber-200 pb-3">
+                        <i class="fas fa-lightbulb"></i> Spiegazione Elementare
+                    </h3>
+                    <div id="theory-content" class="math-content text-gray-800 tex2jax_process">
+                        <!-- Theory dynamically injected -->
                     </div>
-                    <button id="btn-generate" onclick="generateExercises()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 w-full md:w-auto">
-                        <i class="fas fa-wand-magic-sparkles"></i> Genera Esercizi
-                    </button>
                 </div>
 
                 <!-- Exercises Container -->
@@ -350,7 +241,7 @@
                         <div class="flex flex-col gap-2">
                             <label class="text-xs text-slate-400 font-semibold uppercase">Il tuo prossimo passaggio / risposta:</label>
                             <div class="flex gap-2">
-                                <input type="text" id="guided-user-input" placeholder="Scrivi la tua risposta o deduzione logica..." class="flex-grow bg-slate-700 border border-slate-600 text-white text-sm rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500" onkeydown="if(event.key === 'Enter') sendGuidedStep()">
+                                <input type="text" id="guided-user-input" placeholder="Scrivi la tua risposta o deduzione logica (es. x^2)..." class="flex-grow bg-slate-700 border border-slate-600 text-white text-sm rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500" onkeydown="if(event.key === 'Enter') sendGuidedStep()">
                                 <button onclick="sendGuidedStep()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2 rounded transition-colors flex items-center gap-1.5">
                                     <i class="fas fa-paper-plane"></i> Invia
                                 </button>
@@ -367,10 +258,10 @@
                         </h3>
                         <!-- Guided Resolution Activation Trigger -->
                         <button onclick="activateGuidedResolutionPanel()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-all shadow-xs">
-                            <i class="fas fa-route text-blue-400"></i> Attiva Risoluzione Guidata
+                            <i class="fas fa-route text-blue-400"></i> Attiva Guida Passo-Passo
                         </button>
                     </div>
-                    <p class="text-sm text-gray-500 mb-4">Inserisci lo svolgimento o il risultato finale di ciascun esercizio (es: "1) x = 5", "2) S = (1, 3]"). Fornisci i passaggi per un controllo di qualità accurato.</p>
+                    <p class="text-sm text-gray-500 mb-4">Inserisci lo svolgimento o il risultato finale (es: "1) x = 5"). Usa il simbolo ^ per gli esponenti (es. x^2). Fornisci i passaggi per un controllo migliore.</p>
                     <textarea id="user-answers" rows="6" class="w-full border border-gray-300 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y font-mono text-sm" placeholder="Scrivi qui i passaggi delle tue risposte..."></textarea>
                     <div class="mt-4 flex justify-between items-center">
                         <button onclick="toggleCompletedMark()" id="btn-mark-complete" class="text-sm font-semibold text-gray-500 hover:text-blue-600 flex items-center gap-1.5 transition-colors">
@@ -404,51 +295,86 @@
     </main>
 
     <script>
-        // --- DATA & CONFIG ---
-        const syllabus = [
-            "01_Logica e linguaggio matematico",
-            "02_Numeri naturali, MCD, mcm",
-            "03_Operazioni con i numeri interi",
-            "04_Operazioni con le frazioni",
-            "05_Le potenze",
-            "06_Monomi e polinomi",
-            "07_Prodotti notevoli di polinomi",
-            "08_Scomposizione di polinomi",
-            "09_Scomposizioni di polinomi con il metodo di Ruffini",
-            "10_Le equazioni di primo grado intere",
-            "11_Le frazioni algebriche",
-            "12_Le equazioni di primo grado fratte",
-            "13_I sistemi lineari",
-            "14_Le disequazioni di primo grado",
-            "15_I radicali",
-            "16_Insiemi, numeri reali e piano cartesiano",
-            "17_Le funzioni",
-            "18_Le funzioni reali nel piano cartesiano",
-            "19_La retta nel piano cartesiano",
-            "20_Le equazioni di secondo grado",
-            "21_Disequazioni di secondo grado",
-            "22_Funzione esponenziale equazioni e disequazioni",
-            "23_I logaritmi proprietà, equazioni e disequazioni",
-            "24_Introduzione alla goniometria",
-            "25_Equazioni e disequazioni goniometriche",
-            "26_Altri tipi di equazioni e disequazioni",
-            "27_Introduzione allo studio di funzione",
-            "28_Limiti notevoli di potenze, esponenziali, logaritmi",
-            "29_Limiti notevoli di funzioni trigonometriche"
+        // --- DATA & CONFIG (MATEMATICA 0 + LIMITI) ---
+        const syllabusGroups = [
+            {
+                groupName: "1. Logica, Insiemi e Numeri",
+                topics: [
+                    "01_Logica e linguaggio matematico",
+                    "02_Numeri naturali, MCD, mcm",
+                    "03_Operazioni con i numeri interi",
+                    "04_Operazioni con le frazioni",
+                    "05_Le potenze",
+                    "15_I radicali",
+                    "16_Insiemi, numeri reali e piano cartesiano"
+                ]
+            },
+            {
+                groupName: "2. Monomi e Polinomi",
+                topics: [
+                    "06_Monomi e polinomi",
+                    "07_Prodotti notevoli di polinomi",
+                    "08_Scomposizione di polinomi",
+                    "09_Scomposizioni di polinomi con il metodo di Ruffini",
+                    "11_Le frazioni algebriche"
+                ]
+            },
+            {
+                groupName: "3. Equazioni e Sistemi",
+                topics: [
+                    "10_Le equazioni di primo grado intere",
+                    "12_Le equazioni di primo grado fratte",
+                    "13_I sistemi lineari",
+                    "20_Le equazioni di secondo grado",
+                    "26_Altri tipi di equazioni e disequazioni"
+                ]
+            },
+            {
+                groupName: "4. Disequazioni",
+                topics: [
+                    "14_Le disequazioni di primo grado",
+                    "21_Disequazioni di secondo grado"
+                ]
+            },
+            {
+                groupName: "5. Funzioni, Esponenziali e Logaritmi",
+                topics: [
+                    "17_Le funzioni",
+                    "18_Le funzioni reali nel piano cartesiano",
+                    "22_Funzione esponenziale equazioni e disequazioni",
+                    "23_I logaritmi proprietà, equazioni e disequazioni",
+                    "27_Introduzione allo studio di funzione"
+                ]
+            },
+            {
+                groupName: "6. Geometria e Goniometria",
+                topics: [
+                    "19_La retta nel piano cartesiano",
+                    "24_Introduzione alla goniometria",
+                    "25_Equazioni e disequazioni goniometriche"
+                ]
+            },
+            {
+                groupName: "7. Introduzione all'Analisi e Limiti",
+                topics: [
+                    "28_I Limiti: definizioni e concetti di base",
+                    "29_I Limiti Notevoli e calcolo dei limiti"
+                ]
+            }
         ];
+
+        const totalModules = 29;
 
         let currentTopic = "";
         let currentExercisesContext = "";
         let completedModules = new Set();
         
-        // Guided Resolution Session State
         let guidedState = {
             active: false,
             exerciseNum: null,
-            chatHistory: [] // Array format: {role: 'tutor'|'user', text: string}
+            chatHistory: [] 
         };
 
-        // Operations stats in session memory
         let stats = {
             generated: 0,
             correct: 0,
@@ -459,32 +385,39 @@
 Lo studente ha un diploma alberghiero e sta ricominciando la matematica da zero (Matematica 0). Ha bisogno di spiegazioni PURE, SEMPLICI e MOLTO SEMPLIFICATE. Niente gergo tecnico o aziendale.
 
 REGOLE TASSATIVE DA RISPETTARE:
-1. Devi generare SEMPRE ESATTAMENTE 10 ESERCIZI di difficoltà progressiva (da 1 a 10). Non uno in meno, non uno in più.
+1. Quando generi esercizi, fanne SEMPRE ESATTAMENTE 10 di difficoltà progressiva. Non uno in meno, non uno in più.
 2. NON FORNIRE MAI I RISULTATI O LE SOLUZIONI DURANTE LA GENERAZIONE DEGLI ESERCIZI.
-3. Se l'utente commette un errore nelle sue risposte, SPIEGA il concetto in modo elementare, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
-4. Abbandona l'approccio "aziendale/operativo". Usa parole semplici, metafore di vita quotidiana molto basilari (come dividere una torta, o i pesi su una bilancia a due piatti) e spezzetta i concetti difficili in mattoncini facili da capire.
-5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$).`;
+3. Se l'utente sbaglia, SPIEGA il concetto in modo elementare, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
+4. Usa parole semplici, metafore di vita quotidiana molto basilari (come dividere una torta, pesi su una bilancia, o tagliare una mela) e spezzetta i concetti difficili in mattoncini.
+5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$). Non usare caratteri strani non-LaTeX.`;
 
         // --- APP STARTUP & STORAGE ---
         window.onload = () => {
             renderSidebar();
-            loadSavedApiKey();
+            loadSavedSettings();
         };
 
-        function loadSavedApiKey() {
+        function loadSavedSettings() {
             const savedKey = localStorage.getItem('tutor_gemini_api_key');
             if (savedKey) {
                 document.getElementById('api-key-input').value = savedKey;
                 updateKeyStatus(true);
             }
+            const savedModel = localStorage.getItem('tutor_gemini_api_model');
+            if (savedModel) {
+                document.getElementById('api-model-select').value = savedModel;
+            }
         }
 
         function saveApiKey() {
             const key = document.getElementById('api-key-input').value.trim();
+            const model = document.getElementById('api-model-select').value;
+            
             if (key) {
                 localStorage.setItem('tutor_gemini_api_key', key);
+                localStorage.setItem('tutor_gemini_api_model', model);
                 updateKeyStatus(true);
-                showToast("API Key salvata con successo!");
+                showToast("Impostazioni salvate con successo!");
             } else {
                 localStorage.removeItem('tutor_gemini_api_key');
                 updateKeyStatus(false);
@@ -507,30 +440,69 @@ REGOLE TASSATIVE DA RISPETTARE:
             return document.getElementById('api-key-input').value.trim();
         }
 
+        function getSelectedModel() {
+            return document.getElementById('api-model-select').value || 'gemini-1.5-flash';
+        }
+
         // --- SIDEBAR & VIEW CONTROLS ---
         function renderSidebar() {
             const container = document.getElementById('sidebar-topics');
             container.innerHTML = '';
-            syllabus.forEach((topic, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors hover:bg-blue-50 text-gray-700 flex items-center justify-between border border-transparent';
+            
+            syllabusGroups.forEach((group, groupIndex) => {
+                // Crea il contenitore del gruppo a tendina (Accordion)
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'mb-2';
                 
-                const numMatch = topic.match(/^(\d+)_/);
-                const num = numMatch ? numMatch[1] : index + 1;
-                const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
+                // Crea l'intestazione del gruppo cliccabile
+                const groupHeader = document.createElement('button');
+                groupHeader.className = 'w-full text-left px-3 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-700 flex justify-between items-center hover:bg-slate-200 transition-colors';
+                groupHeader.innerHTML = `<span>${group.groupName}</span> <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" id="icon-group-${groupIndex}"></i>`;
+                
+                // Crea il contenitore per i bottoni dei capitoli (nascosto di default)
+                const topicsContainer = document.createElement('div');
+                topicsContainer.id = `group-content-${groupIndex}`;
+                topicsContainer.className = 'hidden flex-col gap-1 mt-1 pl-2';
 
-                const isCompleted = completedModules.has(topic);
-                const checkIcon = isCompleted ? '<i class="fas fa-circle-check text-green-500"></i>' : '<i class="far fa-circle text-gray-300"></i>';
+                // Popola i capitoli singoli
+                group.topics.forEach((topic) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-blue-50 text-gray-700 flex items-center justify-between border border-transparent syllabus-btn';
+                    
+                    const numMatch = topic.match(/^(\d+)_/);
+                    const num = numMatch ? numMatch[1] : "?";
+                    const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
 
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3 truncate">
-                        <span class="flex-shrink-0 w-6 h-6 rounded bg-gray-100 text-gray-500 flex items-center justify-center text-[10px] font-bold">${num}</span>
-                        <span class="truncate text-xs md:text-sm" title="${cleanName}">${cleanName}</span>
-                    </div>
-                    <span class="ml-2 flex-shrink-0">${checkIcon}</span>
-                `;
-                btn.onclick = () => selectTopic(topic, btn);
-                container.appendChild(btn);
+                    const isCompleted = completedModules.has(topic);
+                    const checkIcon = isCompleted ? '<i class="fas fa-circle-check text-green-500"></i>' : '<i class="far fa-circle text-gray-300"></i>';
+
+                    btn.innerHTML = `
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="flex-shrink-0 w-5 h-5 rounded bg-white border border-gray-200 text-gray-500 flex items-center justify-center text-[9px] font-bold">${num}</span>
+                            <span class="truncate text-xs" title="${cleanName}">${cleanName}</span>
+                        </div>
+                        <span class="ml-1 flex-shrink-0">${checkIcon}</span>
+                    `;
+                    btn.onclick = () => selectTopic(topic, btn);
+                    topicsContainer.appendChild(btn);
+                });
+
+                // Logica di apertura/chiusura
+                groupHeader.onclick = () => {
+                    const isHidden = topicsContainer.classList.contains('hidden');
+                    // Chiudi tutti gli altri gruppi aperti per tenere il menu corto
+                    document.querySelectorAll('[id^="group-content-"]').forEach(el => el.classList.add('hidden'));
+                    document.querySelectorAll('[id^="icon-group-"]').forEach(el => el.style.transform = 'rotate(0deg)');
+                    
+                    if (isHidden) {
+                        topicsContainer.classList.remove('hidden');
+                        document.getElementById(`icon-group-${groupIndex}`).style.transform = 'rotate(180deg)';
+                    }
+                };
+
+                groupDiv.appendChild(groupHeader);
+                groupDiv.appendChild(topicsContainer);
+                container.appendChild(groupDiv);
             });
             updateProgressCounters();
         }
@@ -540,43 +512,24 @@ REGOLE TASSATIVE DA RISPETTARE:
             currentExercisesContext = ""; 
             closeGuidedResolution();
             
-            // Close mobile menu if open
             if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
                 toggleSidebar();
             }
 
-            // Update UI
             const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
             document.getElementById('current-topic-title').innerText = cleanName;
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('workspace').classList.remove('hidden');
+            document.getElementById('theory-container').classList.add('hidden');
             document.getElementById('exercises-container').classList.add('hidden');
             document.getElementById('user-input-container').classList.add('hidden');
             document.getElementById('feedback-container').classList.add('hidden');
             document.getElementById('user-answers').value = '';
-            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Genera Esercizi';
+            
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Genera 10 Esercizi';
 
-            // Show or Hide the Formulas Panel depending on Module 28 or 29 selection
-            const formulasPanel = document.getElementById('formulas-reference-container');
-            const tableExp = document.getElementById('table-limiti-exp');
-            const tableTrig = document.getElementById('table-limiti-trig');
-
-            if (topic.startsWith("28_")) {
-                formulasPanel.classList.remove('hidden');
-                tableExp.classList.remove('hidden');
-                tableTrig.classList.add('hidden');
-                if (window.MathJax) MathJax.typesetPromise([formulasPanel]).catch(err => console.warn(err));
-            } else if (topic.startsWith("29_")) {
-                formulasPanel.classList.remove('hidden');
-                tableExp.classList.add('hidden');
-                tableTrig.classList.remove('hidden');
-                if (window.MathJax) MathJax.typesetPromise([formulasPanel]).catch(err => console.warn(err));
-            } else {
-                formulasPanel.classList.add('hidden');
-            }
-
-            // Active State UI Highlight
-            document.querySelectorAll('#sidebar-topics button').forEach(b => {
+            // Rimuovi evidenziazione precedente e aggiungi a quello attuale
+            document.querySelectorAll('.syllabus-btn').forEach(b => {
                 b.classList.remove('bg-blue-50', 'border-blue-200', 'text-blue-700');
             });
             btnElement.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-700');
@@ -604,7 +557,7 @@ REGOLE TASSATIVE DA RISPETTARE:
                 showToast("Modulo rimosso dai completati.");
             } else {
                 completedModules.add(currentTopic);
-                showToast("Grande lavoro! Modulo convalidato.");
+                showToast("Ottimo lavoro! Modulo superato.");
             }
             renderSidebar();
             updateCompleteButtonUI();
@@ -622,7 +575,7 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         function updateProgressCounters() {
-            document.getElementById('modules-progress').innerText = `${completedModules.size} / 29`;
+            document.getElementById('modules-progress').innerText = `${completedModules.size} / ${totalModules}`;
         }
 
         function updateKPIs(action) {
@@ -649,11 +602,13 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         // --- GEMINI API ENGINE ---
-        async function callGemini(userPrompt, systemPromptExtension = "", targetModel = "gemini-2.5-flash") {
+        async function callGemini(userPrompt, systemPromptExtension = "") {
             const activeKey = getApiKey();
+            const targetModel = getSelectedModel();
+
             if (!activeKey) {
                 hideLoading();
-                alert("Attenzione: Inserisci la tua Gemini API Key nel pannello a sinistra per abilitare il tutor intelligente.");
+                alert("Attenzione: Inserisci la tua Gemini API Key nel pannello a sinistra e clicca su Salva.");
                 return null;
             }
 
@@ -664,74 +619,48 @@ REGOLE TASSATIVE DA RISPETTARE:
                 systemInstruction: { parts: [{ text: baseSystemInstruction + "\n" + systemPromptExtension }] }
             };
 
-            let retries = 3;
-            let delay = 1000;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-            while (retries > 0) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 400 || response.status === 403 || response.status === 401) {
-                        const errorData = await response.json();
-                        const errMsg = errorData.error?.message || "Chiave non valida o non abilitata.";
-                        
-                        if (targetModel === "gemini-2.5-flash") {
-                            console.warn("Model gemini-2.5-flash failed or restricted. Retrying with gemini-1.5-flash fallback...");
-                            return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
-                        }
-                        
-                        throw new Error(`Errore API (${response.status}): ${errMsg}`);
-                    }
-
-                    if (!response.ok) {
-                        throw new Error(`Errore di connessione server (${response.status})`);
-                    }
-
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso dal server.";
-                } catch (error) {
-                    console.error("Gemini call failed:", error);
-                    
-                    if (error.message.includes("403") || error.message.includes("401") || error.message.includes("400")) {
-                        hideLoading();
-                        alert(`Errore di Connessione: ${error.message}\n\nSuggerimento: Verifica la correttezza della chiave API Google AI Studio.`);
-                        return null;
-                    }
-
-                    retries--;
-                    if (retries === 0) {
-                        if (targetModel === "gemini-2.5-flash") {
-                            return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
-                        }
-                        return "Errore di connessione persistente. Riprova tra qualche istante.";
-                    }
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errMsg = errorData.error?.message || "Errore sconosciuto";
+                    throw new Error(errMsg);
                 }
+
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso dal server.";
+            } catch (error) {
+                console.error("Gemini call failed:", error);
+                hideLoading();
+                alert(`Si è verificato un errore con il modello selezionato (${targetModel}).\n\nDettaglio: ${error.message}\n\nSoluzione: Prova a cambiare il modello dal menu a tendina a sinistra (es. scegli 'gemini-pro') e riprova.`);
+                return null;
             }
         }
 
         // Diagnostic Connection Tester
         async function testApiConnection() {
             const resultEl = document.getElementById('connection-test-result');
-            resultEl.classList.remove('hidden', 'bg-green-900/40', 'text-green-300', 'bg-red-900/40', 'text-red-300');
+            resultEl.classList.remove('hidden', 'bg-green-900/40', 'text-green-300', 'bg-red-900/40', 'text-red-300', 'bg-amber-900/40', 'text-amber-300');
             resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-slate-800 text-slate-300";
             resultEl.innerText = "Verifica in corso...";
             
             const activeKey = getApiKey();
+            const targetModel = getSelectedModel();
+
             if (!activeKey) {
                 resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                resultEl.innerText = "Errore: Inserisci prima la chiave API!";
+                resultEl.innerText = "Errore: Inserisci prima la chiave API e salvala!";
                 return;
             }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${activeKey}`;
             const payload = {
-                contents: [{ parts: [{ text: "Rispondi solo con OK." }] }]
+                contents: [{ parts: [{ text: "Rispondi solo con la parola 'OK'." }] }]
             };
 
             try {
@@ -743,34 +672,11 @@ REGOLE TASSATIVE DA RISPETTARE:
 
                 if (response.ok) {
                     resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
-                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Connessione riuscita! Il modello gemini-2.5-flash è attivo e pronto.`;
-                } else {
-                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-amber-900/40 text-amber-300 border border-amber-800";
-                    resultEl.innerText = "Gemini 2.5 Fallito. Prova a testare il modulo 1.5...";
-                    testFallbackConnection(activeKey, resultEl);
-                }
-            } catch (err) {
-                resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                resultEl.innerText = `Errore di rete: ${err.message}`;
-            }
-        }
-
-        async function testFallbackConnection(activeKey, resultEl) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`;
-            const payload = { contents: [{ parts: [{ text: "OK" }] }] };
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (response.ok) {
-                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
-                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Connessione riuscita tramite Fallback (gemini-1.5-flash). Funzionamento garantito!`;
+                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Modello ${targetModel} connesso e pronto!`;
                 } else {
                     const errorData = await response.json();
                     resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                    resultEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Fallito: ${errorData.error?.message || "Chiave API errata"}`;
+                    resultEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Errore Modello: Seleziona un altro modello dal menu a tendina. Dettaglio: ${errorData.error?.message}`;
                 }
             } catch (err) {
                 resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
@@ -790,16 +696,42 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         // --- WORKFLOW EXECUTION ---
+
+        async function explainTheory() {
+            if (!currentTopic) return;
+            
+            showLoading("Sto preparando una spiegazione molto semplice della teoria...");
+            
+            const prompt = `Spiega la teoria dell'argomento: "${currentTopic}". 
+Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.`;
+            
+            const response = await callGemini(prompt, "Sei in modalità 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
+            if (!response) return;
+
+            const theoryContent = document.getElementById('theory-content');
+            theoryContent.innerHTML = marked.parse(response);
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([theoryContent]).catch(function (err) {
+                    console.warn('MathJax typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('theory-container').classList.remove('hidden');
+            hideLoading();
+            document.getElementById('theory-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         async function generateExercises() {
             if (!currentTopic) return;
             
-            showLoading("Generazione di 10 esercizi personalizzati a difficoltà crescenti...");
+            showLoading("Generazione di 10 esercizi a difficoltà crescente...");
             document.getElementById('feedback-container').classList.add('hidden');
             document.getElementById('user-answers').value = '';
             closeGuidedResolution();
             
-            const prompt = `Genera esattamente 10 esercizi di difficoltà crescente (da 1 a 10) sull'argomento: "${currentTopic}". 
-Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Solo il testo degli esercizi numerati.`;
+            const prompt = `Genera ESATTAMENTE 10 esercizi di difficoltà crescente (numerati da 1 a 10) sull'argomento: "${currentTopic}". 
+NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.`;
             
             const response = await callGemini(prompt);
             if (!response) return;
@@ -818,7 +750,7 @@ Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Sol
 
             document.getElementById('exercises-container').classList.remove('hidden');
             document.getElementById('user-input-container').classList.remove('hidden');
-            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-rotate"></i> Rigenera Esercizi';
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-rotate"></i> Rigenera 10 Esercizi';
             
             hideLoading();
             document.getElementById('exercises-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -831,9 +763,9 @@ Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Sol
                 return;
             }
 
-            showLoading("Lettura e correzione in corso...");
+            showLoading("Lettura e correzione in corso con calma...");
 
-            const prompt = `Lo studente ha svolto il set di esercizi. Valuta ciascuno singolarmente.
+            const prompt = `Lo studente ha svolto questo set di esercizi:
 <EserciziRichiesti>
 ${currentExercisesContext}
 </EserciziRichiesti>
@@ -842,12 +774,12 @@ ${currentExercisesContext}
 ${userAnswers}
 </RisposteFornite>
 
-Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere la risposta corretta. Invita lo studente a riprovare usando parole di incoraggiamento. Se sono tutti corretti, fagli dei complimenti semplici e sinceri.`;
+Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere il risultato corretto. Invita lo studente a riprovare usando parole di incoraggiamento.`;
 
-            const response = await callGemini(prompt);
+            const response = await callGemini(prompt, "Correggi con infinita pazienza. Non regalare le soluzioni se sbaglia.");
             if (!response) return;
 
-            if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("corretto")) {
+            if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("esatto")) {
                 updateKPIs('correct');
             } else {
                 updateKPIs('attempt'); 
@@ -870,7 +802,7 @@ Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato
         // --- STEP-BY-STEP GUIDED RESOLUTION LOGIC ---
         function activateGuidedResolutionPanel() {
             if (!currentExercisesContext) {
-                alert("Genera prima una batteria di esercizi per attivare la guida personalizzata.");
+                alert("Genera prima i 10 esercizi per attivare la guida passo-passo.");
                 return;
             }
             const panel = document.getElementById('guided-resolution-container');
@@ -894,16 +826,15 @@ Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato
 
             showLoading(`Preparazione della guida per l'Esercizio ${exNum}...`);
 
-            const prompt = `Lo studente ha chiesto di avviare una "Guida Passo-Passo" per l'Esercizio numero ${exNum} del seguente set:
+            const prompt = `Lo studente vuole fare una "Guida Passo-Passo" per l'Esercizio ${exNum} del seguente set:
 <SetEsercizi>
 ${currentExercisesContext}
 </SetEsercizi>
 
-Isola l'Esercizio ${exNum} e individua il primissimo, piccolo passo da fare (es. trovare il denominatore comune, isolare la x, ecc.).
-Poni una domanda molto semplice sullo Step 1 e aspetta che lo studente risponda. Tono amichevole e rassicurante.
-NON svelare mai la soluzione completa né i calcoli successivi.`;
+Isola solo quell'esercizio. Qual è il primissimo, minuscolo passo da fare? (es. trovare un denominatore, o riconoscere il limite notevole).
+Fai una domanda semplice allo studente su quel passo e aspetta la sua risposta. Tono amichevole. NON dare calcoli pronti.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi. Niente paroloni.`);
+            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi.`);
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
@@ -929,15 +860,15 @@ NON svelare mai la soluzione completa né i calcoli successivi.`;
             let logs = guidedState.chatHistory.map(h => `${h.role === 'tutor' ? 'Tutor' : 'Studente'}: ${h.text}`).join('\n\n');
 
             const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} passo dopo passo.
-Ecco lo storico dell'interazione fino a questo momento:
+Storico:
 ${logs}
 
-Valuta l'ultima risposta fornita dallo studente in modo facilissimo.
-- Se il passaggio è corretto, rassicuralo e fagli fare il prossimo passettino.
-- Se ha sbagliato qualcosa, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
-Usa termini quotidiani, no gergo. Continua a mantenere la formattazione in LaTeX.`;
+Valuta l'ultima risposta.
+- Se è giusta, fagli fare il prossimo passettino.
+- Se è sbagliata, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
+Usa termini quotidiani. Mantieni formattazione LaTeX.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Solo un passettino piccolissimo alla volta. Sii molto paziente e chiaro.`);
+            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita.`);
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
