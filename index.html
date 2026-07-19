@@ -82,8 +82,8 @@
         </div>
 
         <div class="p-3 bg-gray-50 text-xs text-gray-500 uppercase font-bold tracking-wider flex justify-between items-center">
-            <span>Programma (27 Moduli)</span>
-            <span id="modules-progress" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">0 / 27</span>
+            <span>Programma (28 Moduli)</span>
+            <span id="modules-progress" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">0 / 28</span>
         </div>
 
         <div class="flex-1 overflow-y-auto p-2" id="sidebar-topics">
@@ -131,7 +131,7 @@
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Costruisci le tue basi matematiche da zero</h3>
                 <p class="text-gray-600 mb-6 max-w-xl mx-auto">
-                    Questo simulatore interattivo è configurato per i 27 capitoli di Matematica 0. Affronteremo ogni capitolo con calma e semplicità. Costruiremo la tua conoscenza un mattoncino alla volta: non passeremo all'argomento successivo finché non avrai capito tutto perfettamente.
+                    Questo simulatore interattivo è configurato per i 28 capitoli di Matematica 0. Affronteremo ogni capitolo con calma e semplicità. Costruiremo la tua conoscenza un mattoncino alla volta: non passeremo all'argomento successivo finché non avrai capito tutto perfettamente.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                     <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex gap-3">
@@ -149,6 +149,73 @@
             <!-- Workspace -->
             <div id="workspace" class="max-w-4xl mx-auto hidden flex-col gap-6 px-2">
                 
+                <!-- Formulas Reference Panel (Dynamically Visible for Module 28) -->
+                <div id="formulas-reference-container" class="hidden bg-white p-6 rounded-xl shadow-sm border border-blue-200">
+                    <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-table"></i> Tabella dei Limiti Notevoli e Ordini di Infinito
+                    </h3>
+                    <div class="overflow-x-auto text-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-blue-50 text-blue-900 border-b border-blue-200 font-bold">
+                                    <th class="p-2.5">Limite Fondamentale</th>
+                                    <th class="p-2.5">Condizioni / Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-gray-700">
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}a^{x} = +\infty$</td>
+                                    <td class="p-2.5">se $a > 1$ ($\lim_{x\rightarrow+\infty}e^{x}=+\infty$)</td>
+                                </tr>
+                                <tr class="bg-gray-50/50">
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}a^{x} = 0$</td>
+                                    <td class="p-2.5">se $0 < a < 1$ ($\lim_{x\rightarrow-\infty}e^{x}=0$)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\frac{\log_{a}x}{x^{b}} = 0$</td>
+                                    <td class="p-2.5">per $a>0, a\ne1$ e $b>0$ (Gerarchia degli infiniti)</td>
+                                </tr>
+                                <tr class="bg-gray-50/50">
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow+\infty}\frac{x^{b}}{a^{x}} = 0$</td>
+                                    <td class="p-2.5">per $a>1$ e $b>0$ (L'esponenziale vince sulle potenze)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow0^{+}}x \log_{a}x = 0$</td>
+                                    <td class="p-2.5">Forma indeterminata $0 \cdot \infty$ ricondotta tramite cambio $y=1/x$</td>
+                                </tr>
+                                <tr class="bg-gray-50/50">
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow\pm\infty}\left(1+\frac{1}{x}\right)^{x} = e$</td>
+                                    <td class="p-2.5">Definizione base del Numero di Nepero</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow\pm\infty}\left(1+\frac{a}{x}\right)^{x} = e^{a}$</td>
+                                    <td class="p-2.5">Generalizzazione tramite sostituzione della variabile $y = x/a$</td>
+                                </tr>
+                                <tr class="bg-gray-50/50">
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}(1+ax)^{\frac{1}{x}} = e^{a}$</td>
+                                    <td class="p-2.5">Forma esponenziale limite notevole del numero $e$</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{\log_{a}(1+x)}{x} = \frac{1}{\log a}$</td>
+                                    <td class="p-2.5">Vale $1$ se la base è naturale ($a = e$)</td>
+                                </tr>
+                                <tr class="bg-gray-50/50">
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{a^{x}-1}{x} = \log a$</td>
+                                    <td class="p-2.5">Vale $1$ se la base è naturale ($a = e$)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-mono">$\lim_{x\rightarrow0}\frac{(1+x)^{a}-1}{x} = a$</td>
+                                    <td class="p-2.5">Limite notevole della potenza binomiale</td>
+                                </tr>
+                                <tr class="bg-blue-50/30 font-semibold">
+                                    <td class="p-2.5 font-mono">$\lim_{x \to x_0} \frac{\log(1+f(x))}{f(x)} = 1$</td>
+                                    <td class="p-2.5 text-blue-900">Forma composta generalizzata: valida per qualsiasi $f(x) \to 0$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Action Controls -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="text-left">
@@ -190,7 +257,7 @@
                                 <option value="3">Esercizio 3</option>
                                 <option value="4">Esercizio 4</option>
                                 <option value="5">Esercizio 5</option>
-                                <option value="6">Eserc6zio 6</option>
+                                <option value="6">Esercizio 6</option>
                                 <option value="7">Esercizio 7</option>
                                 <option value="8">Esercizio 8</option>
                                 <option value="9">Esercizio 9</option>
@@ -293,7 +360,8 @@
             "24_Introduzione alla goniometria",
             "25_Equazioni e disequazioni goniometriche",
             "26_Altri tipi di equazioni e disequazioni",
-            "27_Introduzione allo studio di funzione"
+            "27_Introduzione allo studio di funzione",
+            "28_Limiti notevoli di potenze, esponenziali, logaritmi"
         ];
 
         let currentTopic = "";
@@ -415,6 +483,17 @@ REGOLE TASSATIVE DA RISPETTARE:
             document.getElementById('user-answers').value = '';
             document.getElementById('btn-generate').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Genera Esercizi';
 
+            // Show or Hide the Formulas Panel depending on Module 28 selection
+            const formulasPanel = document.getElementById('formulas-reference-container');
+            if (topic.startsWith("28_")) {
+                formulasPanel.classList.remove('hidden');
+                if (window.MathJax) {
+                    MathJax.typesetPromise([formulasPanel]).catch(err => console.warn(err));
+                }
+            } else {
+                formulasPanel.classList.add('hidden');
+            }
+
             // Active State UI Highlight
             document.querySelectorAll('#sidebar-topics button').forEach(b => {
                 b.classList.remove('bg-blue-50', 'border-blue-200', 'text-blue-700');
@@ -462,7 +541,7 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         function updateProgressCounters() {
-            document.getElementById('modules-progress').innerText = `${completedModules.size} / 27`;
+            document.getElementById('modules-progress').innerText = `${completedModules.size} / 28`;
         }
 
         function updateKPIs(action) {
@@ -515,12 +594,11 @@ REGOLE TASSATIVE DA RISPETTARE:
                         body: JSON.stringify(payload)
                     });
 
-                    // Immediate interruption on Authentication / Bad request errors (User Experience upgrade)
+                    // Immediate interruption on Authentication / Bad request errors
                     if (response.status === 400 || response.status === 403 || response.status === 401) {
                         const errorData = await response.json();
                         const errMsg = errorData.error?.message || "Chiave non valida o non abilitata.";
                         
-                        // If gemini-2.5-flash failed and we haven't tried gemini-1.5-flash, fallback immediately!
                         if (targetModel === "gemini-2.5-flash") {
                             console.warn("Model gemini-2.5-flash failed or restricted. Retrying with gemini-1.5-flash fallback...");
                             return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
@@ -538,7 +616,6 @@ REGOLE TASSATIVE DA RISPETTARE:
                 } catch (error) {
                     console.error("Gemini call failed:", error);
                     
-                    // Stop immediately if it's an authorization/validation error
                     if (error.message.includes("403") || error.message.includes("401") || error.message.includes("400")) {
                         hideLoading();
                         alert(`Errore di Connessione: ${error.message}\n\nSuggerimento: Verifica la correttezza della chiave API Google AI Studio.`);
@@ -547,7 +624,6 @@ REGOLE TASSATIVE DA RISPETTARE:
 
                     retries--;
                     if (retries === 0) {
-                        // Attempt fallback to 1.5-flash if 2.5 failed completely on generic network error
                         if (targetModel === "gemini-2.5-flash") {
                             return await callGemini(userPrompt, systemPromptExtension, "gemini-1.5-flash");
                         }
@@ -573,7 +649,6 @@ REGOLE TASSATIVE DA RISPETTARE:
                 return;
             }
 
-            // Test using stable gemini-2.5-flash
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
             const payload = {
                 contents: [{ parts: [{ text: "Rispondi solo con OK." }] }]
@@ -590,13 +665,8 @@ REGOLE TASSATIVE DA RISPETTARE:
                     resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
                     resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Connessione riuscita! Il modello gemini-2.5-flash è attivo e pronto.`;
                 } else {
-                    const errorData = await response.json();
-                    const errMsg = errorData.error?.message || "Errore sconosciuto.";
-                    
-                    // Fallback check
                     resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-amber-900/40 text-amber-300 border border-amber-800";
                     resultEl.innerText = "Gemini 2.5 Fallito. Prova a testare il modulo 1.5...";
-                    
                     testFallbackConnection(activeKey, resultEl);
                 }
             } catch (err) {
@@ -643,7 +713,7 @@ REGOLE TASSATIVE DA RISPETTARE:
         async function generateExercises() {
             if (!currentTopic) return;
             
-            showLoading("Generazione di 10 esercizi personalizzati a difficoltà crescente...");
+            showLoading("Generazione di 10 esercizi personalizzati a difficoltà crescenti...");
             document.getElementById('feedback-container').classList.add('hidden');
             document.getElementById('user-answers').value = '';
             closeGuidedResolution();
@@ -660,7 +730,6 @@ Non fornire in alcun modo i risultati, le soluzioni o i passaggi risolutivi. Sol
             const exContent = document.getElementById('exercises-content');
             exContent.innerHTML = marked.parse(response);
             
-            // Typeset LaTeX math formatting
             if (window.MathJax) {
                 MathJax.typesetPromise([exContent]).catch(function (err) {
                     console.warn('MathJax typesetting warning: ' + err.message);
@@ -777,7 +846,6 @@ NON svelare mai la soluzione completa né i calcoli successivi.`;
 
             showLoading("Sto leggendo la tua risposta...");
 
-            // Prepare conversation logs for context
             let logs = guidedState.chatHistory.map(h => `${h.role === 'tutor' ? 'Tutor' : 'Studente'}: ${h.text}`).join('\n\n');
 
             const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} passo dopo passo.
@@ -813,14 +881,12 @@ Usa termini quotidiani, no gergo. Continua a mantenere la formattazione in LaTeX
                 historyEl.appendChild(bubble);
             });
 
-            // MathJax translation on the fly inside guided resolution chat
             if (window.MathJax) {
                 MathJax.typesetPromise([historyEl]).catch(function (err) {
                     console.warn('MathJax chat typesetting warning: ' + err.message);
                 });
             }
 
-            // Auto-scroll to the bottom of chat history
             setTimeout(() => {
                 historyEl.scrollTop = historyEl.scrollHeight;
             }, 100);
