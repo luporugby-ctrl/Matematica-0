@@ -1,0 +1,12 @@
+{
+  "titolo": "Analisi 1 (L-9)",
+  "nota": "Ogni argomento ha un id. L'app carica la scheda da schede/<id>.md. Aggiungi qui i nuovi argomenti man mano che le schede vengono create.",
+  "gruppi": [
+    {
+      "gruppo": "1. Successioni e limiti",
+      "argomenti": [
+        { "id": "A01", "num": "1", "titolo": "Limiti notevoli di funzioni trigonometriche" }
+      ]
+    }
+  ]
+}

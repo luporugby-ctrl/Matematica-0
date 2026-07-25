@@ -55,39 +55,39 @@
                 <i class="fas fa-square-root-variable"></i>
                 Matematica 0 & 1
             </h1>
-            <p class="text-xs text-blue-100 mt-1">Preparazione Analisi 1 (L-9)</p>
+            <p id="course-subtitle" class="text-xs text-blue-100 mt-1">Preparazione Analisi 1 (L-9)</p>
         </div>
         
-        <!-- API Key & Model Setup Block -->
+        <!-- Provider, Key & Model Setup Block -->
         <div class="p-4 bg-slate-900 text-white border-b border-slate-800">
-            <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-bold text-blue-400 uppercase tracking-wide flex items-center gap-1">
-                    <i class="fas fa-key"></i> Configurazione Gemini
+                    <i class="fas fa-plug"></i> Motore AI
                 </span>
-                <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300">Mancante</span>
+                <span id="key-status" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300">Chiave mancante</span>
             </div>
             <div class="flex flex-col gap-2 mb-2">
-                <input type="password" id="api-key-input" placeholder="Incolla qui la chiave AI Studio..." class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
-                
-                <!-- NEW: Model Selector to fix API Issues -->
-                <select id="api-model-select" class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
-                    <option value="gemini-1.5-flash">Motore Consigliato (gemini-1.5-flash)</option>
-                    <option value="gemini-pro">Motore Compatibile (gemini-pro)</option>
-                    <option value="gemini-1.5-pro">Motore Avanzato (gemini-1.5-pro)</option>
-                    <option value="gemini-2.5-flash">Motore Sperimentale (gemini-2.5-flash)</option>
+                <select id="api-provider-select" onchange="onProviderChange()" class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
+                    <option value="gemini">Google Gemini</option>
+                    <option value="anthropic">Anthropic Claude</option>
                 </select>
 
+                <input type="password" id="api-key-input" placeholder="Incolla la chiave" class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none">
+
+                <select id="api-model-select" class="w-full text-xs px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-white focus:ring-1 focus:ring-blue-500 outline-none"></select>
+
                 <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded font-bold transition-colors w-full">
-                    Salva Impostazioni
+                    Salva impostazioni
                 </button>
             </div>
             <div class="flex justify-between items-center mt-2">
-                <p class="text-[10px] text-slate-400">Salvata nel browser</p>
+                <a id="key-help-link" href="#" target="_blank" rel="noopener" class="text-[10px] text-slate-400 hover:text-slate-200 underline decoration-dotted">Dove trovo la chiave</a>
                 <button onclick="testApiConnection()" class="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
-                    <i class="fas fa-vial"></i> Testa Modello
+                    <i class="fas fa-vial"></i> Prova il modello
                 </button>
             </div>
-            <div id="connection-test-result" class="text-[10px] mt-2 hidden p-1.5 rounded bg-slate-850 border border-slate-800"></div>
+            <p class="text-[10px] text-slate-500 mt-1.5">La chiave resta nel browser, non viene mai inviata altrove.</p>
+            <div id="connection-test-result" class="text-[10px] mt-2 hidden p-1.5 rounded bg-slate-800 border border-slate-700"></div>
         </div>
 
         <div class="p-3 bg-gray-50 text-xs text-gray-500 uppercase font-bold tracking-wider flex justify-between items-center">
@@ -295,77 +295,223 @@
     </main>
 
     <script>
-        // --- DATA & CONFIG (MATEMATICA 0 + LIMITI) ---
-        const syllabusGroups = [
-            {
-                groupName: "1. Logica, Insiemi e Numeri",
-                topics: [
-                    "01_Logica e linguaggio matematico",
-                    "02_Numeri naturali, MCD, mcm",
-                    "03_Operazioni con i numeri interi",
-                    "04_Operazioni con le frazioni",
-                    "05_Le potenze",
-                    "15_I radicali",
-                    "16_Insiemi, numeri reali e piano cartesiano"
+        // --- PROVIDER CONFIG ---
+        const PROVIDERS = {
+            gemini: {
+                label: "Google Gemini",
+                placeholder: "Chiave AI Studio (AIza...)",
+                help: "https://aistudio.google.com/apikey",
+                models: [
+                    { id: "gemini-3.1-flash-lite",  label: "Veloce ed economico (3.1 Flash Lite)" },
+                    { id: "gemini-3-flash-preview", label: "Equilibrato (3 Flash)" },
+                    { id: "gemini-3.5-flash",       label: "Qualita alta (3.5 Flash)" },
+                    { id: "gemini-3.1-pro-preview", label: "Massima qualita (3.1 Pro)" },
+                    { id: "gemini-2.5-flash",       label: "Legacy (2.5 Flash, attivo fino a ottobre 2026)" }
                 ]
             },
-            {
-                groupName: "2. Monomi e Polinomi",
-                topics: [
-                    "06_Monomi e polinomi",
-                    "07_Prodotti notevoli di polinomi",
-                    "08_Scomposizione di polinomi",
-                    "09_Scomposizioni di polinomi con il metodo di Ruffini",
-                    "11_Le frazioni algebriche"
-                ]
-            },
-            {
-                groupName: "3. Equazioni e Sistemi",
-                topics: [
-                    "10_Le equazioni di primo grado intere",
-                    "12_Le equazioni di primo grado fratte",
-                    "13_I sistemi lineari",
-                    "20_Le equazioni di secondo grado",
-                    "26_Altri tipi di equazioni e disequazioni"
-                ]
-            },
-            {
-                groupName: "4. Disequazioni",
-                topics: [
-                    "14_Le disequazioni di primo grado",
-                    "21_Disequazioni di secondo grado"
-                ]
-            },
-            {
-                groupName: "5. Funzioni, Esponenziali e Logaritmi",
-                topics: [
-                    "17_Le funzioni",
-                    "18_Le funzioni reali nel piano cartesiano",
-                    "22_Funzione esponenziale equazioni e disequazioni",
-                    "23_I logaritmi proprietà, equazioni e disequazioni",
-                    "27_Introduzione allo studio di funzione"
-                ]
-            },
-            {
-                groupName: "6. Geometria e Goniometria",
-                topics: [
-                    "19_La retta nel piano cartesiano",
-                    "24_Introduzione alla goniometria",
-                    "25_Equazioni e disequazioni goniometriche"
-                ]
-            },
-            {
-                groupName: "7. Introduzione all'Analisi e Limiti",
-                topics: [
-                    "28_I Limiti: definizioni e concetti di base",
-                    "29_I Limiti Notevoli e calcolo dei limiti"
+            anthropic: {
+                label: "Anthropic Claude",
+                placeholder: "Chiave Anthropic (sk-ant-...)",
+                help: "https://console.anthropic.com/settings/keys",
+                models: [
+                    { id: "claude-haiku-4-5-20251001", label: "Veloce ed economico (Haiku 4.5)" },
+                    { id: "claude-sonnet-5",           label: "Consigliato (Sonnet 5)" },
+                    { id: "claude-opus-4-8",           label: "Massima qualita (Opus 4.8)" }
                 ]
             }
+        };
+
+        // --- SYLLABUS FALLBACK (Matematica 0, usato se schede/index.json non e raggiungibile) ---
+        const SYLLABUS_FALLBACK = [
+                {
+                        "gruppo": "1. Logica, Insiemi e Numeri",
+                        "argomenti": [
+                                {
+                                        "id": "M01",
+                                        "num": "1",
+                                        "titolo": "Logica e linguaggio matematico"
+                                },
+                                {
+                                        "id": "M02",
+                                        "num": "2",
+                                        "titolo": "Numeri naturali, MCD, mcm"
+                                },
+                                {
+                                        "id": "M03",
+                                        "num": "3",
+                                        "titolo": "Operazioni con i numeri interi"
+                                },
+                                {
+                                        "id": "M04",
+                                        "num": "4",
+                                        "titolo": "Operazioni con le frazioni"
+                                },
+                                {
+                                        "id": "M05",
+                                        "num": "5",
+                                        "titolo": "Le potenze"
+                                },
+                                {
+                                        "id": "M15",
+                                        "num": "15",
+                                        "titolo": "I radicali"
+                                },
+                                {
+                                        "id": "M16",
+                                        "num": "16",
+                                        "titolo": "Insiemi, numeri reali e piano cartesiano"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "2. Monomi e Polinomi",
+                        "argomenti": [
+                                {
+                                        "id": "M06",
+                                        "num": "6",
+                                        "titolo": "Monomi e polinomi"
+                                },
+                                {
+                                        "id": "M07",
+                                        "num": "7",
+                                        "titolo": "Prodotti notevoli di polinomi"
+                                },
+                                {
+                                        "id": "M08",
+                                        "num": "8",
+                                        "titolo": "Scomposizione di polinomi"
+                                },
+                                {
+                                        "id": "M09",
+                                        "num": "9",
+                                        "titolo": "Scomposizioni di polinomi con il metodo di Ruffini"
+                                },
+                                {
+                                        "id": "M11",
+                                        "num": "11",
+                                        "titolo": "Le frazioni algebriche"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "3. Equazioni e Sistemi",
+                        "argomenti": [
+                                {
+                                        "id": "M10",
+                                        "num": "10",
+                                        "titolo": "Le equazioni di primo grado intere"
+                                },
+                                {
+                                        "id": "M12",
+                                        "num": "12",
+                                        "titolo": "Le equazioni di primo grado fratte"
+                                },
+                                {
+                                        "id": "M13",
+                                        "num": "13",
+                                        "titolo": "I sistemi lineari"
+                                },
+                                {
+                                        "id": "M20",
+                                        "num": "20",
+                                        "titolo": "Le equazioni di secondo grado"
+                                },
+                                {
+                                        "id": "M26",
+                                        "num": "26",
+                                        "titolo": "Altri tipi di equazioni e disequazioni"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "4. Disequazioni",
+                        "argomenti": [
+                                {
+                                        "id": "M14",
+                                        "num": "14",
+                                        "titolo": "Le disequazioni di primo grado"
+                                },
+                                {
+                                        "id": "M21",
+                                        "num": "21",
+                                        "titolo": "Disequazioni di secondo grado"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "5. Funzioni, Esponenziali e Logaritmi",
+                        "argomenti": [
+                                {
+                                        "id": "M17",
+                                        "num": "17",
+                                        "titolo": "Le funzioni"
+                                },
+                                {
+                                        "id": "M18",
+                                        "num": "18",
+                                        "titolo": "Le funzioni reali nel piano cartesiano"
+                                },
+                                {
+                                        "id": "M22",
+                                        "num": "22",
+                                        "titolo": "Funzione esponenziale equazioni e disequazioni"
+                                },
+                                {
+                                        "id": "M23",
+                                        "num": "23",
+                                        "titolo": "I logaritmi proprietà, equazioni e disequazioni"
+                                },
+                                {
+                                        "id": "M27",
+                                        "num": "27",
+                                        "titolo": "Introduzione allo studio di funzione"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "6. Geometria e Goniometria",
+                        "argomenti": [
+                                {
+                                        "id": "M19",
+                                        "num": "19",
+                                        "titolo": "La retta nel piano cartesiano"
+                                },
+                                {
+                                        "id": "M24",
+                                        "num": "24",
+                                        "titolo": "Introduzione alla goniometria"
+                                },
+                                {
+                                        "id": "M25",
+                                        "num": "25",
+                                        "titolo": "Equazioni e disequazioni goniometriche"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "7. Introduzione all'Analisi e Limiti",
+                        "argomenti": [
+                                {
+                                        "id": "M28",
+                                        "num": "28",
+                                        "titolo": "I Limiti: definizioni e concetti di base"
+                                },
+                                {
+                                        "id": "M29",
+                                        "num": "29",
+                                        "titolo": "I Limiti Notevoli e calcolo dei limiti"
+                                }
+                        ]
+                }
         ];
 
-        const totalModules = 29;
+        // --- RUNTIME STATE ---
+        let syllabusGroups = [];
+        let schedeAttive = false;
+        const schedeCache = {};
+        let totalModules = 0;
 
-        let currentTopic = "";
+        let currentTopic = null;
         let currentExercisesContext = "";
         let completedModules = new Set();
         
@@ -381,57 +527,133 @@
             totalSubmissions: 0
         };
 
-        const baseSystemInstruction = `Sei un Tutor empatico, paziente e chiarissimo di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9). 
-Lo studente ha un diploma alberghiero e sta ricominciando la matematica da zero (Matematica 0). Ha bisogno di spiegazioni PURE, SEMPLICI e MOLTO SEMPLIFICATE. Niente gergo tecnico o aziendale.
+        const baseSystemInstruction = `Sei un tutor di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9), paziente e chiarissimo.
+Lo studente viene da un diploma alberghiero e ha ricostruito le basi da zero (Matematica 0). Ha bisogno di spiegazioni semplici, concrete, senza gergo tecnico o aziendale.
 
-REGOLE TASSATIVE DA RISPETTARE:
-1. Quando generi esercizi, fanne SEMPRE ESATTAMENTE 10 di difficoltà progressiva. Non uno in meno, non uno in più.
-2. NON FORNIRE MAI I RISULTATI O LE SOLUZIONI DURANTE LA GENERAZIONE DEGLI ESERCIZI.
-3. Se l'utente sbaglia, SPIEGA il concetto in modo elementare, ma NON DARGLI IL RISULTATO CORRETTO. Chiedigli di riprovare quel passaggio.
-4. Usa parole semplici, metafore di vita quotidiana molto basilari (come dividere una torta, pesi su una bilancia, o tagliare una mela) e spezzetta i concetti difficili in mattoncini.
-5. Usa formattazione LaTeX per la matematica (es. inline $x^2$, blocco $$x = \\frac{-b}{2a}$$). Non usare caratteri strani non-LaTeX.`;
+REGOLE TASSATIVE:
+1. Quando generi esercizi, fanne SEMPRE ESATTAMENTE 10, a difficolta crescente. Non uno in meno, non uno in piu.
+2. NON fornire mai risultati o soluzioni durante la generazione degli esercizi.
+3. Se lo studente sbaglia, spiega il concetto in modo elementare ma NON dargli il risultato corretto. Chiedigli di riprovare quel passaggio.
+4. Usa parole semplici, metafore quotidiane molto basilari (dividere una torta, pesi su una bilancia, tagliare una mela) e spezza i concetti difficili in mattoncini.
+5. Usa LaTeX per la matematica (inline $x^2$, blocco $$x = \\frac{-b}{2a}$$). Niente caratteri strani non-LaTeX.
+6. Se ricevi una <SchedaDelCorso>, quella e la fonte autorevole: usa la sua notazione, le sue definizioni e i suoi metodi, e non introdurre tecniche che non compaiono li.`;
 
         // --- APP STARTUP & STORAGE ---
-        window.onload = () => {
-            renderSidebar();
+        window.onload = async () => {
             loadSavedSettings();
+            await loadSyllabus();
+            loadProgress();
+            renderSidebar();
         };
 
+        // --- SYLLABUS & SCHEDE LOADING ---
+        async function loadSyllabus() {
+            try {
+                const res = await fetch('schede/index.json', { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                syllabusGroups = data.gruppi.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                schedeAttive = true;
+                if (data.titolo) {
+                    const sub = document.getElementById('course-subtitle');
+                    if (sub) sub.innerText = data.titolo;
+                }
+            } catch (err) {
+                console.warn('schede/index.json non caricato, uso il programma di base.', err);
+                syllabusGroups = SYLLABUS_FALLBACK.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                schedeAttive = false;
+            }
+            totalModules = syllabusGroups.reduce((n, g) => n + g.topics.length, 0);
+        }
+
+        async function getScheda(topic) {
+            if (!schedeAttive || !topic) return "";
+            if (schedeCache[topic.id] !== undefined) return schedeCache[topic.id];
+            try {
+                const res = await fetch('schede/' + topic.id + '.md', { cache: 'no-cache' });
+                schedeCache[topic.id] = res.ok ? (await res.text()).trim() : "";
+            } catch (err) {
+                schedeCache[topic.id] = "";
+            }
+            return schedeCache[topic.id];
+        }
+
+        function schedaBlock(testo) {
+            if (!testo) return "";
+            return "\n<SchedaDelCorso>\n" + testo + "\n</SchedaDelCorso>\n";
+        }
+
+        function loadProgress() {
+            try {
+                const raw = localStorage.getItem('tutor_moduli_completati');
+                if (raw) completedModules = new Set(JSON.parse(raw));
+            } catch (err) { /* progresso non leggibile, si riparte da zero */ }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('tutor_moduli_completati', JSON.stringify([...completedModules]));
+        }
+
+        function getProvider() {
+            return document.getElementById('api-provider-select').value || 'gemini';
+        }
+
+        function renderModelOptions(provider, preselect) {
+            const sel = document.getElementById('api-model-select');
+            const cfg = PROVIDERS[provider];
+            sel.innerHTML = '';
+            cfg.models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.innerText = m.label;
+                sel.appendChild(opt);
+            });
+            if (preselect && cfg.models.some(m => m.id === preselect)) sel.value = preselect;
+            document.getElementById('api-key-input').placeholder = cfg.placeholder;
+            document.getElementById('key-help-link').href = cfg.help;
+        }
+
+        function onProviderChange() {
+            const provider = getProvider();
+            renderModelOptions(provider, localStorage.getItem('tutor_model_' + provider));
+            const savedKey = localStorage.getItem('tutor_key_' + provider) || '';
+            document.getElementById('api-key-input').value = savedKey;
+            updateKeyStatus(!!savedKey);
+            document.getElementById('connection-test-result').classList.add('hidden');
+        }
+
         function loadSavedSettings() {
-            const savedKey = localStorage.getItem('tutor_gemini_api_key');
-            if (savedKey) {
-                document.getElementById('api-key-input').value = savedKey;
-                updateKeyStatus(true);
-            }
-            const savedModel = localStorage.getItem('tutor_gemini_api_model');
-            if (savedModel) {
-                document.getElementById('api-model-select').value = savedModel;
-            }
+            const provider = localStorage.getItem('tutor_provider') || 'gemini';
+            document.getElementById('api-provider-select').value = provider;
+            onProviderChange();
         }
 
         function saveApiKey() {
+            const provider = getProvider();
             const key = document.getElementById('api-key-input').value.trim();
             const model = document.getElementById('api-model-select').value;
-            
+
+            localStorage.setItem('tutor_provider', provider);
+            localStorage.setItem('tutor_model_' + provider, model);
+
             if (key) {
-                localStorage.setItem('tutor_gemini_api_key', key);
-                localStorage.setItem('tutor_gemini_api_model', model);
+                localStorage.setItem('tutor_key_' + provider, key);
                 updateKeyStatus(true);
-                showToast("Impostazioni salvate con successo!");
+                showToast("Impostazioni salvate.");
             } else {
-                localStorage.removeItem('tutor_gemini_api_key');
+                localStorage.removeItem('tutor_key_' + provider);
                 updateKeyStatus(false);
-                showToast("API Key rimossa.");
+                showToast("Chiave rimossa.");
             }
         }
 
         function updateKeyStatus(hasKey) {
             const statusEl = document.getElementById('key-status');
             if (hasKey) {
-                statusEl.innerText = "Configurata";
+                statusEl.innerText = "Pronto";
                 statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-green-900/50 text-green-300";
             } else {
-                statusEl.innerText = "Mancante";
+                statusEl.innerText = "Chiave mancante";
                 statusEl.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-900/50 text-red-300";
             }
         }
@@ -441,7 +663,8 @@ REGOLE TASSATIVE DA RISPETTARE:
         }
 
         function getSelectedModel() {
-            return document.getElementById('api-model-select').value || 'gemini-1.5-flash';
+            const sel = document.getElementById('api-model-select');
+            return sel.value || PROVIDERS[getProvider()].models[0].id;
         }
 
         // --- SIDEBAR & VIEW CONTROLS ---
@@ -469,11 +692,10 @@ REGOLE TASSATIVE DA RISPETTARE:
                     const btn = document.createElement('button');
                     btn.className = 'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-blue-50 text-gray-700 flex items-center justify-between border border-transparent syllabus-btn';
                     
-                    const numMatch = topic.match(/^(\d+)_/);
-                    const num = numMatch ? numMatch[1] : "?";
-                    const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
+                    const num = topic.num || "-";
+                    const cleanName = topic.titolo;
 
-                    const isCompleted = completedModules.has(topic);
+                    const isCompleted = completedModules.has(topic.id);
                     const checkIcon = isCompleted ? '<i class="fas fa-circle-check text-green-500"></i>' : '<i class="far fa-circle text-gray-300"></i>';
 
                     btn.innerHTML = `
@@ -516,8 +738,7 @@ REGOLE TASSATIVE DA RISPETTARE:
                 toggleSidebar();
             }
 
-            const cleanName = topic.replace(/^\d+_/, '').replace(/^\d+\s/, '').trim();
-            document.getElementById('current-topic-title').innerText = cleanName;
+            document.getElementById('current-topic-title').innerText = topic.titolo;
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('workspace').classList.remove('hidden');
             document.getElementById('theory-container').classList.add('hidden');
@@ -552,20 +773,21 @@ REGOLE TASSATIVE DA RISPETTARE:
         // --- INTERACTION & REWARDS ---
         function toggleCompletedMark() {
             if (!currentTopic) return;
-            if (completedModules.has(currentTopic)) {
-                completedModules.delete(currentTopic);
+            if (completedModules.has(currentTopic.id)) {
+                completedModules.delete(currentTopic.id);
                 showToast("Modulo rimosso dai completati.");
             } else {
-                completedModules.add(currentTopic);
+                completedModules.add(currentTopic.id);
                 showToast("Ottimo lavoro! Modulo superato.");
             }
+            saveProgress();
             renderSidebar();
             updateCompleteButtonUI();
         }
 
         function updateCompleteButtonUI() {
             const btn = document.getElementById('btn-mark-complete');
-            if (completedModules.has(currentTopic)) {
+            if (currentTopic && completedModules.has(currentTopic.id)) {
                 btn.innerHTML = '<i class="fas fa-circle-check text-green-600"></i> Modulo Completato!';
                 btn.className = "text-sm font-semibold text-green-600 flex items-center gap-1.5 transition-colors";
             } else {
@@ -601,86 +823,104 @@ REGOLE TASSATIVE DA RISPETTARE:
             setTimeout(() => toast.remove(), 3500);
         }
 
-        // --- GEMINI API ENGINE ---
-        async function callGemini(userPrompt, systemPromptExtension = "") {
-            const activeKey = getApiKey();
-            const targetModel = getSelectedModel();
+        // --- AI ENGINE (Gemini + Anthropic) ---
+        async function callAI(userPrompt, systemPromptExtension = "") {
+            const provider = getProvider();
+            const key = getApiKey();
+            const model = getSelectedModel();
 
-            if (!activeKey) {
+            if (!key) {
                 hideLoading();
-                alert("Attenzione: Inserisci la tua Gemini API Key nel pannello a sinistra e clicca su Salva.");
+                showToast("Inserisci la chiave API nel pannello a sinistra, poi salva.");
                 return null;
             }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${activeKey}`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: userPrompt }] }],
-                systemInstruction: { parts: [{ text: baseSystemInstruction + "\n" + systemPromptExtension }] }
-            };
+            const system = baseSystemInstruction + "\n" + systemPromptExtension;
 
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const errMsg = errorData.error?.message || "Errore sconosciuto";
-                    throw new Error(errMsg);
-                }
-
-                const data = await response.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Impossibile recuperare il responso dal server.";
+                const text = provider === 'anthropic'
+                    ? await callAnthropic(key, model, system, userPrompt)
+                    : await callGemini(key, model, system, userPrompt);
+                if (!text) throw new Error("Il modello ha risposto senza testo.");
+                return text;
             } catch (error) {
-                console.error("Gemini call failed:", error);
+                console.error('Chiamata AI fallita:', error);
                 hideLoading();
-                alert(`Si è verificato un errore con il modello selezionato (${targetModel}).\n\nDettaglio: ${error.message}\n\nSoluzione: Prova a cambiare il modello dal menu a tendina a sinistra (es. scegli 'gemini-pro') e riprova.`);
+                alert("Il modello " + model + " non ha risposto.\n\nDettaglio: " + error.message +
+                      "\n\nSe leggi un errore 404 il modello e stato dismesso: scegline un altro dal menu a sinistra. Se leggi 401 o 403 la chiave non e valida. Se leggi 429 hai finito la quota gratuita, riprova tra qualche minuto.");
                 return null;
             }
         }
 
-        // Diagnostic Connection Tester
+        async function callGemini(key, model, system, userPrompt) {
+            const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: system }] }
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
+            }
+            const data = await res.json();
+            const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+            return parts.map(p => p.text).filter(Boolean).join("\n").trim();
+        }
+
+        async function callAnthropic(key, model, system, userPrompt) {
+            const res = await fetch("https://api.anthropic.com/v1/messages", {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-api-key': key,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: model,
+                    max_tokens: 4000,
+                    system: system,
+                    messages: [{ role: 'user', content: userPrompt }]
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
+            }
+            const data = await res.json();
+            return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join("\n").trim();
+        }
+
+        // --- CONNECTION TESTER ---
         async function testApiConnection() {
             const resultEl = document.getElementById('connection-test-result');
-            resultEl.classList.remove('hidden', 'bg-green-900/40', 'text-green-300', 'bg-red-900/40', 'text-red-300', 'bg-amber-900/40', 'text-amber-300');
-            resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-slate-800 text-slate-300";
-            resultEl.innerText = "Verifica in corso...";
-            
-            const activeKey = getApiKey();
-            const targetModel = getSelectedModel();
+            const provider = getProvider();
+            const model = getSelectedModel();
+            const key = getApiKey();
 
-            if (!activeKey) {
+            resultEl.classList.remove('hidden');
+            resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-slate-800 text-slate-300 border border-slate-700";
+            resultEl.innerText = "Verifica in corso...";
+
+            if (!key) {
                 resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                resultEl.innerText = "Errore: Inserisci prima la chiave API e salvala!";
+                resultEl.innerText = "Inserisci prima la chiave e salvala.";
                 return;
             }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${activeKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: "Rispondi solo con la parola 'OK'." }] }]
-            };
-
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
-                    resultEl.innerHTML = `<i class="fas fa-check-circle"></i> Modello ${targetModel} connesso e pronto!`;
-                } else {
-                    const errorData = await response.json();
-                    resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                    resultEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Errore Modello: Seleziona un altro modello dal menu a tendina. Dettaglio: ${errorData.error?.message}`;
-                }
+                const out = provider === 'anthropic'
+                    ? await callAnthropic(key, model, "Rispondi solo con OK.", "Rispondi solo con la parola OK.")
+                    : await callGemini(key, model, "Rispondi solo con OK.", "Rispondi solo con la parola OK.");
+                resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-green-900/40 text-green-300 border border-green-800";
+                resultEl.innerHTML = '<i class="fas fa-check-circle"></i> ' + model + " risponde. Puoi iniziare.";
             } catch (err) {
                 resultEl.className = "text-[10px] mt-2 p-1.5 rounded bg-red-900/40 text-red-300 border border-red-800";
-                resultEl.innerText = `Errore di rete: ${err.message}`;
+                resultEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + err.message;
             }
         }
 
@@ -701,11 +941,13 @@ REGOLE TASSATIVE DA RISPETTARE:
             if (!currentTopic) return;
             
             showLoading("Sto preparando una spiegazione molto semplice della teoria...");
-            
-            const prompt = `Spiega la teoria dell'argomento: "${currentTopic}". 
+
+            const scheda = await getScheda(currentTopic);
+            const prompt = `Spiega la teoria dell'argomento: "${currentTopic.titolo}".
+${schedaBlock(scheda)}
 Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.`;
-            
-            const response = await callGemini(prompt, "Sei in modalità 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
+
+            const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
             if (!response) return;
 
             const theoryContent = document.getElementById('theory-content');
@@ -730,10 +972,13 @@ Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo.
             document.getElementById('user-answers').value = '';
             closeGuidedResolution();
             
-            const prompt = `Genera ESATTAMENTE 10 esercizi di difficoltà crescente (numerati da 1 a 10) sull'argomento: "${currentTopic}". 
+            const scheda = await getScheda(currentTopic);
+            const prompt = `Genera ESATTAMENTE 10 esercizi di difficolta crescente (numerati da 1 a 10) sull'argomento: "${currentTopic.titolo}".
+${schedaBlock(scheda)}
+Gli esercizi devono essere dello stesso tipo e livello di quelli che lo studente trovera all'esame, coerenti con la scheda del corso.
 NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.`;
-            
-            const response = await callGemini(prompt);
+
+            const response = await callAI(prompt);
             if (!response) return;
 
             currentExercisesContext = response; 
@@ -776,7 +1021,7 @@ ${userAnswers}
 
 Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere il risultato corretto. Invita lo studente a riprovare usando parole di incoraggiamento.`;
 
-            const response = await callGemini(prompt, "Correggi con infinita pazienza. Non regalare le soluzioni se sbaglia.");
+            const response = await callAI(prompt, "Correggi con infinita pazienza. Non regalare le soluzioni se sbaglia." + schedaBlock(await getScheda(currentTopic)));
             if (!response) return;
 
             if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("esatto")) {
@@ -834,7 +1079,7 @@ ${currentExercisesContext}
 Isola solo quell'esercizio. Qual è il primissimo, minuscolo passo da fare? (es. trovare un denominatore, o riconoscere il limite notevole).
 Fai una domanda semplice allo studente su quel passo e aspetta la sua risposta. Tono amichevole. NON dare calcoli pronti.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi.`);
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi.` + schedaBlock(await getScheda(currentTopic)));
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
@@ -868,7 +1113,7 @@ Valuta l'ultima risposta.
 - Se è sbagliata, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
 Usa termini quotidiani. Mantieni formattazione LaTeX.`;
 
-            const response = await callGemini(prompt, `Sei in modalità 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita.`);
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita.`);
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
