@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematica 0 e Analisi 1</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+    },
+    options: { ignoreHtmlClass: 'tex2jax_ignore', processHtmlClass: 'tex2jax_process' }
+};
+</script>
+
+<style>
+/* ============================================================
+   Quaderno a quadretti — sistema visivo
+   carta fredda, inchiostro biro, matita rossa solo per gli errori
+   ============================================================ */
+:root{
+  --carta:#FAFAF7;
+  --carta-alta:#FFFFFF;
+  --quadretto:#E2E7EA;
+  --bordo:#E4E4DE;
+  --grafite:#222A31;
+  --grafite-2:#5C6670;
+  --grafite-3:#8B949C;
+  --inchiostro:#3A34A8;
+  --inchiostro-tenue:#EDECFA;
+  --rossa:#B23A2F;
+  --rossa-tenue:#FBEDEB;
+  --visto:#2F7D4F;
+  --visto-tenue:#EAF3ED;
+  --ambra:#8A6212;
+  --ambra-tenue:#FBF3E0;
+  --r:10px;
+  --ombra:0 1px 2px rgba(34,42,49,.05), 0 8px 24px -12px rgba(34,42,49,.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--carta);
+  color:var(--grafite);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  display:flex;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+@media (max-width:820px){ body{flex-direction:column} }
+
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:none;cursor:pointer}
+a{color:var(--inchiostro)}
+
+/* utility minime richieste dal JS */
+.hidden{display:none !important}
+.flex{display:flex}
+
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#D5DAD3;border-radius:9px;border:3px solid var(--carta)}
+::-webkit-scrollbar-thumb:hover{background:#BFC5BE}
+::-webkit-scrollbar-track{background:transparent}
+
+:focus-visible{outline:2px solid var(--inchiostro);outline-offset:2px;border-radius:4px}
+
+@keyframes appare{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes entra{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes scrive{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+@keyframes battito{0%,100%{opacity:.25}50%{opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+
+/* ---------------------------------------------------------- barra mobile */
+.barra-mobile{
+  display:none;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:var(--grafite);color:#fff;
+}
+.barra-mobile h1{font-family:"Instrument Serif",serif;font-size:20px;font-weight:400}
+@media (max-width:820px){ .barra-mobile{display:flex} }
+
+/* ---------------------------------------------------------- colonna sinistra */
+.colonna{
+  width:322px;flex-shrink:0;height:100%;
+  background:var(--carta-alta);
+  border-right:1px solid var(--bordo);
+  display:flex;flex-direction:column;
+  z-index:40;
+}
+@media (max-width:820px){
+  .colonna{
+    position:fixed;inset:0 auto 0 0;width:88%;max-width:340px;
+    transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 60px rgba(0,0,0,.2);
+  }
+  .colonna:not(.-translate-x-full){transform:none}
+}
+
+.testata{padding:22px 22px 18px;border-bottom:1px solid var(--bordo)}
+.testata .marchio{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grafite-3);
+}
+.testata h1{
+  font-family:"Instrument Serif",serif;font-weight:400;font-size:30px;
+  line-height:1.1;margin-top:6px;letter-spacing:-.01em;
+}
+.testata h1 em{font-style:italic;color:var(--inchiostro)}
+.testata p{font-size:12.5px;color:var(--grafite-2);margin-top:5px}
+
+/* ---------------------------------------------------------- motore AI */
+.motore{padding:16px 22px;border-bottom:1px solid var(--bordo);background:#FCFCFA}
+.etichetta{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--grafite-3);
+}
+.motore-intestazione{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+
+.stato{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:500;
+  padding:2px 7px;border-radius:99px;letter-spacing:.04em;
+}
+.stato-ok{background:var(--visto-tenue);color:var(--visto)}
+.stato-ko{background:var(--rossa-tenue);color:var(--rossa)}
+
+.campo{
+  width:100%;padding:9px 11px;margin-bottom:8px;
+  background:var(--carta-alta);border:1px solid var(--bordo);border-radius:8px;
+  font-size:13px;transition:border-color .15s, box-shadow .15s;
+}
+.campo:focus{outline:none;border-color:var(--inchiostro);box-shadow:0 0 0 3px var(--inchiostro-tenue)}
+
+.bottone-pieno{
+  width:100%;padding:9px;border-radius:8px;background:var(--inchiostro);color:#fff;
+  font-size:13px;font-weight:600;transition:transform .12s, filter .15s;
+}
+.bottone-pieno:hover{filter:brightness(1.12)}
+.bottone-pieno:active{transform:translateY(1px)}
+
+.motore-piede{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}
+.minuto{font-size:11px;color:var(--grafite-3)}
+.minuto:hover{color:var(--grafite-2)}
+
+.esito{
+  font-size:11px;margin-top:10px;padding:7px 9px;border-radius:7px;
+  background:#F4F5F2;color:var(--grafite-2);border:1px solid var(--bordo);
+}
+.esito-ok{background:var(--visto-tenue);color:var(--visto);border-color:#CFE3D7}
+.esito-ko{background:var(--rossa-tenue);color:var(--rossa);border-color:#F0D5D1}
+
+/* riga di riepilogo quando la chiave è già salvata */
+.config-riga{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.config-riga .nome{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--grafite-2);
+  display:flex;align-items:center;gap:7px;min-width:0;
+}
+.config-riga .nome span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pallino{width:6px;height:6px;border-radius:99px;background:var(--visto);flex-shrink:0}
+.config-riga button{font-size:11px;font-weight:600;color:var(--inchiostro);flex-shrink:0}
+.config-riga button:hover{text-decoration:underline}
+
+/* ---------------------------------------------------------- avanzamento */
+.avanzamento{padding:14px 22px 12px;border-bottom:1px solid var(--bordo)}
+.avanzamento-testa{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.avanzamento-testa b{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:var(--grafite)}
+.binario{height:3px;background:var(--bordo);border-radius:99px;overflow:hidden}
+.binario span{display:block;height:100%;width:0;background:var(--inchiostro);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ---------------------------------------------------------- indice */
+.indice{flex:1;overflow-y:auto;padding:10px 14px 26px}
+
+.sezione{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--inchiostro);
+  padding:16px 8px 7px;margin-bottom:6px;border-bottom:1px solid var(--bordo);
+}
+.gruppo{margin-bottom:3px}
+.gruppo-testa{
+  width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:8px;text-align:left;
+  font-size:12.5px;font-weight:600;color:var(--grafite-2);
+  transition:background .15s,color .15s;
+}
+.gruppo-testa:hover{background:#F4F5F2;color:var(--grafite)}
+.freccia{font-size:9px;color:var(--grafite-3);transition:transform .22s ease;flex-shrink:0}
+
+.gruppo-voci{display:flex;flex-direction:column;gap:1px;padding:3px 0 8px 4px}
+
+.voce{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:7px 10px;border-radius:7px;position:relative;
+  transition:background .14s;
+}
+.voce::before{
+  content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;
+  background:var(--inchiostro);border-radius:2px;
+  transform:scaleY(0);transform-origin:center;transition:transform .2s ease;
+}
+.voce:hover{background:#F5F6F3}
+.voce.attiva{background:var(--inchiostro-tenue)}
+.voce.attiva::before{transform:scaleY(1)}
+.voce.attiva .voce-nome{color:var(--inchiostro);font-weight:600}
+
+.voce-num{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--grafite-3);
+  min-width:20px;flex-shrink:0;text-align:right;
+}
+.voce-nome{
+  flex:1;font-size:12.5px;color:var(--grafite-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.voce-stato{flex-shrink:0;width:14px;text-align:center}
+.visto{color:var(--visto);font-size:10px}
+
+/* ---------------------------------------------------------- area principale */
+.principale{flex:1;display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+.intestazione{
+  padding:22px 32px;background:var(--carta-alta);border-bottom:1px solid var(--bordo);
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+}
+.intestazione h2{
+  font-family:"Instrument Serif",serif;font-weight:400;font-size:34px;line-height:1.12;
+  letter-spacing:-.015em;position:relative;display:inline-block;
+}
+.intestazione h2::after{
+  content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;
+  background:var(--inchiostro);opacity:.85;border-radius:2px;
+  transform-origin:left;animation:scrive .55s cubic-bezier(.4,0,.2,1) both;
+}
+.apri-prontuario{
+  margin-top:14px;display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;color:var(--inchiostro);
+  padding:5px 11px;border:1px solid #D9D7F0;border-radius:99px;background:var(--inchiostro-tenue);
+  transition:background .15s,transform .12s;
+}
+.apri-prontuario:hover{background:#E3E1F7}
+.apri-prontuario:active{transform:translateY(1px)}
+
+/* contatori: una riga sottile, non un riquadro */
+.contatori{display:flex;gap:26px;align-items:flex-end;padding-bottom:4px}
+.contatore{text-align:right}
+.contatore .n{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:500;display:block;line-height:1}
+.contatore .l{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--grafite-3)}
+#kpi-generated{color:var(--inchiostro)}
+#kpi-correct{color:var(--visto)}
+#kpi-efficiency{color:var(--ambra)}
+@media (max-width:820px){
+  .intestazione{padding:18px 20px}
+  .intestazione h2{font-size:26px}
+  .contatori{gap:18px}
+}
+
+/* ---------------------------------------------------------- carta a quadretti */
+.foglio{
+  flex:1;overflow-y:auto;padding:30px 32px 60px;scroll-behavior:smooth;
+  background-image:
+    linear-gradient(var(--quadretto) 1px, transparent 1px),
+    linear-gradient(90deg, var(--quadretto) 1px, transparent 1px);
+  background-size:24px 24px;
+  background-position:-1px -1px;
+}
+@media (max-width:820px){ .foglio{padding:20px 16px 50px} }
+
+.colonna-testo{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+.pannello{
+  background:var(--carta-alta);border:1px solid var(--bordo);border-radius:var(--r);
+  padding:24px;box-shadow:var(--ombra);animation:entra .34s cubic-bezier(.4,0,.2,1) both;
+}
+.pannello h3{
+  font-family:"Instrument Serif",serif;font-weight:400;font-size:22px;
+  display:flex;align-items:center;gap:9px;margin-bottom:16px;
+  padding-bottom:12px;border-bottom:1px solid var(--bordo);
+}
+.pannello h3 i{font-size:15px;color:var(--inchiostro)}
+
+/* ---------------------------------------------------------- benvenuto */
+.benvenuto{max-width:620px;margin:8vh auto 0;text-align:center;animation:appare .5s ease both}
+.benvenuto .glifo{
+  font-family:"Instrument Serif",serif;font-size:60px;color:var(--inchiostro);
+  line-height:1;margin-bottom:18px;
+}
+.benvenuto h3{font-family:"Instrument Serif",serif;font-weight:400;font-size:32px;line-height:1.2;margin-bottom:12px}
+.benvenuto p{color:var(--grafite-2);font-size:15px;max-width:480px;margin:0 auto}
+.passi{display:flex;flex-direction:column;gap:0;margin:32px 0 0;text-align:left}
+.passo{display:flex;gap:16px;padding:16px 4px;border-top:1px solid var(--bordo)}
+.passo:last-child{border-bottom:1px solid var(--bordo)}
+.passo .n{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--inchiostro);
+  padding-top:2px;flex-shrink:0;
+}
+.passo b{display:block;font-size:13.5px;font-weight:600;margin-bottom:2px}
+.passo span{font-size:12.5px;color:var(--grafite-2)}
+
+/* ---------------------------------------------------------- scelta azione */
+.scelta{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.scelta .testo b{font-family:"Instrument Serif",serif;font-weight:400;font-size:21px;display:block}
+.scelta .testo span{font-size:13px;color:var(--grafite-2)}
+.azioni{display:flex;gap:10px;flex-wrap:wrap}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;border-radius:8px;font-size:13.5px;font-weight:600;
+  transition:transform .12s, filter .15s, background .15s;
+}
+.btn:active{transform:translateY(1px)}
+.btn-inchiostro{background:var(--inchiostro);color:#fff}
+.btn-inchiostro:hover{filter:brightness(1.12)}
+.btn-ambra{background:var(--ambra-tenue);color:var(--ambra);border:1px solid #EFE0BC}
+.btn-ambra:hover{background:#F7EBD2}
+.btn-visto{background:var(--visto);color:#fff}
+.btn-visto:hover{filter:brightness(1.1)}
+.btn-grafite{background:var(--grafite);color:#fff;font-size:11.5px;padding:7px 13px}
+.btn-grafite:hover{filter:brightness(1.4)}
+
+.link-azione{
+  display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+  color:var(--grafite-2);transition:color .15s;
+}
+.link-azione:hover{color:var(--inchiostro)}
+.link-azione.fatto{color:var(--visto)}
+
+/* ---------------------------------------------------------- pannelli tematici */
+.pannello-teoria{background:#FDFAF2;border-color:#EFE4CC}
+.pannello-teoria h3 i{color:var(--ambra)}
+.pannello-feedback{background:#F7F7FD;border-color:#DFDDF3}
+.pannello-feedback h3 i{color:var(--inchiostro)}
+
+textarea#user-answers{
+  width:100%;padding:14px;border:1px solid var(--bordo);border-radius:8px;
+  font-family:"IBM Plex Mono",monospace;font-size:13px;resize:vertical;
+  background:var(--carta-alta);transition:border-color .15s, box-shadow .15s;
+}
+textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shadow:0 0 0 3px var(--inchiostro-tenue)}
+
+.riga-fondo{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap}
+.nota{font-size:12.5px;color:var(--grafite-2);margin-bottom:14px}
+
+/* ---------------------------------------------------------- guida passo-passo */
+.pannello-guida{background:var(--grafite);border-color:#333C45;color:#EDEFF1}
+.pannello-guida h3{color:#fff;border-bottom-color:#333C45}
+.pannello-guida h3 i{color:#9C97E8}
+.guida-testa{display:flex;justify-content:space-between;align-items:center}
+.chiudi{color:var(--grafite-3);font-size:19px;line-height:1;padding:2px 6px;transition:color .15s}
+.chiudi:hover{color:#fff}
+
+.campo-scuro{
+  background:#2C353D;border:1px solid #3C464F;border-radius:7px;
+  padding:8px 11px;font-size:13px;color:#fff;
+}
+.campo-scuro:focus{outline:none;border-color:#9C97E8}
+
+.cronologia{
+  background:#1A2128;border:1px solid #313A43;border-radius:8px;
+  padding:14px;max-height:320px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:11px;
+}
+.bolla{padding:11px 13px;border-radius:9px;font-size:13px;line-height:1.5}
+.bolla-chi{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;display:block;margin-bottom:5px;
+}
+.bolla-tutor{background:#232C34;border:1px solid #313A43}
+.bolla-tutor .bolla-chi{color:#9C97E8}
+.bolla-tu{background:#2B3841;border:1px solid #3A4751;align-self:flex-end;max-width:85%}
+.bolla-tu .bolla-chi{color:#7FC49B}
+
+/* ---------------------------------------------------------- prontuario */
+.velo{
+  position:fixed;inset:0;background:rgba(28,34,40,.55);backdrop-filter:blur(3px);
+  z-index:60;align-items:center;justify-content:center;padding:20px;
+}
+.finestra{
+  background:var(--carta-alta);border-radius:14px;width:100%;max-width:760px;height:84vh;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);
+  animation:entra .26s cubic-bezier(.4,0,.2,1) both;
+}
+.finestra-testa{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 18px;border-bottom:1px solid var(--bordo);background:#FCFCFA;
+}
+.tab{
+  padding:6px 13px;border-radius:99px;font-size:12.5px;font-weight:600;
+  color:var(--grafite-2);transition:background .15s,color .15s;
+}
+.tab:hover{background:#F0F1EE}
+.tab.attiva{background:var(--inchiostro);color:#fff}
+.tab.attiva:hover{background:var(--inchiostro)}
+
+#tab-vocabolario,#tab-schede{flex:1;flex-direction:column;overflow:hidden}
+.cerca-riga{padding:14px 18px;border-bottom:1px solid var(--bordo)}
+.lista-voci{flex:1;overflow-y:auto;padding:6px 18px 20px}
+
+.lemma{padding:15px 0;border-bottom:1px solid var(--bordo)}
+.lemma:last-child{border-bottom:none}
+.lemma-testa{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.lemma-termine{font-weight:600;font-size:14.5px}
+.lemma-simbolo{color:var(--inchiostro);font-size:14px}
+.lemma-significato{font-size:13.5px;color:var(--grafite-2);margin-top:5px}
+.lemma-esempio{
+  font-size:12.5px;color:var(--grafite-2);margin-top:7px;
+  padding-left:12px;border-left:2px solid var(--bordo);
+}
+.vuoto{text-align:center;color:var(--grafite-3);font-size:13px;padding:40px 0}
+
+/* ---------------------------------------------------------- attesa */
+.velo-attesa{
+  position:absolute;inset:0;background:rgba(250,250,247,.9);backdrop-filter:blur(2px);
+  z-index:50;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+}
+.puntini{display:flex;gap:7px}
+.puntini i{width:8px;height:8px;border-radius:99px;background:var(--inchiostro);animation:battito 1.1s ease-in-out infinite}
+.puntini i:nth-child(2){animation-delay:.16s}
+.puntini i:nth-child(3){animation-delay:.32s}
+#loading-text{font-size:14px;color:var(--grafite-2)}
+
+/* ---------------------------------------------------------- toast */
+.toast{
+  position:fixed;bottom:22px;right:22px;z-index:70;
+  background:var(--grafite);color:#fff;padding:11px 16px;border-radius:9px;
+  font-size:13px;display:flex;align-items:center;gap:9px;
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.45);
+  animation:entra .24s cubic-bezier(.4,0,.2,1) both;
+}
+.toast i{color:#9C97E8}
+
+/* ---------------------------------------------------------- testo generato */
+.math-content{font-size:14.5px;line-height:1.7}
+.math-content p{margin-bottom:.9rem}
+.math-content h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:21px;margin:1.5rem 0 .6rem}
+.math-content h3{font-family:"Instrument Serif",serif;font-weight:400;font-size:18px;margin:1.2rem 0 .5rem;border:none;padding:0}
+.math-content ol{list-style:decimal;padding-left:1.4rem;margin-bottom:.9rem}
+.math-content ul{list-style:disc;padding-left:1.4rem;margin-bottom:.9rem}
+.math-content li{margin-bottom:.4rem}
+.math-content strong{font-weight:600}
+.math-content code{font-family:"IBM Plex Mono",monospace;font-size:.9em;background:#F2F3F0;padding:1px 5px;border-radius:4px}
+.math-content hr{border:none;border-top:1px solid var(--bordo);margin:1.4rem 0}
+
+.testo-md{font-size:14px;line-height:1.65}
+.testo-md h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:25px;margin-bottom:.8rem}
+.testo-md h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:19px;margin:1.5rem 0 .6rem;color:var(--inchiostro)}
+.testo-md p{margin-bottom:.8rem}
+.testo-md ul{list-style:disc;padding-left:1.3rem;margin-bottom:.8rem}
+.testo-md li{margin-bottom:.35rem}
+.testo-md strong{font-weight:600}
+.testo-md table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:13px}
+.testo-md th{
+  text-align:left;padding:8px 10px;background:#F5F6F3;border-bottom:2px solid var(--bordo);
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--grafite-2);font-weight:500;
+}
+.testo-md td{padding:8px 10px;border-bottom:1px solid var(--bordo);vertical-align:top}
+.testo-md tr:hover td{background:#FAFAF7}
+
+.velo-colonna{position:fixed;inset:0;background:rgba(28,34,40,.45);z-index:35}
+#guided-chat-step:not(.hidden){display:flex}
+#loading-overlay:not(.hidden){display:flex}
+@media (min-width:821px){ .velo-colonna{display:none !important} }
+</style>
+</head>
+<body>
+
+<header class="barra-mobile">
+    <h1>Matematica <em>&amp;</em> Analisi</h1>
+    <button id="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Apri l'indice"><i class="fas fa-bars"></i></button>
+</header>
+
+<aside id="sidebar" class="colonna -translate-x-full">
+
+    <div class="testata">
+        <div class="marchio">Ingegneria gestionale · L-9</div>
+        <h1>Matematica <em>0</em> &amp; Analisi <em>1</em></h1>
+        <p id="course-subtitle">Le basi, poi il corso.</p>
+    </div>
+
+    <div class="motore">
+        <div class="motore-intestazione">
+            <span class="etichetta">Motore AI</span>
+            <span id="key-status" class="stato stato-ko">Manca la chiave</span>
+        </div>
+
+        <div id="config-chiuso" class="config-riga hidden">
+            <div class="nome"><i class="pallino"></i><span id="config-riepilogo">—</span></div>
+            <button onclick="apriConfig()">Cambia</button>
+        </div>
+
+        <div id="config-aperto">
+            <select id="api-provider-select" class="campo" onchange="onProviderChange()">
+                <option value="gemini">Google Gemini</option>
+                <option value="anthropic">Anthropic Claude</option>
+            </select>
+            <input type="password" id="api-key-input" class="campo" placeholder="Incolla la chiave">
+            <select id="api-model-select" class="campo"></select>
+            <button class="bottone-pieno" onclick="saveApiKey()">Salva impostazioni</button>
+            <div class="motore-piede">
+                <a id="key-help-link" class="minuto" href="#" target="_blank" rel="noopener">Dove trovo la chiave</a>
+                <button class="minuto" onclick="testApiConnection()"><i class="fas fa-vial"></i> Prova il modello</button>
+            </div>
+        </div>
+
+        <div id="connection-test-result" class="esito hidden"></div>
+    </div>
+
+    <div class="avanzamento">
+        <div class="avanzamento-testa">
+            <span class="etichetta">Moduli superati</span>
+            <b id="modules-progress">0/0</b>
+        </div>
+        <div class="binario"><span id="progress-bar"></span></div>
+    </div>
+
+    <nav class="indice" id="sidebar-topics"></nav>
+</aside>
+
+<div id="sidebar-overlay" class="velo-colonna hidden" onclick="toggleSidebar()"></div>
+
+<main class="principale">
+
+    <header class="intestazione">
+        <div>
+            <h2 id="current-topic-title">Scegli un argomento</h2>
+            <button class="apri-prontuario" onclick="apriProntuario()">
+                <i class="fas fa-book-open"></i> Prontuario e vocabolario
+            </button>
+        </div>
+        <div class="contatori">
+            <div class="contatore"><span class="n" id="kpi-generated">0</span><span class="l">Esercizi</span></div>
+            <div class="contatore"><span class="n" id="kpi-correct">0</span><span class="l">Corretti</span></div>
+            <div class="contatore"><span class="n" id="kpi-efficiency">0%</span><span class="l">Precisione</span></div>
+        </div>
+    </header>
+
+    <div class="foglio" id="main-content-area">
+
+        <section id="welcome-screen" class="benvenuto">
+            <div class="glifo">∫</div>
+            <h3>Un mattoncino alla volta</h3>
+            <p>Le basi di Matematica 0 e il programma di Analisi 1, con gli esercizi costruiti sulle dispense del tuo corso.</p>
+            <div class="passi">
+                <div class="passo">
+                    <span class="n">01</span>
+                    <div><b>Salva la chiave</b><span>Nel pannello a sinistra. Resta sul tuo browser, non la vede nessun altro.</span></div>
+                </div>
+                <div class="passo">
+                    <span class="n">02</span>
+                    <div><b>Scegli un argomento</b><span>Dalle basi o dal programma di Analisi 1. L'indice è a sinistra.</span></div>
+                </div>
+                <div class="passo">
+                    <span class="n">03</span>
+                    <div><b>Teoria, poi esercizi</b><span>Dieci esercizi per volta. Se sbagli non ti do il risultato: ti guido fino a trovarlo.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <div id="workspace" class="colonna-testo hidden">
+
+            <section class="pannello scelta">
+                <div class="testo">
+                    <b>Come vuoi procedere?</b>
+                    <span>Ripassa la teoria, oppure mettiti subito alla prova.</span>
+                </div>
+                <div class="azioni">
+                    <button id="btn-theory" class="btn btn-ambra" onclick="explainTheory()">
+                        <i class="fas fa-book-open-reader"></i> Spiegami la teoria
+                    </button>
+                    <button id="btn-generate" class="btn btn-inchiostro" onclick="generateExercises()">
+                        <i class="fas fa-wand-magic-sparkles"></i> Genera 10 esercizi
+                    </button>
+                </div>
+            </section>
+
+            <section id="theory-container" class="pannello pannello-teoria hidden">
+                <h3><i class="fas fa-lightbulb"></i> La teoria, in parole semplici</h3>
+                <div id="theory-content" class="math-content tex2jax_process"></div>
+            </section>
+
+            <section id="exercises-container" class="pannello hidden">
+                <h3><i class="fas fa-list-ol"></i> I tuoi esercizi</h3>
+                <div id="exercises-content" class="math-content tex2jax_process"></div>
+            </section>
+
+            <section id="guided-resolution-container" class="pannello pannello-guida hidden">
+                <div class="guida-testa">
+                    <h3 style="border:none;padding:0;margin:0"><i class="fas fa-route"></i> Guida passo-passo</h3>
+                    <button class="chiudi" onclick="closeGuidedResolution()" aria-label="Chiudi la guida">&times;</button>
+                </div>
+
+                <div id="guided-setup-step" style="margin-top:16px">
+                    <p style="font-size:13px;color:#B8C0C8;margin-bottom:11px">Quale esercizio vuoi affrontare insieme?</p>
+                    <div style="display:flex;gap:9px;flex-wrap:wrap">
+                        <select id="guided-exercise-select" class="campo-scuro">
+                            <option value="1">Esercizio 1</option><option value="2">Esercizio 2</option>
+                            <option value="3">Esercizio 3</option><option value="4">Esercizio 4</option>
+                            <option value="5">Esercizio 5</option><option value="6">Esercizio 6</option>
+                            <option value="7">Esercizio 7</option><option value="8">Esercizio 8</option>
+                            <option value="9">Esercizio 9</option><option value="10">Esercizio 10</option>
+                        </select>
+                        <button class="btn btn-inchiostro" style="padding:8px 15px;font-size:12.5px" onclick="startGuidedSession()">Iniziamo</button>
+                    </div>
+                </div>
+
+                <div id="guided-chat-step" class="hidden" style="margin-top:16px;flex-direction:column;gap:14px">
+                    <div class="cronologia" id="guided-chat-history"></div>
+                    <div>
+                        <label class="etichetta" style="color:#8B949C;display:block;margin-bottom:7px">Il tuo prossimo passaggio</label>
+                        <div style="display:flex;gap:9px">
+                            <input type="text" id="guided-user-input" class="campo-scuro" style="flex:1"
+                                   placeholder="Scrivi la tua deduzione, es. x^2"
+                                   onkeydown="if(event.key==='Enter') sendGuidedStep()">
+                            <button class="btn btn-visto" style="padding:8px 16px;font-size:12.5px" onclick="sendGuidedStep()">
+                                <i class="fas fa-paper-plane"></i> Invia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-input-container" class="pannello hidden">
+                <div class="guida-testa" style="margin-bottom:16px">
+                    <h3 style="border:none;padding:0;margin:0"><i class="fas fa-pen-to-square"></i> Le tue risposte</h3>
+                    <button class="btn btn-grafite" onclick="activateGuidedResolutionPanel()">
+                        <i class="fas fa-route"></i> Guidami passo-passo
+                    </button>
+                </div>
+                <p class="nota">Scrivi lo svolgimento o il risultato, numerando come gli esercizi (es. <code>1) x = 5</code>). Per gli esponenti usa il simbolo ^, come in <code>x^2</code>. Più passaggi scrivi, più la correzione è precisa.</p>
+                <textarea id="user-answers" rows="7" placeholder="Scrivi qui i tuoi passaggi..."></textarea>
+                <div class="riga-fondo">
+                    <button id="btn-mark-complete" class="link-azione" onclick="toggleCompletedMark()">
+                        <i class="far fa-circle-check"></i> Segna il modulo come superato
+                    </button>
+                    <button id="btn-submit" class="btn btn-visto" onclick="checkAnswers()">
+                        <i class="fas fa-check-double"></i> Correggi
+                    </button>
+                </div>
+            </section>
+
+            <section id="feedback-container" class="pannello pannello-feedback hidden">
+                <h3><i class="fas fa-chalkboard-user"></i> La correzione</h3>
+                <div id="feedback-content" class="math-content tex2jax_process"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="velo-attesa hidden">
+        <div class="puntini"><i></i><i></i><i></i></div>
+        <p id="loading-text">Sto lavorando...</p>
+    </div>
+
+</main>
+
+<div id="prontuario" class="velo hidden">
+    <div class="finestra">
+        <div class="finestra-testa">
+            <div style="display:flex;gap:5px">
+                <button id="tab-btn-vocabolario" class="tab" onclick="mostraTab('vocabolario')">Vocabolario</button>
+                <button id="tab-btn-schede" class="tab" onclick="mostraTab('schede')">Schede di sopravvivenza</button>
+            </div>
+            <button class="chiudi" style="color:var(--grafite-3)" onclick="chiudiProntuario()" aria-label="Chiudi">&times;</button>
+        </div>
+
+        <div id="tab-vocabolario" class="hidden">
+            <div class="cerca-riga">
+                <input id="vocab-search" class="campo" style="margin:0" type="text"
+                       placeholder="Cerca un termine, un simbolo o una parola nella spiegazione"
+                       oninput="filtraVocabolario()">
+            </div>
+            <div id="vocab-list" class="lista-voci"></div>
+        </div>
+
+        <div id="tab-schede" class="hidden">
+            <div class="cerca-riga">
+                <select id="scheda-select" class="campo" style="margin:0" onchange="caricaSchedaRiferimento()"></select>
+            </div>
+            <div id="scheda-content" class="lista-voci testo-md tex2jax_process"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+        // --- PROVIDER CONFIG ---
+        const PROVIDERS = {
+            gemini: {
+                label: "Google Gemini",
+                placeholder: "Chiave AI Studio (AIza...)",
+                help: "https://aistudio.google.com/apikey",
+                models: [
+                    { id: "gemini-3.1-flash-lite",  label: "Veloce ed economico (3.1 Flash Lite)" },
+                    { id: "gemini-3-flash-preview", label: "Equilibrato (3 Flash)" },
+                    { id: "gemini-3.5-flash",       label: "Qualita alta (3.5 Flash)" },
+                    { id: "gemini-3.1-pro-preview", label: "Massima qualita (3.1 Pro)" },
+                    { id: "gemini-2.5-flash",       label: "Legacy (2.5 Flash, attivo fino a ottobre 2026)" }
+                ]
+            },
+            anthropic: {
+                label: "Anthropic Claude",
+                placeholder: "Chiave Anthropic (sk-ant-...)",
+                help: "https://console.anthropic.com/settings/keys",
+                models: [
+                    { id: "claude-haiku-4-5-20251001", label: "Veloce ed economico (Haiku 4.5)" },
+                    { id: "claude-sonnet-5",           label: "Consigliato (Sonnet 5)" },
+                    { id: "claude-opus-4-8",           label: "Massima qualita (Opus 4.8)" }
+                ]
+            }
+        };
+
+        // --- SYLLABUS FALLBACK (Matematica 0, usato se schede/index.json non e raggiungibile) ---
+        const SYLLABUS_FALLBACK = [
+                {
+                        "gruppo": "1. Logica, Insiemi e Numeri",
+                        "argomenti": [
+                                {
+                                        "id": "M01",
+                                        "num": "1",
+                                        "titolo": "Logica e linguaggio matematico"
+                                },
+                                {
+                                        "id": "M02",
+                                        "num": "2",
+                                        "titolo": "Numeri naturali, MCD, mcm"
+                                },
+                                {
+                                        "id": "M03",
+                                        "num": "3",
+                                        "titolo": "Operazioni con i numeri interi"
+                                },
+                                {
+                                        "id": "M04",
+                                        "num": "4",
+                                        "titolo": "Operazioni con le frazioni"
+                                },
+                                {
+                                        "id": "M05",
+                                        "num": "5",
+                                        "titolo": "Le potenze"
+                                },
+                                {
+                                        "id": "M15",
+                                        "num": "15",
+                                        "titolo": "I radicali"
+                                },
+                                {
+                                        "id": "M16",
+                                        "num": "16",
+                                        "titolo": "Insiemi, numeri reali e piano cartesiano"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "2. Monomi e Polinomi",
+                        "argomenti": [
+                                {
+                                        "id": "M06",
+                                        "num": "6",
+                                        "titolo": "Monomi e polinomi"
+                                },
+                                {
+                                        "id": "M07",
+                                        "num": "7",
+                                        "titolo": "Prodotti notevoli di polinomi"
+                                },
+                                {
+                                        "id": "M08",
+                                        "num": "8",
+                                        "titolo": "Scomposizione di polinomi"
+                                },
+                                {
+                                        "id": "M09",
+                                        "num": "9",
+                                        "titolo": "Scomposizioni di polinomi con il metodo di Ruffini"
+                                },
+                                {
+                                        "id": "M11",
+                                        "num": "11",
+                                        "titolo": "Le frazioni algebriche"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "3. Equazioni e Sistemi",
+                        "argomenti": [
+                                {
+                                        "id": "M10",
+                                        "num": "10",
+                                        "titolo": "Le equazioni di primo grado intere"
+                                },
+                                {
+                                        "id": "M12",
+                                        "num": "12",
+                                        "titolo": "Le equazioni di primo grado fratte"
+                                },
+                                {
+                                        "id": "M13",
+                                        "num": "13",
+                                        "titolo": "I sistemi lineari"
+                                },
+                                {
+                                        "id": "M20",
+                                        "num": "20",
+                                        "titolo": "Le equazioni di secondo grado"
+                                },
+                                {
+                                        "id": "M26",
+                                        "num": "26",
+                                        "titolo": "Altri tipi di equazioni e disequazioni"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "4. Disequazioni",
+                        "argomenti": [
+                                {
+                                        "id": "M14",
+                                        "num": "14",
+                                        "titolo": "Le disequazioni di primo grado"
+                                },
+                                {
+                                        "id": "M21",
+                                        "num": "21",
+                                        "titolo": "Disequazioni di secondo grado"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "5. Funzioni, Esponenziali e Logaritmi",
+                        "argomenti": [
+                                {
+                                        "id": "M17",
+                                        "num": "17",
+                                        "titolo": "Le funzioni"
+                                },
+                                {
+                                        "id": "M18",
+                                        "num": "18",
+                                        "titolo": "Le funzioni reali nel piano cartesiano"
+                                },
+                                {
+                                        "id": "M22",
+                                        "num": "22",
+                                        "titolo": "Funzione esponenziale equazioni e disequazioni"
+                                },
+                                {
+                                        "id": "M23",
+                                        "num": "23",
+                                        "titolo": "I logaritmi proprietà, equazioni e disequazioni"
+                                },
+                                {
+                                        "id": "M27",
+                                        "num": "27",
+                                        "titolo": "Introduzione allo studio di funzione"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "6. Geometria e Goniometria",
+                        "argomenti": [
+                                {
+                                        "id": "M19",
+                                        "num": "19",
+                                        "titolo": "La retta nel piano cartesiano"
+                                },
+                                {
+                                        "id": "M24",
+                                        "num": "24",
+                                        "titolo": "Introduzione alla goniometria"
+                                },
+                                {
+                                        "id": "M25",
+                                        "num": "25",
+                                        "titolo": "Equazioni e disequazioni goniometriche"
+                                }
+                        ]
+                },
+                {
+                        "gruppo": "7. Introduzione all'Analisi e Limiti",
+                        "argomenti": [
+                                {
+                                        "id": "M28",
+                                        "num": "28",
+                                        "titolo": "I Limiti: definizioni e concetti di base"
+                                },
+                                {
+                                        "id": "M29",
+                                        "num": "29",
+                                        "titolo": "I Limiti Notevoli e calcolo dei limiti"
+                                }
+                        ]
+                }
+        ];
+
+        // --- RUNTIME STATE ---
+        let syllabusGroups = [];
+        let schedeAttive = false;
+        const schedeCache = {};
+        let totalModules = 0;
+
+        let currentTopic = null;
+        let currentExercisesContext = "";
+        let completedModules = new Set();
+        
+        let guidedState = {
+            active: false,
+            exerciseNum: null,
+            chatHistory: [] 
+        };
+
+        let stats = {
+            generated: 0,
+            correct: 0,
+            totalSubmissions: 0
+        };
+
+        const baseSystemInstruction = `Sei un tutor di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9), paziente e chiarissimo.
+Lo studente viene da un diploma alberghiero e ha ricostruito le basi da zero (Matematica 0). Ha bisogno di spiegazioni semplici, concrete, senza gergo tecnico o aziendale.
+
+REGOLE TASSATIVE:
+1. Quando generi esercizi, fanne SEMPRE ESATTAMENTE 10, a difficolta crescente. Non uno in meno, non uno in piu.
+2. NON fornire mai risultati o soluzioni durante la generazione degli esercizi.
+3. Se lo studente sbaglia, spiega il concetto in modo elementare ma NON dargli il risultato corretto. Chiedigli di riprovare quel passaggio.
+4. Usa parole semplici, metafore quotidiane molto basilari (dividere una torta, pesi su una bilancia, tagliare una mela) e spezza i concetti difficili in mattoncini.
+5. Usa LaTeX per la matematica (inline $x^2$, blocco $$x = \\frac{-b}{2a}$$). Niente caratteri strani non-LaTeX.
+6. Se ricevi una <SchedaDelCorso>, quella e la fonte autorevole: usa la sua notazione, le sue definizioni e i suoi metodi, e non introdurre tecniche che non compaiono li.`;
+
+        // --- APP STARTUP & STORAGE ---
+        window.onload = async () => {
+            loadSavedSettings();
+            await loadSyllabus();
+            loadProgress();
+            renderSidebar();
+        };
+
+        // --- PRONTUARIO (vocabolario + schede di sopravvivenza) ---
+        let vocabolario = [];
+        let schedeRiferimento = [];
+        let prontuarioCaricato = false;
+
+        async function apriProntuario() {
+            const box = document.getElementById('prontuario');
+            box.classList.remove('hidden');
+            box.classList.add('flex');
+            if (!prontuarioCaricato) {
+                prontuarioCaricato = true;
+                await caricaProntuario();
+            }
+            mostraTab('vocabolario');
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') chiudiProntuario();
+        });
+
+        function chiudiProntuario() {
+            const box = document.getElementById('prontuario');
+            box.classList.add('hidden');
+            box.classList.remove('flex');
+        }
+
+        function mostraTab(nome) {
+            const tabs = ['vocabolario', 'schede'];
+            tabs.forEach(t => {
+                const pannello = document.getElementById('tab-' + t);
+                const bottone = document.getElementById('tab-btn-' + t);
+                const attivo = (t === nome);
+                pannello.classList.toggle('hidden', !attivo);
+                pannello.classList.toggle('flex', attivo);
+                bottone.className = attivo ? 'tab attiva' : 'tab';
+            });
+        }
+
+        async function caricaProntuario() {
+            try {
+                const res = await fetch('riferimenti/vocabolario.json', { cache: 'no-cache' });
+                if (res.ok) vocabolario = (await res.json()).voci || [];
+            } catch (err) { console.warn('vocabolario non caricato', err); }
+            filtraVocabolario();
+
+            try {
+                const res = await fetch('riferimenti/index.json', { cache: 'no-cache' });
+                if (res.ok) schedeRiferimento = (await res.json()).schede || [];
+            } catch (err) { console.warn('schede di riferimento non caricate', err); }
+
+            const sel = document.getElementById('scheda-select');
+            sel.innerHTML = '';
+            if (!schedeRiferimento.length) {
+                sel.innerHTML = '<option>Nessuna scheda ancora</option>';
+            } else {
+                schedeRiferimento.forEach(sc => {
+                    const opt = document.createElement('option');
+                    opt.value = sc.file;
+                    opt.innerText = sc.titolo;
+                    sel.appendChild(opt);
+                });
+                caricaSchedaRiferimento();
+            }
+        }
+
+        function filtraVocabolario() {
+            const q = (document.getElementById('vocab-search').value || '').toLowerCase().trim();
+            const lista = document.getElementById('vocab-list');
+
+            const risultati = vocabolario.filter(v =>
+                !q ||
+                v.termine.toLowerCase().includes(q) ||
+                (v.simbolo || '').toLowerCase().includes(q) ||
+                v.significato.toLowerCase().includes(q)
+            );
+
+            if (!risultati.length) {
+                lista.innerHTML = '<p class="vuoto">Nessun termine con questa parola. Puoi aggiungerlo in <code>riferimenti/vocabolario.json</code>.</p>';
+                return;
+            }
+
+            lista.innerHTML = risultati.map(v => `
+                <div class="lemma tex2jax_process">
+                    <div class="lemma-testa">
+                        <span class="lemma-termine">${v.termine}</span>
+                        ${v.simbolo ? `<span class="lemma-simbolo">${v.simbolo}</span>` : ''}
+                    </div>
+                    <p class="lemma-significato">${v.significato}</p>
+                    ${v.esempio ? `<p class="lemma-esempio">${v.esempio}</p>` : ''}
+                </div>
+            `).join('');
+
+            if (window.MathJax) MathJax.typesetPromise([lista]).catch(e => console.warn(e.message));
+        }
+
+        async function caricaSchedaRiferimento() {
+            const file = document.getElementById('scheda-select').value;
+            const box = document.getElementById('scheda-content');
+            if (!file) return;
+            box.innerHTML = '<p class="vuoto">Un attimo...</p>';
+            try {
+                const res = await fetch('riferimenti/' + file, { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                box.innerHTML = marked.parse(await res.text());
+                if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
+            } catch (err) {
+                box.innerHTML = '<p class="vuoto">Scheda non trovata. Controlla che il file sia in <code>riferimenti/</code> e registrato in <code>riferimenti/index.json</code>.</p>';
+            }
+        }
+
+        // --- SYLLABUS & SCHEDE LOADING ---
+        async function loadSyllabus() {
+            try {
+                const res = await fetch('schede/index.json', { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                syllabusGroups = data.gruppi.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                schedeAttive = true;
+                if (data.titolo) {
+                    const sub = document.getElementById('course-subtitle');
+                    if (sub) sub.innerText = data.titolo;
+                }
+            } catch (err) {
+                console.warn('schede/index.json non caricato, uso il programma di base.', err);
+                syllabusGroups = SYLLABUS_FALLBACK.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                schedeAttive = false;
+            }
+            totalModules = syllabusGroups.reduce((n, g) => n + g.topics.length, 0);
+        }
+
+        async function getScheda(topic) {
+            if (!schedeAttive || !topic) return "";
+            if (schedeCache[topic.id] !== undefined) return schedeCache[topic.id];
+            try {
+                const res = await fetch('schede/' + topic.id + '.md', { cache: 'no-cache' });
+                schedeCache[topic.id] = res.ok ? (await res.text()).trim() : "";
+            } catch (err) {
+                schedeCache[topic.id] = "";
+            }
+            return schedeCache[topic.id];
+        }
+
+        function schedaBlock(testo) {
+            if (!testo) return "";
+            return "\n<SchedaDelCorso>\n" + testo + "\n</SchedaDelCorso>\n";
+        }
+
+        function loadProgress() {
+            try {
+                const raw = localStorage.getItem('tutor_moduli_completati');
+                if (raw) completedModules = new Set(JSON.parse(raw));
+            } catch (err) { /* progresso non leggibile, si riparte da zero */ }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('tutor_moduli_completati', JSON.stringify([...completedModules]));
+        }
+
+        function getProvider() {
+            return document.getElementById('api-provider-select').value || 'gemini';
+        }
+
+        function renderModelOptions(provider, preselect) {
+            const sel = document.getElementById('api-model-select');
+            const cfg = PROVIDERS[provider];
+            sel.innerHTML = '';
+            cfg.models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.innerText = m.label;
+                sel.appendChild(opt);
+            });
+            if (preselect && cfg.models.some(m => m.id === preselect)) sel.value = preselect;
+            document.getElementById('api-key-input').placeholder = cfg.placeholder;
+            document.getElementById('key-help-link').href = cfg.help;
+        }
+
+        function onProviderChange() {
+            const provider = getProvider();
+            renderModelOptions(provider, localStorage.getItem('tutor_model_' + provider));
+            const savedKey = localStorage.getItem('tutor_key_' + provider) || '';
+            document.getElementById('api-key-input').value = savedKey;
+            updateKeyStatus(!!savedKey);
+            aggiornaConfigUI();
+            document.getElementById('connection-test-result').classList.add('hidden');
+        }
+
+        function loadSavedSettings() {
+            const provider = localStorage.getItem('tutor_provider') || 'gemini';
+            document.getElementById('api-provider-select').value = provider;
+            onProviderChange();
+            aggiornaConfigUI();
+        }
+
+        // Il pannello della chiave serve una volta sola: dopo il salvataggio si richiude
+        // e lascia una riga di riepilogo.
+        function aggiornaConfigUI() {
+            const provider = getProvider();
+            const configurato = !!localStorage.getItem('tutor_key_' + provider);
+            document.getElementById('config-aperto').classList.toggle('hidden', configurato);
+            document.getElementById('config-chiuso').classList.toggle('hidden', !configurato);
+
+            if (configurato) {
+                const sel = document.getElementById('api-model-select');
+                const nome = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].innerText : '';
+                document.getElementById('config-riepilogo').innerText =
+                    PROVIDERS[provider].label + ' · ' + nome.replace(/\s*\(.*\)/, '');
+            }
+        }
+
+        function apriConfig() {
+            document.getElementById('config-aperto').classList.remove('hidden');
+            document.getElementById('config-chiuso').classList.add('hidden');
+        }
+
+        function saveApiKey() {
+            const provider = getProvider();
+            const key = document.getElementById('api-key-input').value.trim();
+            const model = document.getElementById('api-model-select').value;
+
+            localStorage.setItem('tutor_provider', provider);
+            localStorage.setItem('tutor_model_' + provider, model);
+
+            if (key) {
+                localStorage.setItem('tutor_key_' + provider, key);
+                updateKeyStatus(true);
+                showToast("Impostazioni salvate.");
+            } else {
+                localStorage.removeItem('tutor_key_' + provider);
+                updateKeyStatus(false);
+                showToast("Chiave rimossa.");
+            }
+            aggiornaConfigUI();
+        }
+
+        function updateKeyStatus(hasKey) {
+            const statusEl = document.getElementById('key-status');
+            if (hasKey) {
+                statusEl.innerText = "Pronto";
+                statusEl.className = "stato stato-ok";
+            } else {
+                statusEl.innerText = "Manca la chiave";
+                statusEl.className = "stato stato-ko";
+            }
+        }
+
+        function getApiKey() {
+            return document.getElementById('api-key-input').value.trim();
+        }
+
+        function getSelectedModel() {
+            const sel = document.getElementById('api-model-select');
+            return sel.value || PROVIDERS[getProvider()].models[0].id;
+        }
+
+        // --- SIDEBAR & VIEW CONTROLS ---
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-topics');
+            container.innerHTML = '';
+            
+            let sezioneCorrente = null;
+            syllabusGroups.forEach((group, groupIndex) => {
+                // Intestazione di sezione (Basi / Analisi 1)
+                if (group.sezione && group.sezione !== sezioneCorrente) {
+                    sezioneCorrente = group.sezione;
+                    const sez = document.createElement('div');
+                    sez.className = 'sezione';
+                    sez.innerText = sezioneCorrente;
+                    container.appendChild(sez);
+                }
+
+                // Crea il contenitore del gruppo a tendina (Accordion)
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'gruppo';
+                
+                // Crea l'intestazione del gruppo cliccabile
+                const groupHeader = document.createElement('button');
+                groupHeader.className = 'gruppo-testa';
+                groupHeader.innerHTML = `<span>${group.groupName}</span><i class="fas fa-chevron-down freccia" id="icon-group-${groupIndex}"></i>`;
+                
+                // Crea il contenitore per i bottoni dei capitoli (nascosto di default)
+                const topicsContainer = document.createElement('div');
+                topicsContainer.id = `group-content-${groupIndex}`;
+                topicsContainer.className = 'gruppo-voci hidden';
+
+                // Popola i capitoli singoli
+                group.topics.forEach((topic) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'voce syllabus-btn';
+                    
+                    const num = topic.num || "-";
+                    const cleanName = topic.titolo;
+
+                    const isCompleted = completedModules.has(topic.id);
+                    const checkIcon = isCompleted ? '<i class="fas fa-check visto"></i>' : '';
+
+                    btn.innerHTML = `
+                        <span class="voce-num">${num}</span>
+                        <span class="voce-nome" title="${cleanName}">${cleanName}</span>
+                        <span class="voce-stato">${checkIcon}</span>
+                    `;
+                    btn.onclick = () => selectTopic(topic, btn);
+                    topicsContainer.appendChild(btn);
+                });
+
+                // Logica di apertura/chiusura
+                groupHeader.onclick = () => {
+                    const isHidden = topicsContainer.classList.contains('hidden');
+                    // Chiudi tutti gli altri gruppi aperti per tenere il menu corto
+                    document.querySelectorAll('[id^="group-content-"]').forEach(el => el.classList.add('hidden'));
+                    document.querySelectorAll('[id^="icon-group-"]').forEach(el => el.style.transform = 'rotate(0deg)');
+                    
+                    if (isHidden) {
+                        topicsContainer.classList.remove('hidden');
+                        document.getElementById(`icon-group-${groupIndex}`).style.transform = 'rotate(180deg)';
+                    }
+                };
+
+                groupDiv.appendChild(groupHeader);
+                groupDiv.appendChild(topicsContainer);
+                container.appendChild(groupDiv);
+            });
+            updateProgressCounters();
+        }
+
+        function selectTopic(topic, btnElement) {
+            currentTopic = topic;
+            currentExercisesContext = ""; 
+            closeGuidedResolution();
+            
+            if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
+            document.getElementById('current-topic-title').innerText = topic.titolo;
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('workspace').classList.remove('hidden');
+            document.getElementById('theory-container').classList.add('hidden');
+            document.getElementById('exercises-container').classList.add('hidden');
+            document.getElementById('user-input-container').classList.add('hidden');
+            document.getElementById('feedback-container').classList.add('hidden');
+            document.getElementById('user-answers').value = '';
+            
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Genera 10 esercizi';
+
+            // Rimuovi evidenziazione precedente e aggiungi a quello attuale
+            document.querySelectorAll('.syllabus-btn').forEach(b => b.classList.remove('attiva'));
+            btnElement.classList.add('attiva');
+
+            updateCompleteButtonUI();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- INTERACTION & REWARDS ---
+        function toggleCompletedMark() {
+            if (!currentTopic) return;
+            if (completedModules.has(currentTopic.id)) {
+                completedModules.delete(currentTopic.id);
+                showToast("Modulo rimosso dai completati.");
+            } else {
+                completedModules.add(currentTopic.id);
+                showToast("Ottimo lavoro! Modulo superato.");
+            }
+            saveProgress();
+            renderSidebar();
+            updateCompleteButtonUI();
+        }
+
+        function updateCompleteButtonUI() {
+            const btn = document.getElementById('btn-mark-complete');
+            if (currentTopic && completedModules.has(currentTopic.id)) {
+                btn.innerHTML = '<i class="fas fa-circle-check"></i> Modulo superato';
+                btn.className = "link-azione fatto";
+            } else {
+                btn.innerHTML = '<i class="far fa-circle-check"></i> Segna il modulo come superato';
+                btn.className = "link-azione";
+            }
+        }
+
+        function updateProgressCounters() {
+            document.getElementById('modules-progress').innerText = `${completedModules.size}/${totalModules}`;
+            const barra = document.getElementById('progress-bar');
+            if (barra && totalModules) {
+                barra.style.width = Math.round((completedModules.size / totalModules) * 100) + '%';
+            }
+        }
+
+        function updateKPIs(action) {
+            if (action === 'generate') {
+                stats.generated += 10;
+            } else if (action === 'correct') {
+                stats.correct += 1;
+            }
+            stats.totalSubmissions++;
+
+            document.getElementById('kpi-generated').innerText = stats.generated;
+            document.getElementById('kpi-correct').innerText = stats.correct;
+            
+            const efficiency = stats.generated > 0 ? Math.round((stats.correct / stats.totalSubmissions) * 100) : 0;
+            document.getElementById('kpi-efficiency').innerText = `${efficiency}%`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "toast";
+            toast.innerHTML = `<i class="fas fa-circle-info"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // --- AI ENGINE (Gemini + Anthropic) ---
+        async function callAI(userPrompt, systemPromptExtension = "") {
+            const provider = getProvider();
+            const key = getApiKey();
+            const model = getSelectedModel();
+
+            if (!key) {
+                hideLoading();
+                showToast("Inserisci la chiave API nel pannello a sinistra, poi salva.");
+                return null;
+            }
+
+            const system = baseSystemInstruction + "\n" + systemPromptExtension;
+
+            try {
+                const text = provider === 'anthropic'
+                    ? await callAnthropic(key, model, system, userPrompt)
+                    : await callGemini(key, model, system, userPrompt);
+                if (!text) throw new Error("Il modello ha risposto senza testo.");
+                return text;
+            } catch (error) {
+                console.error('Chiamata AI fallita:', error);
+                hideLoading();
+                alert("Il modello " + model + " non ha risposto.\n\nDettaglio: " + error.message +
+                      "\n\nSe leggi un errore 404 il modello e stato dismesso: scegline un altro dal menu a sinistra. Se leggi 401 o 403 la chiave non e valida. Se leggi 429 hai finito la quota gratuita, riprova tra qualche minuto.");
+                return null;
+            }
+        }
+
+        async function callGemini(key, model, system, userPrompt) {
+            const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: system }] }
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
+            }
+            const data = await res.json();
+            const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+            return parts.map(p => p.text).filter(Boolean).join("\n").trim();
+        }
+
+        async function callAnthropic(key, model, system, userPrompt) {
+            const res = await fetch("https://api.anthropic.com/v1/messages", {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-api-key': key,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: model,
+                    max_tokens: 4000,
+                    system: system,
+                    messages: [{ role: 'user', content: userPrompt }]
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
+            }
+            const data = await res.json();
+            return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join("\n").trim();
+        }
+
+        // --- CONNECTION TESTER ---
+        async function testApiConnection() {
+            const resultEl = document.getElementById('connection-test-result');
+            const provider = getProvider();
+            const model = getSelectedModel();
+            const key = getApiKey();
+
+            resultEl.classList.remove('hidden');
+            resultEl.className = "esito";
+            resultEl.innerText = "Verifica in corso...";
+
+            if (!key) {
+                resultEl.className = "esito esito-ko";
+                resultEl.innerText = "Inserisci prima la chiave e salvala.";
+                return;
+            }
+
+            try {
+                const out = provider === 'anthropic'
+                    ? await callAnthropic(key, model, "Rispondi solo con OK.", "Rispondi solo con la parola OK.")
+                    : await callGemini(key, model, "Rispondi solo con OK.", "Rispondi solo con la parola OK.");
+                resultEl.className = "esito esito-ok";
+                resultEl.innerHTML = '<i class="fas fa-check-circle"></i> ' + model + " risponde. Puoi iniziare.";
+            } catch (err) {
+                resultEl.className = "esito esito-ko";
+                resultEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + err.message;
+            }
+        }
+
+        function showLoading(text) {
+            document.getElementById('loading-text').innerText = text;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('flex');
+        }
+
+        // --- WORKFLOW EXECUTION ---
+
+        async function explainTheory() {
+            if (!currentTopic) return;
+            
+            showLoading("Sto preparando una spiegazione molto semplice della teoria...");
+
+            const scheda = await getScheda(currentTopic);
+
+            // Sugli argomenti di base la teoria deve sempre agganciarsi all'uso in Analisi 1.
+            const aggancio = currentTopic.base
+                ? `\nQuesto e un argomento di base (Matematica 0). Chiudi la spiegazione con una sezione
+"## A cosa ti serve in Analisi 1" in cui indichi 2 o 3 punti concreti del programma di Analisi 1
+in cui questa tecnica viene data per scontata (per esempio: nel calcolo di un limite, in una
+derivata, nella scomposizione prima di un integrale), con un mini esempio per ciascuno.`
+                : "";
+
+            const prompt = `Spiega la teoria dell'argomento: "${currentTopic.titolo}".
+${schedaBlock(scheda)}
+Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.
+
+Struttura la risposta cosi:
+## L'idea in due righe
+## Come si fa, passo per passo
+## Le formule da ricordare
+## Un esempio svolto
+## L'errore che fanno tutti${aggancio}`;
+
+            const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
+            if (!response) return;
+
+            const theoryContent = document.getElementById('theory-content');
+            theoryContent.innerHTML = marked.parse(response);
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([theoryContent]).catch(function (err) {
+                    console.warn('MathJax typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('theory-container').classList.remove('hidden');
+            hideLoading();
+            document.getElementById('theory-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function generateExercises() {
+            if (!currentTopic) return;
+            
+            showLoading("Generazione di 10 esercizi a difficoltà crescente...");
+            document.getElementById('feedback-container').classList.add('hidden');
+            document.getElementById('user-answers').value = '';
+            closeGuidedResolution();
+            
+            const scheda = await getScheda(currentTopic);
+            const prompt = `Genera ESATTAMENTE 10 esercizi di difficolta crescente (numerati da 1 a 10) sull'argomento: "${currentTopic.titolo}".
+${schedaBlock(scheda)}
+Gli esercizi devono essere dello stesso tipo e livello di quelli che lo studente trovera all'esame, coerenti con la scheda del corso.
+NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.`;
+
+            const response = await callAI(prompt);
+            if (!response) return;
+
+            currentExercisesContext = response; 
+            updateKPIs('generate');
+
+            const exContent = document.getElementById('exercises-content');
+            exContent.innerHTML = marked.parse(response);
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([exContent]).catch(function (err) {
+                    console.warn('MathJax typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('exercises-container').classList.remove('hidden');
+            document.getElementById('user-input-container').classList.remove('hidden');
+            document.getElementById('btn-generate').innerHTML = '<i class="fas fa-rotate"></i> Rigenera 10 Esercizi';
+            
+            hideLoading();
+            document.getElementById('exercises-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function checkAnswers() {
+            const userAnswers = document.getElementById('user-answers').value.trim();
+            if (!userAnswers) {
+                alert("Fornisci almeno un tentativo di risposta o spiegazione dei passaggi.");
+                return;
+            }
+
+            showLoading("Lettura e correzione in corso con calma...");
+
+            const prompt = `Lo studente ha svolto questo set di esercizi:
+<EserciziRichiesti>
+${currentExercisesContext}
+</EserciziRichiesti>
+
+<RisposteFornite>
+${userAnswers}
+</RisposteFornite>
+
+Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere il risultato corretto. Invita lo studente a riprovare usando parole di incoraggiamento.`;
+
+            const response = await callAI(prompt, "Correggi con infinita pazienza. Non regalare le soluzioni se sbaglia." + schedaBlock(await getScheda(currentTopic)));
+            if (!response) return;
+
+            if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("esatto")) {
+                updateKPIs('correct');
+            } else {
+                updateKPIs('attempt'); 
+            }
+
+            const fbContent = document.getElementById('feedback-content');
+            fbContent.innerHTML = marked.parse(response);
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([fbContent]).catch(function (err) {
+                    console.warn('MathJax feedback typesetting warning: ' + err.message);
+                });
+            }
+
+            document.getElementById('feedback-container').classList.remove('hidden');
+            hideLoading();
+            document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- STEP-BY-STEP GUIDED RESOLUTION LOGIC ---
+        function activateGuidedResolutionPanel() {
+            if (!currentExercisesContext) {
+                alert("Genera prima i 10 esercizi per attivare la guida passo-passo.");
+                return;
+            }
+            const panel = document.getElementById('guided-resolution-container');
+            panel.classList.remove('hidden');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeGuidedResolution() {
+            document.getElementById('guided-resolution-container').classList.add('hidden');
+            document.getElementById('guided-setup-step').classList.remove('hidden');
+            document.getElementById('guided-chat-step').classList.add('hidden');
+            document.getElementById('guided-chat-history').innerHTML = '';
+            guidedState = { active: false, exerciseNum: null, chatHistory: [] };
+        }
+
+        async function startGuidedSession() {
+            const exNum = document.getElementById('guided-exercise-select').value;
+            guidedState.active = true;
+            guidedState.exerciseNum = exNum;
+            guidedState.chatHistory = [];
+
+            showLoading(`Preparazione della guida per l'Esercizio ${exNum}...`);
+
+            const prompt = `Lo studente vuole fare una "Guida Passo-Passo" per l'Esercizio ${exNum} del seguente set:
+<SetEsercizi>
+${currentExercisesContext}
+</SetEsercizi>
+
+Isola solo quell'esercizio. Qual è il primissimo, minuscolo passo da fare? (es. trovare un denominatore, o riconoscere il limite notevole).
+Fai una domanda semplice allo studente su quel passo e aspetta la sua risposta. Tono amichevole. NON dare calcoli pronti.`;
+
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi.` + schedaBlock(await getScheda(currentTopic)));
+            if (!response) return;
+
+            guidedState.chatHistory.push({ role: 'tutor', text: response });
+            
+            document.getElementById('guided-setup-step').classList.add('hidden');
+            document.getElementById('guided-chat-step').classList.remove('hidden');
+            
+            renderGuidedChat();
+            hideLoading();
+        }
+
+        async function sendGuidedStep() {
+            const inputEl = document.getElementById('guided-user-input');
+            const userResponse = inputEl.value.trim();
+            if (!userResponse) return;
+
+            guidedState.chatHistory.push({ role: 'user', text: userResponse });
+            inputEl.value = '';
+            renderGuidedChat();
+
+            showLoading("Sto leggendo la tua risposta...");
+
+            let logs = guidedState.chatHistory.map(h => `${h.role === 'tutor' ? 'Tutor' : 'Studente'}: ${h.text}`).join('\n\n');
+
+            const prompt = `Stiamo risolvendo l'Esercizio ${guidedState.exerciseNum} passo dopo passo.
+Storico:
+${logs}
+
+Valuta l'ultima risposta.
+- Se è giusta, fagli fare il prossimo passettino.
+- Se è sbagliata, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
+Usa termini quotidiani. Mantieni formattazione LaTeX.`;
+
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita.`);
+            if (!response) return;
+
+            guidedState.chatHistory.push({ role: 'tutor', text: response });
+            renderGuidedChat();
+            hideLoading();
+        }
+
+        function renderGuidedChat() {
+            const historyEl = document.getElementById('guided-chat-history');
+            historyEl.innerHTML = '';
+
+            guidedState.chatHistory.forEach(msg => {
+                const bubble = document.createElement('div');
+                if (msg.role === 'tutor') {
+                    bubble.className = "bolla bolla-tutor tex2jax_process math-content";
+                    bubble.innerHTML = `<span class="bolla-chi">Tutor</span>${marked.parse(msg.text)}`;
+                } else {
+                    bubble.className = "bolla bolla-tu";
+                    bubble.innerHTML = `<span class="bolla-chi">Tu</span>${msg.text}`;
+                }
+                historyEl.appendChild(bubble);
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([historyEl]).catch(function (err) {
+                    console.warn('MathJax chat typesetting warning: ' + err.message);
+                });
+            }
+
+            setTimeout(() => {
+                historyEl.scrollTop = historyEl.scrollHeight;
+            }, 100);
+        }
+    
+</script>
+</body>
+</html>
