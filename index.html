@@ -100,6 +100,34 @@
         </div>
     </aside>
 
+    <!-- Prontuario: schede di sopravvivenza + vocabolario -->
+    <div id="prontuario" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-slate-50">
+                <div class="flex gap-1">
+                    <button id="tab-btn-vocabolario" onclick="mostraTab('vocabolario')" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors">Vocabolario</button>
+                    <button id="tab-btn-schede" onclick="mostraTab('schede')" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors">Schede di sopravvivenza</button>
+                </div>
+                <button onclick="chiudiProntuario()" class="text-gray-400 hover:text-gray-700 text-xl leading-none px-2">&times;</button>
+            </div>
+
+            <div id="tab-vocabolario" class="flex-1 flex flex-col overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100">
+                    <input id="vocab-search" oninput="filtraVocabolario()" type="text" placeholder="Cerca un termine o un simbolo..."
+                           class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div id="vocab-list" class="flex-1 overflow-y-auto px-5 py-3 space-y-3"></div>
+            </div>
+
+            <div id="tab-schede" class="flex-1 flex-col overflow-hidden hidden">
+                <div class="px-5 py-3 border-b border-gray-100">
+                    <select id="scheda-select" onchange="caricaSchedaRiferimento()" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></select>
+                </div>
+                <div id="scheda-content" class="flex-1 overflow-y-auto px-5 py-4 prose prose-sm max-w-none"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Overlay for mobile sidebar -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden transition-opacity"></div>
 
@@ -111,6 +139,9 @@
             <div>
                 <h2 id="current-topic-title" class="text-2xl font-bold text-gray-800">Seleziona un argomento</h2>
                 <p class="text-gray-500 text-sm mt-1">Costruiamo le tue basi un mattoncino alla volta, senza fretta.</p>
+                <button onclick="apriProntuario()" class="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
+                    <i class="fas fa-book-open"></i> Prontuario e vocabolario
+                </button>
             </div>
             
             <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-lg border border-gray-100 self-stretch sm:self-auto justify-around">
@@ -546,6 +577,114 @@ REGOLE TASSATIVE:
             renderSidebar();
         };
 
+        // --- PRONTUARIO (vocabolario + schede di sopravvivenza) ---
+        let vocabolario = [];
+        let schedeRiferimento = [];
+        let prontuarioCaricato = false;
+
+        async function apriProntuario() {
+            const box = document.getElementById('prontuario');
+            box.classList.remove('hidden');
+            box.classList.add('flex');
+            if (!prontuarioCaricato) {
+                prontuarioCaricato = true;
+                await caricaProntuario();
+            }
+            mostraTab('vocabolario');
+        }
+
+        function chiudiProntuario() {
+            const box = document.getElementById('prontuario');
+            box.classList.add('hidden');
+            box.classList.remove('flex');
+        }
+
+        function mostraTab(nome) {
+            const tabs = ['vocabolario', 'schede'];
+            tabs.forEach(t => {
+                const pannello = document.getElementById('tab-' + t);
+                const bottone = document.getElementById('tab-btn-' + t);
+                const attivo = (t === nome);
+                pannello.classList.toggle('hidden', !attivo);
+                pannello.classList.toggle('flex', attivo);
+                bottone.className = attivo
+                    ? 'px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white transition-colors'
+                    : 'px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-200 transition-colors';
+            });
+        }
+
+        async function caricaProntuario() {
+            try {
+                const res = await fetch('riferimenti/vocabolario.json', { cache: 'no-cache' });
+                if (res.ok) vocabolario = (await res.json()).voci || [];
+            } catch (err) { console.warn('vocabolario non caricato', err); }
+            filtraVocabolario();
+
+            try {
+                const res = await fetch('riferimenti/index.json', { cache: 'no-cache' });
+                if (res.ok) schedeRiferimento = (await res.json()).schede || [];
+            } catch (err) { console.warn('schede di riferimento non caricate', err); }
+
+            const sel = document.getElementById('scheda-select');
+            sel.innerHTML = '';
+            if (!schedeRiferimento.length) {
+                sel.innerHTML = '<option>Nessuna scheda disponibile</option>';
+            } else {
+                schedeRiferimento.forEach(sc => {
+                    const opt = document.createElement('option');
+                    opt.value = sc.file;
+                    opt.innerText = sc.titolo;
+                    sel.appendChild(opt);
+                });
+                caricaSchedaRiferimento();
+            }
+        }
+
+        function filtraVocabolario() {
+            const q = (document.getElementById('vocab-search').value || '').toLowerCase().trim();
+            const lista = document.getElementById('vocab-list');
+
+            const risultati = vocabolario.filter(v =>
+                !q ||
+                v.termine.toLowerCase().includes(q) ||
+                (v.simbolo || '').toLowerCase().includes(q) ||
+                v.significato.toLowerCase().includes(q)
+            );
+
+            if (!risultati.length) {
+                lista.innerHTML = '<p class="text-sm text-gray-500 py-6 text-center">Nessun termine trovato. Puoi aggiungerlo in <code>riferimenti/vocabolario.json</code>.</p>';
+                return;
+            }
+
+            lista.innerHTML = risultati.map(v => `
+                <div class="border-b border-gray-100 pb-3">
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                        <span class="font-bold text-slate-800 text-sm">${v.termine}</span>
+                        ${v.simbolo ? `<span class="text-blue-600 text-sm">${v.simbolo}</span>` : ''}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">${v.significato}</p>
+                    ${v.esempio ? `<p class="text-xs text-gray-500 mt-1 italic">${v.esempio}</p>` : ''}
+                </div>
+            `).join('');
+
+            if (window.MathJax) MathJax.typesetPromise([lista]).catch(e => console.warn(e.message));
+        }
+
+        async function caricaSchedaRiferimento() {
+            const file = document.getElementById('scheda-select').value;
+            const box = document.getElementById('scheda-content');
+            if (!file) return;
+            box.innerHTML = '<p class="text-sm text-gray-400">Caricamento...</p>';
+            try {
+                const res = await fetch('riferimenti/' + file, { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                box.innerHTML = marked.parse(await res.text());
+                if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
+            } catch (err) {
+                box.innerHTML = '<p class="text-sm text-red-500">Scheda non trovata.</p>';
+            }
+        }
+
         // --- SYLLABUS & SCHEDE LOADING ---
         async function loadSyllabus() {
             try {
@@ -672,7 +811,17 @@ REGOLE TASSATIVE:
             const container = document.getElementById('sidebar-topics');
             container.innerHTML = '';
             
+            let sezioneCorrente = null;
             syllabusGroups.forEach((group, groupIndex) => {
+                // Intestazione di sezione (Basi / Analisi 1)
+                if (group.sezione && group.sezione !== sezioneCorrente) {
+                    sezioneCorrente = group.sezione;
+                    const sez = document.createElement('div');
+                    sez.className = 'px-1 pt-3 pb-1 mb-1 text-[10px] font-black uppercase tracking-widest text-blue-700 border-b border-slate-200';
+                    sez.innerText = sezioneCorrente;
+                    container.appendChild(sez);
+                }
+
                 // Crea il contenitore del gruppo a tendina (Accordion)
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'mb-2';
@@ -943,9 +1092,25 @@ REGOLE TASSATIVE:
             showLoading("Sto preparando una spiegazione molto semplice della teoria...");
 
             const scheda = await getScheda(currentTopic);
+
+            // Sugli argomenti di base la teoria deve sempre agganciarsi all'uso in Analisi 1.
+            const aggancio = currentTopic.base
+                ? `\nQuesto e un argomento di base (Matematica 0). Chiudi la spiegazione con una sezione
+"## A cosa ti serve in Analisi 1" in cui indichi 2 o 3 punti concreti del programma di Analisi 1
+in cui questa tecnica viene data per scontata (per esempio: nel calcolo di un limite, in una
+derivata, nella scomposizione prima di un integrale), con un mini esempio per ciascuno.`
+                : "";
+
             const prompt = `Spiega la teoria dell'argomento: "${currentTopic.titolo}".
 ${schedaBlock(scheda)}
-Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.`;
+Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.
+
+Struttura la risposta cosi:
+## L'idea in due righe
+## Come si fa, passo per passo
+## Le formule da ricordare
+## Un esempio svolto
+## L'errore che fanno tutti${aggancio}`;
 
             const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
             if (!response) return;
