@@ -1,32 +1,358 @@
 {
-  "nota": "Vocabolario del corso. Ogni voce: termine, simbolo (opzionale), significato in parole semplici, esempio (opzionale). Aggiungi voci qui, l'app le carica da sola.",
+  "nota": "Vocabolario del corso. Ogni voce: termine, simbolo (opzionale), significato, esempio (opzionale). Aggiungi voci qui, l'app le carica da sola.",
   "voci": [
-    { "termine": "Tendere a", "simbolo": "$x \\to 3$", "significato": "La x si avvicina sempre di piu a 3 senza per forza arrivarci. Non stiamo calcolando il valore in 3: stiamo guardando dove va a finire la funzione mentre ci si avvicina.", "esempio": "$x \\to 0^+$ vuol dire che ci si avvicina a zero venendo dai numeri positivi." },
-    { "termine": "Definitivamente", "significato": "Da un certo punto in poi. Una proprieta vale definitivamente se e vera per tutti gli indici oltre un certo $n_0$, e non importa cosa succede prima.", "esempio": "La successione $a_n = n - 100$ e definitivamente positiva: lo diventa da $n = 101$." },
-    { "termine": "Maggiorare", "significato": "Trovare qualcosa di piu grande che sia piu facile da studiare. Serve a dire: se il piu grande va a zero, a maggior ragione ci va il mio.", "esempio": "$|\\sin n| \\le 1$, quindi $\\left|\\frac{\\sin n}{n}\\right| \\le \\frac{1}{n}$." },
-    { "termine": "Minorare", "significato": "L'opposto di maggiorare: trovare qualcosa di piu piccolo. Se il piu piccolo esplode all'infinito, esplode anche il mio.", "esempio": "$n + \\cos n \\ge n - 1$, e $n-1 \\to +\\infty$." },
-    { "termine": "Infinitesimo", "significato": "Una quantita che tende a zero. Non e zero: ci sta andando.", "esempio": "$\\frac{1}{n}$ e infinitesima." },
-    { "termine": "Limitata", "significato": "Una successione o funzione che resta chiusa dentro due valori, senza mai scappare all'infinito.", "esempio": "$\\sin x$ e limitata: sta sempre tra $-1$ e $1$." },
-    { "termine": "Forma indeterminata", "simbolo": "$\\frac{0}{0}$, $\\frac{\\infty}{\\infty}$, $\\infty - \\infty$, $0 \\cdot \\infty$, $1^\\infty$", "significato": "Un risultato che non dice nulla: da solo puo valere qualsiasi cosa. Va sciolto con un metodo (raccoglimento, limiti notevoli, De l'Hopital).", "esempio": "$\\frac{\\sin x}{x}$ in $x \\to 0$ e $\\frac{0}{0}$, ma il limite vale 1." },
-    { "termine": "Fattoriale", "simbolo": "$n!$", "significato": "Il prodotto di tutti i numeri interi da 1 fino a n. Cresce piu in fretta di qualsiasi esponenziale.", "esempio": "$5! = 1 \\cdot 2 \\cdot 3 \\cdot 4 \\cdot 5 = 120$. Per convenzione $0! = 1$." },
-    { "termine": "Tangente", "simbolo": "$\\tan x$", "significato": "Il rapporto tra seno e coseno. Esplode dove il coseno si annulla.", "esempio": "$\\tan x = \\frac{\\sin x}{\\cos x}$, non definita in $x = \\pi/2$." },
-    { "termine": "Arcotangente", "simbolo": "$\\arctan x$", "significato": "La funzione inversa della tangente: dato un valore, restituisce l'angolo che lo produce. E limitata tra $-\\pi/2$ e $\\pi/2$.", "esempio": "$\\arctan x \\to \\frac{\\pi}{2}$ per $x \\to +\\infty$." },
-    { "termine": "Arcoseno", "simbolo": "$\\arcsin x$", "significato": "L'inversa del seno, definita solo per $x$ tra $-1$ e $1$.", "esempio": "$\\arcsin 1 = \\frac{\\pi}{2}$." },
-    { "termine": "Sottosuccessione", "simbolo": "$a_{n_k}$", "significato": "Una successione ottenuta pescando solo alcuni termini della successione di partenza, rispettando l'ordine.", "esempio": "Dai termini di $a_n$ prendi solo quelli di indice pari." },
-    { "termine": "Monotona", "significato": "Che va sempre nella stessa direzione: o sempre su (crescente) o sempre giu (decrescente), senza tornare indietro." },
-    { "termine": "Asintoto", "significato": "Una retta a cui il grafico si avvicina indefinitamente senza toccarla.", "esempio": "$y = 0$ e asintoto orizzontale per $\\frac{1}{x}$." },
-    { "termine": "Dominio", "significato": "L'insieme dei valori di x per cui la funzione ha senso. Fuori dal dominio la funzione non esiste.", "esempio": "Il dominio di $\\log x$ e $x > 0$." },
-    { "termine": "Continuita", "significato": "Una funzione e continua in un punto se il limite in quel punto coincide con il valore che la funzione assume li. In pratica: il grafico non fa salti." },
-    { "termine": "Derivata", "simbolo": "$f'(x)$", "significato": "La pendenza della funzione in un punto: quanto cresce o cala in quell'istante." },
-    { "termine": "Primitiva", "simbolo": "$F(x)$", "significato": "Una funzione la cui derivata e quella di partenza. Andare all'indietro rispetto alla derivata.", "esempio": "Una primitiva di $2x$ e $x^2$." },
-    { "termine": "Integrale definito", "simbolo": "$\\int_a^b f(x)\\,dx$", "significato": "L'area con segno sotto il grafico tra a e b. Il risultato e un numero." },
-    { "termine": "Integrale indefinito", "simbolo": "$\\int f(x)\\,dx$", "significato": "L'insieme di tutte le primitive. Il risultato e una famiglia di funzioni, per questo si scrive $+\\,c$." },
-    { "termine": "Integrale improprio", "significato": "Un integrale in cui l'intervallo e infinito oppure la funzione esplode dentro l'intervallo. Si calcola con un limite." },
-    { "termine": "Serie", "simbolo": "$\\sum_{n=1}^{\\infty} a_n$", "significato": "La somma di infiniti termini. Ha senso solo se le somme parziali tendono a un numero finito: in quel caso la serie converge." },
-    { "termine": "Converge", "significato": "Tende a un valore finito e preciso." },
-    { "termine": "Diverge", "significato": "Scappa a $+\\infty$ o $-\\infty$, oppure non si stabilizza da nessuna parte." },
-    { "termine": "Per assurdo", "significato": "Tecnica di dimostrazione: si suppone vero il contrario di quello che si vuole dimostrare e si arriva a una contraddizione." },
-    { "termine": "Se e solo se", "simbolo": "$\\iff$", "significato": "Le due affermazioni sono equivalenti: ciascuna implica l'altra. Vale in entrambi i versi." },
-    { "termine": "Per ogni / esiste", "simbolo": "$\\forall$ / $\\exists$", "significato": "I due quantificatori. L'ordine in cui compaiono cambia tutto: in $\\forall \\epsilon\\ \\exists n_0$ l'indice $n_0$ dipende da $\\epsilon$." }
+    {
+      "termine": "Tendere a",
+      "simbolo": "$x \\to 3$",
+      "significato": "La x si avvicina sempre di piu a 3 senza per forza arrivarci. Non stiamo calcolando il valore in 3: stiamo guardando dove va a finire la funzione mentre ci si avvicina.",
+      "esempio": "$x \\to 0^+$ vuol dire che ci si avvicina a zero venendo dai numeri positivi."
+    },
+    {
+      "termine": "Definitivamente",
+      "significato": "Da un certo punto in poi. Una proprieta vale definitivamente se e vera per tutti gli indici oltre un certo $n_0$, e non importa cosa succede prima.",
+      "esempio": "$a_n = n - 100$ e definitivamente positiva: lo diventa da $n = 101$."
+    },
+    {
+      "termine": "Intorno",
+      "significato": "Una zona attorno a un punto, per quanto piccola. Quasi tutte le definizioni di limite dicono in realta: prendi un intorno abbastanza stretto e da li in poi succede questo."
+    },
+    {
+      "termine": "Maggiorare",
+      "significato": "Trovare qualcosa di piu grande che sia piu facile da studiare. Serve a dire: se il piu grande va a zero, a maggior ragione ci va il mio.",
+      "esempio": "$|\\sin n| \\le 1$, quindi $\\left|\\frac{\\sin n}{n}\\right| \\le \\frac{1}{n}$."
+    },
+    {
+      "termine": "Minorare",
+      "significato": "L'opposto di maggiorare: trovare qualcosa di piu piccolo. Se il piu piccolo esplode all'infinito, esplode anche il mio.",
+      "esempio": "$n + \\cos n \\ge n - 1$, e $n - 1 \\to +\\infty$."
+    },
+    {
+      "termine": "Infinitesimo",
+      "significato": "Una quantita che tende a zero. Non e zero: ci sta andando.",
+      "esempio": "$\\frac{1}{n}$ e infinitesima."
+    },
+    {
+      "termine": "Infinito (di ordine)",
+      "significato": "Quanto in fretta una quantita esplode. Serve a capire chi vince in una forma indeterminata: il logaritmo perde contro la potenza, la potenza perde contro l'esponenziale, l'esponenziale perde contro il fattoriale.",
+      "esempio": "$\\log n \\ll n^k \\ll a^n \\ll n!$"
+    },
+    {
+      "termine": "Limitata",
+      "significato": "Una successione o funzione che resta chiusa dentro due valori, senza mai scappare all'infinito.",
+      "esempio": "$\\sin x$ e limitata: sta sempre tra $-1$ e $1$."
+    },
+    {
+      "termine": "Forma indeterminata",
+      "simbolo": "$\\frac{0}{0}$, $\\frac{\\infty}{\\infty}$, $\\infty - \\infty$, $0 \\cdot \\infty$, $1^\\infty$, $0^0$, $\\infty^0$",
+      "significato": "Un risultato che non dice nulla: da solo puo valere qualsiasi cosa. Va sciolto con un metodo (raccoglimento, limiti notevoli, De l'Hopital).",
+      "esempio": "$\\frac{\\sin x}{x}$ in $x \\to 0$ e $\\frac{0}{0}$, ma il limite vale 1."
+    },
+    {
+      "termine": "Limite notevole",
+      "significato": "Un limite standard il cui valore si impara a memoria e si riusa come mattoncino dentro limiti piu complicati.",
+      "esempio": "$\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$"
+    },
+    {
+      "termine": "Asintotico",
+      "simbolo": "$f \\sim g$",
+      "significato": "Due funzioni si comportano allo stesso modo vicino a un punto: il loro rapporto tende a 1. Permette di sostituire una con l'altra dentro prodotti e quozienti.",
+      "esempio": "Per $x \\to 0$: $\\sin x \\sim x$."
+    },
+    {
+      "termine": "Converge",
+      "significato": "Tende a un valore finito e preciso."
+    },
+    {
+      "termine": "Diverge",
+      "significato": "Scappa a $+\\infty$ o $-\\infty$."
+    },
+    {
+      "termine": "Irregolare",
+      "significato": "Non converge e non diverge: continua a oscillare senza decidersi.",
+      "esempio": "$a_n = (-1)^n$ e irregolare."
+    },
+    {
+      "termine": "Teorema ponte",
+      "significato": "Il collegamento tra limiti di successioni e limiti di funzioni: se il limite della funzione esiste, lo si ritrova su ogni successione che tende a quel punto. Si usa soprattutto al contrario, per dimostrare che un limite NON esiste."
+    },
+    {
+      "termine": "Teorema dei carabinieri",
+      "significato": "Se la tua funzione e schiacciata tra due funzioni che tendono allo stesso valore, e costretta a tendere li anche lei.",
+      "esempio": "Da $-\\frac{1}{n} \\le \\frac{\\sin n}{n} \\le \\frac{1}{n}$ segue che il limite e 0."
+    },
+    {
+      "termine": "De l'Hopital",
+      "significato": "Regola per sciogliere $\\frac{0}{0}$ e $\\frac{\\infty}{\\infty}$: si derivano separatamente numeratore e denominatore e si riprova. Non e una divisione di frazioni: le derivate si fanno una sopra e una sotto."
+    },
+    {
+      "termine": "Successione",
+      "simbolo": "$a_n$",
+      "significato": "Una lista infinita e ordinata di numeri, uno per ogni indice naturale.",
+      "esempio": "$a_n = \\frac{1}{n}$ da $1, \\frac{1}{2}, \\frac{1}{3}, \\dots$"
+    },
+    {
+      "termine": "Sottosuccessione",
+      "simbolo": "$a_{n_k}$",
+      "significato": "Una successione ottenuta pescando solo alcuni termini di quella di partenza, rispettando l'ordine.",
+      "esempio": "Dai termini di $a_n$ prendi solo quelli di indice pari."
+    },
+    {
+      "termine": "Monotona",
+      "significato": "Che va sempre nella stessa direzione: o sempre su (crescente) o sempre giu (decrescente), senza tornare indietro."
+    },
+    {
+      "termine": "Serie",
+      "simbolo": "$\\sum_{n=1}^{\\infty} a_n$",
+      "significato": "La somma di infiniti termini. Ha senso solo se le somme parziali tendono a un numero finito: in quel caso la serie converge."
+    },
+    {
+      "termine": "Somma parziale",
+      "simbolo": "$s_N = \\sum_{n=1}^{N} a_n$",
+      "significato": "La somma dei primi N termini. Una serie converge esattamente quando la successione delle sue somme parziali converge."
+    },
+    {
+      "termine": "Condizione necessaria",
+      "significato": "Se una serie converge allora il termine generale tende a zero. Attenzione al verso: non basta che tenda a zero perche la serie converga.",
+      "esempio": "La serie armonica $\\sum \\frac{1}{n}$ ha termine che tende a zero ma diverge."
+    },
+    {
+      "termine": "Serie armonica",
+      "simbolo": "$\\sum \\frac{1}{n}$",
+      "significato": "L'esempio classico di serie che diverge pur avendo termini che si rimpiccioliscono."
+    },
+    {
+      "termine": "Serie armonica generalizzata",
+      "simbolo": "$\\sum \\frac{1}{n^\\alpha}$",
+      "significato": "Converge se $\\alpha > 1$, diverge se $\\alpha \\le 1$. E il metro di paragone per il criterio del confronto."
+    },
+    {
+      "termine": "Serie geometrica",
+      "simbolo": "$\\sum q^n$",
+      "significato": "Converge se $|q| < 1$, e in quel caso vale $\\frac{1}{1-q}$ partendo da $n=0$."
+    },
+    {
+      "termine": "Serie telescopica",
+      "significato": "Serie in cui ogni termine si spezza in due pezzi che si cancellano con quelli vicini, lasciando solo il primo e l'ultimo."
+    },
+    {
+      "termine": "Criterio del rapporto",
+      "significato": "Si guarda $\\frac{a_{n+1}}{a_n}$: se il limite e minore di 1 la serie converge, se e maggiore diverge. Utile con fattoriali ed esponenziali."
+    },
+    {
+      "termine": "Criterio della radice",
+      "significato": "Si guarda $\\sqrt[n]{a_n}$: stessa regola del rapporto. Utile quando l'indice n compare come esponente."
+    },
+    {
+      "termine": "Assolutamente convergente",
+      "significato": "Converge anche la serie dei valori assoluti. E una condizione piu forte: se vale, la serie converge di sicuro."
+    },
+    {
+      "termine": "Criterio di Leibniz",
+      "significato": "Per le serie a segni alterni: se i valori assoluti dei termini scendono verso zero in modo monotono, la serie converge.",
+      "esempio": "$\\sum \\frac{(-1)^n}{n}$ converge."
+    },
+    {
+      "termine": "Dominio",
+      "significato": "L'insieme dei valori di x per cui la funzione ha senso. Fuori dal dominio la funzione non esiste.",
+      "esempio": "Il dominio di $\\log x$ e $x > 0$."
+    },
+    {
+      "termine": "Codominio",
+      "significato": "L'insieme dei valori che la funzione puo restituire in uscita."
+    },
+    {
+      "termine": "Immagine",
+      "significato": "I valori effettivamente raggiunti dalla funzione, non solo quelli che potrebbe raggiungere."
+    },
+    {
+      "termine": "Iniettiva",
+      "significato": "A input diversi corrispondono output diversi: nessun valore viene raggiunto due volte."
+    },
+    {
+      "termine": "Suriettiva",
+      "significato": "Ogni valore del codominio viene effettivamente raggiunto da almeno un input."
+    },
+    {
+      "termine": "Biiettiva",
+      "significato": "Iniettiva e suriettiva insieme. E la condizione per poter costruire la funzione inversa."
+    },
+    {
+      "termine": "Funzione inversa",
+      "simbolo": "$f^{-1}$",
+      "significato": "Fa il percorso al contrario: dato il risultato, restituisce l'input di partenza. Il suo grafico e il riflesso di quello di f rispetto alla bisettrice."
+    },
+    {
+      "termine": "Funzione composta",
+      "simbolo": "$f(g(x))$",
+      "significato": "Si applica prima g, poi f al risultato. L'ordine conta."
+    },
+    {
+      "termine": "Pari / dispari",
+      "significato": "Pari se $f(-x) = f(x)$, cioe simmetrica rispetto all'asse y. Dispari se $f(-x) = -f(x)$, simmetrica rispetto all'origine.",
+      "esempio": "$\\cos x$ e pari, $\\sin x$ e dispari."
+    },
+    {
+      "termine": "Continuita",
+      "significato": "Una funzione e continua in un punto se il limite in quel punto coincide con il valore che assume li. In pratica: il grafico non fa salti."
+    },
+    {
+      "termine": "Asintoto",
+      "significato": "Una retta a cui il grafico si avvicina indefinitamente senza toccarla. Puo essere verticale, orizzontale o obliquo.",
+      "esempio": "$y = 0$ e asintoto orizzontale per $\\frac{1}{x}$."
+    },
+    {
+      "termine": "Teorema degli zeri",
+      "significato": "Se una funzione continua passa da negativa a positiva su un intervallo, da qualche parte in mezzo vale zero."
+    },
+    {
+      "termine": "Teorema di Weierstrass",
+      "significato": "Una funzione continua su un intervallo chiuso e limitato raggiunge davvero il suo massimo e il suo minimo. Servono tutte e tre le ipotesi."
+    },
+    {
+      "termine": "Derivata",
+      "simbolo": "$f'(x)$",
+      "significato": "La pendenza della funzione in un punto: quanto cresce o cala in quell'istante. E il limite del rapporto incrementale."
+    },
+    {
+      "termine": "Rapporto incrementale",
+      "simbolo": "$\\frac{f(x+h)-f(x)}{h}$",
+      "significato": "La pendenza media tra due punti vicini. La derivata e il suo limite per $h \\to 0$."
+    },
+    {
+      "termine": "Punto stazionario",
+      "significato": "Un punto dove la derivata si annulla. Puo essere un massimo, un minimo, oppure nessuno dei due (flesso a tangente orizzontale)."
+    },
+    {
+      "termine": "Massimo / minimo relativo",
+      "significato": "Il piu alto o il piu basso rispetto ai punti vicini, non necessariamente in tutto il dominio."
+    },
+    {
+      "termine": "Concavita",
+      "significato": "Come si curva il grafico: verso l'alto se la derivata seconda e positiva, verso il basso se e negativa."
+    },
+    {
+      "termine": "Flesso",
+      "significato": "Il punto dove la concavita cambia verso. Si cerca dove la derivata seconda si annulla."
+    },
+    {
+      "termine": "Teorema di Rolle",
+      "significato": "Se una funzione continua e derivabile assume lo stesso valore agli estremi, in mezzo c'e almeno un punto a derivata nulla."
+    },
+    {
+      "termine": "Teorema di Lagrange",
+      "significato": "Esiste almeno un punto in cui la pendenza istantanea coincide con la pendenza media sull'intervallo."
+    },
+    {
+      "termine": "Polinomio di Taylor",
+      "significato": "L'approssimazione di una funzione con un polinomio costruito sulle sue derivate in un punto. Piu gradi si usano, meglio approssima li vicino."
+    },
+    {
+      "termine": "Primitiva",
+      "simbolo": "$F(x)$",
+      "significato": "Una funzione la cui derivata e quella di partenza. Andare all'indietro rispetto alla derivata.",
+      "esempio": "Una primitiva di $2x$ e $x^2$."
+    },
+    {
+      "termine": "Integrale indefinito",
+      "simbolo": "$\\int f(x)\\,dx$",
+      "significato": "L'insieme di tutte le primitive. Il risultato e una famiglia di funzioni, per questo si scrive $+\\,c$."
+    },
+    {
+      "termine": "Integrale definito",
+      "simbolo": "$\\int_a^b f(x)\\,dx$",
+      "significato": "L'area con segno sotto il grafico tra a e b. Il risultato e un numero."
+    },
+    {
+      "termine": "Teorema fondamentale",
+      "significato": "Il ponte tra derivate e integrali: per calcolare un integrale definito basta trovare una primitiva e fare la differenza agli estremi.",
+      "esempio": "$\\int_a^b f = F(b) - F(a)$"
+    },
+    {
+      "termine": "Integrazione per parti",
+      "significato": "Metodo per integrare un prodotto: si integra un pezzo e si deriva l'altro. Si sceglie come derivare quello che si semplifica.",
+      "esempio": "$\\int u\\,v' = uv - \\int u'v$"
+    },
+    {
+      "termine": "Integrazione per sostituzione",
+      "significato": "Si cambia variabile per far diventare l'integrale piu semplice, ricordandosi di cambiare anche il differenziale e gli estremi."
+    },
+    {
+      "termine": "Integrale improprio",
+      "significato": "Un integrale in cui l'intervallo e infinito oppure la funzione esplode dentro l'intervallo. Si calcola con un limite."
+    },
+    {
+      "termine": "Fattoriale",
+      "simbolo": "$n!$",
+      "significato": "Il prodotto di tutti i numeri interi da 1 fino a n. Cresce piu in fretta di qualsiasi esponenziale.",
+      "esempio": "$5! = 120$. Per convenzione $0! = 1$."
+    },
+    {
+      "termine": "Coefficiente binomiale",
+      "simbolo": "$\\binom{n}{k}$",
+      "significato": "In quanti modi si possono scegliere k oggetti tra n, senza contare l'ordine.",
+      "esempio": "$\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$"
+    },
+    {
+      "termine": "Numero di Nepero",
+      "simbolo": "$e$",
+      "significato": "La costante $\\approx 2{,}718$, base del logaritmo naturale. Nasce come limite di $\\left(1+\\frac{1}{n}\\right)^n$."
+    },
+    {
+      "termine": "Logaritmo naturale",
+      "simbolo": "$\\log x$ o $\\ln x$",
+      "significato": "Il logaritmo in base e. Nei corsi di Analisi la scrittura $\\log$ senza base indica quasi sempre questo."
+    },
+    {
+      "termine": "Tangente",
+      "simbolo": "$\\tan x$",
+      "significato": "Il rapporto tra seno e coseno. Esplode dove il coseno si annulla.",
+      "esempio": "$\\tan x = \\frac{\\sin x}{\\cos x}$, non definita in $x = \\frac{\\pi}{2}$."
+    },
+    {
+      "termine": "Arcotangente",
+      "simbolo": "$\\arctan x$",
+      "significato": "L'inversa della tangente: dato un valore, restituisce l'angolo che lo produce. E limitata tra $-\\frac{\\pi}{2}$ e $\\frac{\\pi}{2}$.",
+      "esempio": "$\\arctan x \\to \\frac{\\pi}{2}$ per $x \\to +\\infty$."
+    },
+    {
+      "termine": "Arcoseno",
+      "simbolo": "$\\arcsin x$",
+      "significato": "L'inversa del seno, definita solo per x tra $-1$ e $1$.",
+      "esempio": "$\\arcsin 1 = \\frac{\\pi}{2}$."
+    },
+    {
+      "termine": "Valore assoluto",
+      "simbolo": "$|x|$",
+      "significato": "La distanza di x da zero, sempre positiva. Nelle disuguaglianze si spezza in due casi.",
+      "esempio": "$|x| < 3$ significa $-3 < x < 3$."
+    },
+    {
+      "termine": "Parte intera",
+      "simbolo": "$\\lfloor x \\rfloor$",
+      "significato": "Il piu grande intero che non supera x.",
+      "esempio": "$\\lfloor 2{,}7 \\rfloor = 2$"
+    },
+    {
+      "termine": "Per assurdo",
+      "significato": "Tecnica di dimostrazione: si suppone vero il contrario di quello che si vuole dimostrare e si arriva a una contraddizione."
+    },
+    {
+      "termine": "Se e solo se",
+      "simbolo": "$\\iff$",
+      "significato": "Le due affermazioni sono equivalenti: ciascuna implica l'altra. Vale in entrambi i versi."
+    },
+    {
+      "termine": "Condizione necessaria e sufficiente",
+      "significato": "Necessaria: senza di essa la tesi non puo valere. Sufficiente: se c'e, la tesi vale di sicuro. Non e detto che una condizione sia entrambe."
+    },
+    {
+      "termine": "Per ogni / esiste",
+      "simbolo": "$\\forall$ / $\\exists$",
+      "significato": "I due quantificatori. L'ordine in cui compaiono cambia tutto: in $\\forall \\epsilon\\ \\exists n_0$ l'indice $n_0$ dipende da $\\epsilon$."
+    },
+    {
+      "termine": "Ipotesi e tesi",
+      "significato": "L'ipotesi e cio che si da per vero, la tesi cio che si vuole dimostrare. Se un teorema non funziona, quasi sempre e perche manca un'ipotesi."
+    }
   ]
 }
