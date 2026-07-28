@@ -121,21 +121,23 @@ a{color:var(--inchiostro)}
 }
 .testata h1 em{font-style:italic;color:var(--inchiostro)}
 .testata p{font-size:12.5px;color:var(--grafite-2);margin-top:5px}
+.spia{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;
+  color:var(--grafite-2);padding:4px 9px 4px 8px;border-radius:99px;
+  border:1px solid var(--bordo);background:#FCFCFA;transition:border-color .15s,background .15s;
+}
+.spia:hover{border-color:var(--inchiostro);background:var(--inchiostro-tenue)}
+.spia .led{width:6px;height:6px;border-radius:99px;background:var(--visto);flex-shrink:0}
+.spia.spenta{color:var(--rossa);border-color:#EFD6D2;background:var(--rossa-tenue)}
+.spia.spenta .led{background:var(--rossa)}
 
 /* ---------------------------------------------------------- motore AI */
-.motore{padding:16px 22px;border-bottom:1px solid var(--bordo);background:#FCFCFA}
 .etichetta{
   font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--grafite-3);
 }
-.motore-intestazione{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 
-.stato{
-  font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:500;
-  padding:2px 7px;border-radius:99px;letter-spacing:.04em;
-}
-.stato-ok{background:var(--visto-tenue);color:var(--visto)}
-.stato-ko{background:var(--rossa-tenue);color:var(--rossa)}
 
 .campo{
   width:100%;padding:9px 11px;margin-bottom:8px;
@@ -162,16 +164,6 @@ a{color:var(--inchiostro)}
 .esito-ok{background:var(--visto-tenue);color:var(--visto);border-color:#CFE3D7}
 .esito-ko{background:var(--rossa-tenue);color:var(--rossa);border-color:#F0D5D1}
 
-/* riga di riepilogo quando la chiave è già salvata */
-.config-riga{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.config-riga .nome{
-  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--grafite-2);
-  display:flex;align-items:center;gap:7px;min-width:0;
-}
-.config-riga .nome span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pallino{width:6px;height:6px;border-radius:99px;background:var(--visto);flex-shrink:0}
-.config-riga button{font-size:11px;font-weight:600;color:var(--inchiostro);flex-shrink:0}
-.config-riga button:hover{text-decoration:underline}
 
 /* ---------------------------------------------------------- avanzamento */
 .avanzamento{padding:14px 22px 12px;border-bottom:1px solid var(--bordo)}
@@ -183,22 +175,30 @@ a{color:var(--inchiostro)}
 /* ---------------------------------------------------------- indice */
 .indice{flex:1;overflow-y:auto;padding:10px 14px 26px}
 
-.sezione{
-  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--inchiostro);
-  padding:16px 8px 7px;margin-bottom:6px;border-bottom:1px solid var(--bordo);
+.cerca-indice{padding:12px 14px 10px;border-bottom:1px solid var(--bordo);background:var(--carta-alta)}
+.cerca-indice input{
+  width:100%;padding:8px 11px;border:1px solid var(--bordo);border-radius:8px;
+  font-size:12.5px;background:#FCFCFA;transition:border-color .15s,box-shadow .15s;
 }
-.gruppo{margin-bottom:3px}
-.gruppo-testa{
-  width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;
-  padding:8px 10px;border-radius:8px;text-align:left;
-  font-size:12.5px;font-weight:600;color:var(--grafite-2);
-  transition:background .15s,color .15s;
-}
-.gruppo-testa:hover{background:#F4F5F2;color:var(--grafite)}
-.freccia{font-size:9px;color:var(--grafite-3);transition:transform .22s ease;flex-shrink:0}
+.cerca-indice input:focus{outline:none;border-color:var(--inchiostro);box-shadow:0 0 0 3px var(--inchiostro-tenue);background:#fff}
 
-.gruppo-voci{display:flex;flex-direction:column;gap:1px;padding:3px 0 8px 4px}
+.sezione{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--inchiostro);text-align:left;
+  padding:15px 8px 7px;margin-bottom:4px;border-bottom:1px solid var(--bordo);
+}
+.sezione .conta{color:var(--grafite-3);letter-spacing:.04em}
+.sezione .freccia{font-size:8px;color:var(--grafite-3);transition:transform .22s ease}
+.sezione.chiusa .freccia{transform:rotate(-90deg)}
+
+.gruppo-nome{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--grafite-3);
+  padding:13px 10px 5px;
+}
+.gruppo-voci{display:flex;flex-direction:column;gap:1px}
+.nessun-risultato{font-size:12.5px;color:var(--grafite-3);padding:22px 10px;text-align:center}
 
 .voce{
   display:flex;align-items:center;gap:10px;width:100%;text-align:left;
@@ -512,34 +512,9 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
         <div class="marchio">Ingegneria gestionale · L-9</div>
         <h1>Matematica <em>0</em> &amp; Analisi <em>1</em></h1>
         <p id="course-subtitle">Le basi, poi il corso.</p>
-    </div>
-
-    <div class="motore">
-        <div class="motore-intestazione">
-            <span class="etichetta">Motore AI</span>
-            <span id="key-status" class="stato stato-ko">Manca la chiave</span>
-        </div>
-
-        <div id="config-chiuso" class="config-riga hidden">
-            <div class="nome"><i class="pallino"></i><span id="config-riepilogo">—</span></div>
-            <button onclick="apriConfig()">Cambia</button>
-        </div>
-
-        <div id="config-aperto">
-            <select id="api-provider-select" class="campo" onchange="onProviderChange()">
-                <option value="gemini">Google Gemini</option>
-                <option value="anthropic">Anthropic Claude</option>
-            </select>
-            <input type="password" id="api-key-input" class="campo" placeholder="Incolla la chiave">
-            <select id="api-model-select" class="campo"></select>
-            <button class="bottone-pieno" onclick="saveApiKey()">Salva impostazioni</button>
-            <div class="motore-piede">
-                <a id="key-help-link" class="minuto" href="#" target="_blank" rel="noopener">Dove trovo la chiave</a>
-                <button class="minuto" onclick="testApiConnection()"><i class="fas fa-vial"></i> Prova il modello</button>
-            </div>
-        </div>
-
-        <div id="connection-test-result" class="esito hidden"></div>
+        <button id="spia-ai" class="spia spenta" onclick="apriConfig()">
+            <span class="led"></span><span id="spia-testo">Chiave mancante</span>
+        </button>
     </div>
 
     <div class="avanzamento">
@@ -550,6 +525,9 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
         <div class="binario"><span id="progress-bar"></span></div>
     </div>
 
+    <div class="cerca-indice">
+        <input id="cerca-modulo" type="text" placeholder="Cerca un argomento" oninput="renderSidebar()">
+    </div>
     <nav class="indice" id="sidebar-topics"></nav>
 </aside>
 
@@ -697,6 +675,30 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 
 </main>
 
+<div id="config-modal" class="velo hidden">
+    <div class="finestra" style="max-width:420px;height:auto">
+        <div class="finestra-testa">
+            <span class="etichetta">Motore AI</span>
+            <button class="chiudi" style="color:var(--grafite-3)" onclick="chiudiConfig()" aria-label="Chiudi">&times;</button>
+        </div>
+        <div style="padding:18px">
+            <select id="api-provider-select" class="campo" onchange="onProviderChange()">
+                <option value="gemini">Google Gemini</option>
+                <option value="anthropic">Anthropic Claude</option>
+            </select>
+            <input type="password" id="api-key-input" class="campo" placeholder="Incolla la chiave">
+            <select id="api-model-select" class="campo"></select>
+            <button class="bottone-pieno" onclick="saveApiKey()">Salva e chiudi</button>
+            <div class="motore-piede">
+                <a id="key-help-link" class="minuto" href="#" target="_blank" rel="noopener">Dove trovo la chiave</a>
+                <button class="minuto" onclick="testApiConnection()"><i class="fas fa-vial"></i> Prova il modello</button>
+            </div>
+            <div id="connection-test-result" class="esito hidden"></div>
+            <p class="minuto" style="margin-top:12px">La chiave resta nel browser, non viene inviata altrove.</p>
+        </div>
+    </div>
+</div>
+
 <div id="prontuario" class="velo hidden">
     <div class="finestra">
         <div class="finestra-testa">
@@ -755,7 +757,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
         // --- SYLLABUS FALLBACK (Matematica 0, usato se schede/index.json non e raggiungibile) ---
         const SYLLABUS_FALLBACK = [
                 {
-                        "gruppo": "1. Logica, Insiemi e Numeri",
+                        "gruppo": "Logica, Insiemi e Numeri",
                         "argomenti": [
                                 {
                                         "id": "M01",
@@ -795,7 +797,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                         ]
                 },
                 {
-                        "gruppo": "2. Monomi e Polinomi",
+                        "gruppo": "Monomi e Polinomi",
                         "argomenti": [
                                 {
                                         "id": "M06",
@@ -825,7 +827,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                         ]
                 },
                 {
-                        "gruppo": "3. Equazioni e Sistemi",
+                        "gruppo": "Equazioni e disequazioni",
                         "argomenti": [
                                 {
                                         "id": "M10",
@@ -851,12 +853,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                                         "id": "M26",
                                         "num": "26",
                                         "titolo": "Altri tipi di equazioni e disequazioni"
-                                }
-                        ]
-                },
-                {
-                        "gruppo": "4. Disequazioni",
-                        "argomenti": [
+                                },
                                 {
                                         "id": "M14",
                                         "num": "14",
@@ -870,7 +867,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                         ]
                 },
                 {
-                        "gruppo": "5. Funzioni, Esponenziali e Logaritmi",
+                        "gruppo": "Funzioni, Esponenziali e Logaritmi",
                         "argomenti": [
                                 {
                                         "id": "M17",
@@ -900,7 +897,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                         ]
                 },
                 {
-                        "gruppo": "6. Geometria e Goniometria",
+                        "gruppo": "Geometria e Goniometria",
                         "argomenti": [
                                 {
                                         "id": "M19",
@@ -916,21 +913,6 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                                         "id": "M25",
                                         "num": "25",
                                         "titolo": "Equazioni e disequazioni goniometriche"
-                                }
-                        ]
-                },
-                {
-                        "gruppo": "7. Introduzione all'Analisi e Limiti",
-                        "argomenti": [
-                                {
-                                        "id": "M28",
-                                        "num": "28",
-                                        "titolo": "I Limiti: definizioni e concetti di base"
-                                },
-                                {
-                                        "id": "M29",
-                                        "num": "29",
-                                        "titolo": "I Limiti Notevoli e calcolo dei limiti"
                                 }
                         ]
                 }
@@ -1466,7 +1448,7 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
         }
 
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') chiudiProntuario();
+            if (e.key === 'Escape') { chiudiProntuario(); chiudiConfig(); }
         });
 
         function chiudiProntuario() {
@@ -1658,23 +1640,28 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
 
         // Il pannello della chiave serve una volta sola: dopo il salvataggio si richiude
         // e lascia una riga di riepilogo.
+        // Una volta salvata la chiave resta solo una spia. Il pannello torna a chiamata.
         function aggiornaConfigUI() {
             const provider = getProvider();
-            const configurato = !!localStorage.getItem('tutor_key_' + provider);
-            document.getElementById('config-aperto').classList.toggle('hidden', configurato);
-            document.getElementById('config-chiuso').classList.toggle('hidden', !configurato);
-
-            if (configurato) {
-                const sel = document.getElementById('api-model-select');
-                const nome = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].innerText : '';
-                document.getElementById('config-riepilogo').innerText =
-                    PROVIDERS[provider].label + ' · ' + nome.replace(/\s*\(.*\)/, '');
-            }
+            const attivo = !!localStorage.getItem('tutor_key_' + provider);
+            const spia = document.getElementById('spia-ai');
+            spia.classList.toggle('spenta', !attivo);
+            document.getElementById('spia-testo').innerText = attivo
+                ? 'AI attiva · ' + PROVIDERS[provider].label.replace('Google ', '').replace('Anthropic ', '')
+                : 'Chiave mancante';
         }
 
         function apriConfig() {
-            document.getElementById('config-aperto').classList.remove('hidden');
-            document.getElementById('config-chiuso').classList.add('hidden');
+            const box = document.getElementById('config-modal');
+            box.classList.remove('hidden');
+            box.classList.add('flex');
+            setTimeout(() => document.getElementById('api-key-input').focus(), 60);
+        }
+
+        function chiudiConfig() {
+            const box = document.getElementById('config-modal');
+            box.classList.add('hidden');
+            box.classList.remove('flex');
         }
 
         function saveApiKey() {
@@ -1689,6 +1676,7 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
                 localStorage.setItem('tutor_key_' + provider, key);
                 updateKeyStatus(true);
                 showToast("Impostazioni salvate.");
+                chiudiConfig();
             } else {
                 localStorage.removeItem('tutor_key_' + provider);
                 updateKeyStatus(false);
@@ -1697,16 +1685,7 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             aggiornaConfigUI();
         }
 
-        function updateKeyStatus(hasKey) {
-            const statusEl = document.getElementById('key-status');
-            if (hasKey) {
-                statusEl.innerText = "Pronto";
-                statusEl.className = "stato stato-ok";
-            } else {
-                statusEl.innerText = "Manca la chiave";
-                statusEl.className = "stato stato-ko";
-            }
-        }
+        function updateKeyStatus(hasKey) { aggiornaConfigUI(); }
 
         function getApiKey() {
             return document.getElementById('api-key-input').value.trim();
@@ -1718,72 +1697,86 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
         }
 
         // --- SIDEBAR & VIEW CONTROLS ---
+        // Sezioni richiudibili, niente tendine sui singoli gruppi: con 80 argomenti
+        // aprire e chiudere fisarmoniche e piu lento che scorrere o cercare.
+        const sezioniChiuse = new Set();
+
+        function normalizza(t) {
+            return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
         function renderSidebar() {
             const container = document.getElementById('sidebar-topics');
+            const campo = document.getElementById('cerca-modulo');
+            const cerca = normalizza(campo ? campo.value.trim() : '');
             container.innerHTML = '';
-            
+
+            // filtra prima, cosi le sezioni vuote spariscono del tutto
+            const visibili = syllabusGroups.map(g => ({
+                sezione: g.sezione || 'Argomenti',
+                groupName: g.groupName,
+                topics: cerca
+                    ? g.topics.filter(t => normalizza(t.titolo).includes(cerca) || normalizza(g.groupName).includes(cerca))
+                    : g.topics
+            })).filter(g => g.topics.length);
+
+            if (!visibili.length) {
+                container.innerHTML = '<p class="nessun-risultato">Nessun argomento con questo nome.</p>';
+                return;
+            }
+
             let sezioneCorrente = null;
-            syllabusGroups.forEach((group, groupIndex) => {
-                // Intestazione di sezione (Basi / Analisi 1)
-                if (group.sezione && group.sezione !== sezioneCorrente) {
+            let corpoSezione = null;
+
+            visibili.forEach(group => {
+                if (group.sezione !== sezioneCorrente) {
                     sezioneCorrente = group.sezione;
-                    const sez = document.createElement('div');
-                    sez.className = 'sezione';
-                    sez.innerText = sezioneCorrente;
-                    container.appendChild(sez);
+                    const quanti = visibili.filter(g => g.sezione === sezioneCorrente)
+                                           .reduce((n, g) => n + g.topics.length, 0);
+                    const chiusa = sezioniChiuse.has(sezioneCorrente) && !cerca;
+
+                    const testa = document.createElement('button');
+                    testa.className = 'sezione' + (chiusa ? ' chiusa' : '');
+                    testa.innerHTML = `<span>${sezioneCorrente}</span>
+                        <span><span class="conta">${quanti}</span> <i class="fas fa-chevron-down freccia"></i></span>`;
+                    const nome = sezioneCorrente;
+                    testa.onclick = () => {
+                        if (sezioniChiuse.has(nome)) sezioniChiuse.delete(nome); else sezioniChiuse.add(nome);
+                        renderSidebar();
+                    };
+                    container.appendChild(testa);
+
+                    corpoSezione = document.createElement('div');
+                    if (chiusa) corpoSezione.className = 'hidden';
+                    container.appendChild(corpoSezione);
                 }
 
-                // Crea il contenitore del gruppo a tendina (Accordion)
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'gruppo';
-                
-                // Crea l'intestazione del gruppo cliccabile
-                const groupHeader = document.createElement('button');
-                groupHeader.className = 'gruppo-testa';
-                groupHeader.innerHTML = `<span>${group.groupName}</span><i class="fas fa-chevron-down freccia" id="icon-group-${groupIndex}"></i>`;
-                
-                // Crea il contenitore per i bottoni dei capitoli (nascosto di default)
-                const topicsContainer = document.createElement('div');
-                topicsContainer.id = `group-content-${groupIndex}`;
-                topicsContainer.className = 'gruppo-voci hidden';
+                // l'etichetta del gruppo serve solo se raccoglie piu di un argomento
+                if (group.topics.length > 1) {
+                    const et = document.createElement('div');
+                    et.className = 'gruppo-nome';
+                    et.innerText = group.groupName;
+                    corpoSezione.appendChild(et);
+                }
 
-                // Popola i capitoli singoli
-                group.topics.forEach((topic) => {
+                const voci = document.createElement('div');
+                voci.className = 'gruppo-voci';
+                group.topics.forEach(topic => {
                     const btn = document.createElement('button');
                     btn.className = 'voce syllabus-btn';
-                    
-                    const num = topic.num || "-";
-                    const cleanName = topic.titolo;
+                    if (currentTopic && currentTopic.id === topic.id) btn.classList.add('attiva');
 
-                    const isCompleted = completedModules.has(topic.id);
-                    const checkIcon = isCompleted ? '<i class="fas fa-check visto"></i>' : '';
-
+                    const fatto = completedModules.has(topic.id);
                     btn.innerHTML = `
-                        <span class="voce-num">${num}</span>
-                        <span class="voce-nome" title="${cleanName}">${cleanName}</span>
-                        <span class="voce-stato">${checkIcon}</span>
-                    `;
+                        <span class="voce-num">${topic.num || '-'}</span>
+                        <span class="voce-nome" title="${topic.titolo}">${topic.titolo}</span>
+                        <span class="voce-stato">${fatto ? '<i class="fas fa-check visto"></i>' : ''}</span>`;
                     btn.onclick = () => selectTopic(topic, btn);
-                    topicsContainer.appendChild(btn);
+                    voci.appendChild(btn);
                 });
-
-                // Logica di apertura/chiusura
-                groupHeader.onclick = () => {
-                    const isHidden = topicsContainer.classList.contains('hidden');
-                    // Chiudi tutti gli altri gruppi aperti per tenere il menu corto
-                    document.querySelectorAll('[id^="group-content-"]').forEach(el => el.classList.add('hidden'));
-                    document.querySelectorAll('[id^="icon-group-"]').forEach(el => el.style.transform = 'rotate(0deg)');
-                    
-                    if (isHidden) {
-                        topicsContainer.classList.remove('hidden');
-                        document.getElementById(`icon-group-${groupIndex}`).style.transform = 'rotate(180deg)';
-                    }
-                };
-
-                groupDiv.appendChild(groupHeader);
-                groupDiv.appendChild(topicsContainer);
-                container.appendChild(groupDiv);
+                corpoSezione.appendChild(voci);
             });
+
             updateProgressCounters();
         }
 
