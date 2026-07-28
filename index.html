@@ -468,6 +468,32 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 .testo-md tr:hover td{background:#FAFAF7}
 
 .velo-colonna{position:fixed;inset:0;background:rgba(28,34,40,.45);z-index:35}
+
+/* ---------------------------------------------------------- grafici */
+.griglia-grafici{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.carta-grafico{
+  border:1px solid var(--bordo);border-radius:9px;overflow:hidden;
+  background:var(--carta-alta);animation:entra .3s cubic-bezier(.4,0,.2,1) both;
+}
+.carta-grafico > header{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:9px 12px;border-bottom:1px solid var(--bordo);background:#FCFCFA;
+}
+.carta-grafico .rif{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--grafite-3);flex-shrink:0;
+}
+.carta-grafico .tit{font-size:12px;color:var(--grafite-2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.carta-grafico canvas{display:block;width:100%;height:230px;cursor:grab;touch-action:none}
+.carta-grafico canvas:active{cursor:grabbing}
+.carta-piede{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  padding:8px 12px;border-top:1px solid var(--bordo);font-size:11.5px;color:var(--grafite-2);
+}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:"IBM Plex Mono",monospace;font-size:11px}
+.chip .tratto{width:14px;height:2px;border-radius:2px;flex-shrink:0}
+.azzera{margin-left:auto;font-size:10.5px;color:var(--grafite-3);font-family:"IBM Plex Mono",monospace}
+.azzera:hover{color:var(--inchiostro)}
 #guided-chat-step:not(.hidden){display:flex}
 #loading-overlay:not(.hidden){display:flex}
 @media (min-width:821px){ .velo-colonna{display:none !important} }
@@ -587,11 +613,18 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
             <section id="theory-container" class="pannello pannello-teoria hidden">
                 <h3><i class="fas fa-lightbulb"></i> La teoria, in parole semplici</h3>
                 <div id="theory-content" class="math-content tex2jax_process"></div>
+                <div id="theory-graphs" class="griglia-grafici" style="margin-top:18px"></div>
             </section>
 
             <section id="exercises-container" class="pannello hidden">
                 <h3><i class="fas fa-list-ol"></i> I tuoi esercizi</h3>
                 <div id="exercises-content" class="math-content tex2jax_process"></div>
+            </section>
+
+            <section id="grafici-container" class="pannello hidden">
+                <h3><i class="fas fa-chart-line"></i> Sul piano cartesiano</h3>
+                <p class="nota">Trascina per spostarti, rotella per ingrandire, doppio clic per rimettere a posto.</p>
+                <div id="grafici-content" class="griglia-grafici"></div>
             </section>
 
             <section id="guided-resolution-container" class="pannello pannello-guida hidden">
@@ -944,6 +977,478 @@ REGOLE TASSATIVE:
             renderSidebar();
         };
 
+        // ============================================================
+        // GRAFICI — piano cartesiano disegnato su canvas
+        // ============================================================
+
+        const COLORI_CURVE = ['#3A34A8', '#B23A2F', '#2F7D4F', '#8A6212', '#7A3E9D'];
+
+        // Solo questi nomi sono ammessi dentro un'espressione.
+        const NOMI_AMMESSI = {
+            sin:'Math.sin', cos:'Math.cos', tan:'Math.tan',
+            asin:'Math.asin', acos:'Math.acos', atan:'Math.atan',
+            arcsin:'Math.asin', arccos:'Math.acos', arctan:'Math.atan',
+            sinh:'Math.sinh', cosh:'Math.cosh', tanh:'Math.tanh',
+            exp:'Math.exp', log:'Math.log', ln:'Math.log',
+            log10:'Math.log10', log2:'Math.log2',
+            sqrt:'Math.sqrt', cbrt:'Math.cbrt', abs:'Math.abs', sign:'Math.sign',
+            floor:'Math.floor', ceil:'Math.ceil', round:'Math.round',
+            min:'Math.min', max:'Math.max', pow:'Math.pow',
+            pi:'Math.PI', PI:'Math.PI', e:'Math.E', E:'Math.E'
+        };
+        const NOMI_FUNZIONE = new Set(['sin','cos','tan','asin','acos','atan','arcsin','arccos','arctan',
+            'sinh','cosh','tanh','exp','log','ln','log10','log2','sqrt','cbrt','abs','sign',
+            'floor','ceil','round','min','max','pow']);
+
+        // Compila un'espressione in una funzione, accettando solo token noti.
+        function compilaEspressione(testo) {
+            let t = String(testo).replace(/\^/g, '**');
+
+            const pezzi = [];
+
+            // notazione scientifica (1e-3) prima dei nomi, se no la "e" sembra un identificatore
+            t = t.replace(/\d+\.?\d*[eE][+-]?\d+/g, num => {
+                pezzi.push({ tipo: 'val', code: num });
+                return '@' + (pezzi.length - 1) + '@';
+            });
+
+            t = t.replace(/[A-Za-z_][A-Za-z0-9_]*/g, nome => {
+                if (nome === 'x' || nome === 'n') { pezzi.push({ tipo: 'val', code: 'x' }); return '@' + (pezzi.length - 1) + '@'; }
+                if (!Object.prototype.hasOwnProperty.call(NOMI_AMMESSI, nome)) throw new Error('nome non ammesso: ' + nome);
+                pezzi.push({ tipo: NOMI_FUNZIONE.has(nome) ? 'fun' : 'val', code: NOMI_AMMESSI[nome] });
+                return '@' + (pezzi.length - 1) + '@';
+            });
+
+            if (/[^0-9.,+\-*/()\s@]/.test(t.replace(/@\d+@/g, ''))) throw new Error('carattere non ammesso');
+
+            // moltiplicazioni implicite: 2x, 2(, )(, x(, )x
+            t = t.replace(/(\d)\s*@(\d+)@/g, (m, d, i) => d + '*@' + i + '@');
+            t = t.replace(/(\d)\s*\(/g, '$1*(');
+            t = t.replace(/\)\s*\(/g, ')*(');
+            t = t.replace(/\)\s*@(\d+)@/g, ')*@$1@');
+            t = t.replace(/@(\d+)@\s*\(/g, (m, i) => pezzi[+i].tipo === 'fun' ? m : '@' + i + '@*(');
+            t = t.replace(/@(\d+)@\s*@(\d+)@/g, (m, a, b) => '@' + a + '@*@' + b + '@');
+
+            // esponente negativo: x**-2 va letto come x**(-2)
+            t = t.replace(/\*\*\s*-\s*(\d+(?:\.\d+)?)/g, '**(-$1)');
+
+            // meno unario: -x**3 deve valere -(x**3), che in JS richiede una riscrittura
+            let prima;
+            do {
+                prima = t;
+                t = t.replace(/(^|[(,+*/\u0000])\s*-\s*/g, '$1\u0000');
+            } while (t !== prima);
+            t = t.replace(/\u0000/g, '(-1)*');
+
+            const codice = t.replace(/@(\d+)@/g, (m, i) => pezzi[+i].code);
+            const f = new Function('x', 'return (' + codice + ');');
+            // Deve dare almeno un valore sensato. Si provano anche gli interi, perche
+            // le successioni a segni alterni tipo (-1)**n esistono solo li.
+            const sonde = [1, 2, 3, 4, 0.37, 1.21, -0.83, 10];
+            if (!sonde.some(v => { try { return isFinite(f(v)); } catch (err) { return false; } })) {
+                throw new Error('espressione senza valori validi');
+            }
+            return f;
+        }
+
+        // Estrae il blocco ```grafici dal testo del modello.
+        function estraiGrafici(testo) {
+            const m = testo.match(/```grafici\s*([\s\S]*?)```/);
+            if (!m) return { testo: testo, spec: [] };
+            let spec = [];
+            try {
+                const dati = JSON.parse(m[1].trim());
+                if (Array.isArray(dati)) spec = dati;
+            } catch (err) {
+                console.warn('blocco grafici non leggibile', err);
+            }
+            return { testo: testo.replace(m[0], '').trim(), spec: spec };
+        }
+
+        function passoGriglia(ampiezza) {
+            const grezzo = ampiezza / 10;
+            const decade = Math.pow(10, Math.floor(Math.log10(grezzo)));
+            const n = grezzo / decade;
+            return decade * (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10);
+        }
+
+        function formattaTacca(v, passo) {
+            if (Math.abs(v) < passo / 1000) return '0';
+            const dec = Math.max(0, -Math.floor(Math.log10(passo)));
+            return v.toFixed(Math.min(dec, 4)).replace(/\.?0+$/, '');
+        }
+
+        // Sceglie un intervallo verticale sensato ignorando le esplosioni agli asintoti.
+        function intervalloY(campioni) {
+            const valori = campioni.filter(isFinite);
+            if (!valori.length) return [-5, 5];
+            valori.sort((a, b) => a - b);
+            let lo = valori[Math.floor(valori.length * 0.04)];
+            let hi = valori[Math.floor(valori.length * 0.96)];
+            if (lo > 0) lo = 0;
+            if (hi < 0) hi = 0;
+            if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
+            const margine = (hi - lo) * 0.14;
+            return [lo - margine, hi + margine];
+        }
+
+        function campionaCurve(curve, xmin, xmax) {
+            const out = [];
+            curve.forEach(cu => cu.segmenti.forEach(sg => {
+                const da = Math.max(xmin, sg.da), a = Math.min(xmax, sg.a);
+                if (!(a > da)) return;
+                for (let i = 0; i <= 240; i++) {
+                    let y; try { y = sg.f(da + (a - da) * i / 240); } catch (err) { y = NaN; }
+                    out.push(y);
+                }
+            }));
+            return out;
+        }
+
+        // ---------------------------------------------------------- disegno
+        function disegnaGrafico(cv, st) {
+            const dpr = window.devicePixelRatio || 1;
+            const L = cv.clientWidth, A = cv.clientHeight;
+            cv.width = L * dpr; cv.height = A * dpr;
+            const c = cv.getContext('2d');
+            c.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const { xmin, xmax, ymin, ymax } = st;
+            const sx = v => (v - xmin) / (xmax - xmin) * L;
+            const sy = v => A - (v - ymin) / (ymax - ymin) * A;
+
+            c.fillStyle = '#FFFFFF';
+            c.fillRect(0, 0, L, A);
+
+            // quadretti
+            const px = st.modo === 'successione'
+                ? Math.max(1, passoGriglia(xmax - xmin))
+                : passoGriglia(xmax - xmin);
+            const py = passoGriglia(ymax - ymin);
+            c.strokeStyle = '#E6EAED'; c.lineWidth = 1;
+            c.beginPath();
+            for (let v = Math.ceil(xmin / px) * px; v <= xmax; v += px) {
+                const X = Math.round(sx(v)) + .5; c.moveTo(X, 0); c.lineTo(X, A);
+            }
+            for (let v = Math.ceil(ymin / py) * py; v <= ymax; v += py) {
+                const Y = Math.round(sy(v)) + .5; c.moveTo(0, Y); c.lineTo(L, Y);
+            }
+            c.stroke();
+
+            // assi
+            c.strokeStyle = '#98A2AA'; c.lineWidth = 1.2;
+            c.beginPath();
+            if (ymin < 0 && ymax > 0) { const Y = Math.round(sy(0)) + .5; c.moveTo(0, Y); c.lineTo(L, Y); }
+            if (xmin < 0 && xmax > 0) { const X = Math.round(sx(0)) + .5; c.moveTo(X, 0); c.lineTo(X, A); }
+            c.stroke();
+
+            // tacche
+            c.fillStyle = '#8B949C';
+            c.font = '10px "IBM Plex Mono", monospace';
+            c.textAlign = 'center'; c.textBaseline = 'top';
+            const yAsse = (ymin < 0 && ymax > 0) ? sy(0) : A - 2;
+            for (let v = Math.ceil(xmin / px) * px; v <= xmax; v += px) {
+                if (Math.abs(v) < px / 1000) continue;
+                c.fillText(formattaTacca(v, px), sx(v), Math.min(yAsse + 4, A - 13));
+            }
+            c.textAlign = 'right'; c.textBaseline = 'middle';
+            const xAsse = (xmin < 0 && xmax > 0) ? sx(0) : L - 2;
+            for (let v = Math.ceil(ymin / py) * py; v <= ymax; v += py) {
+                if (Math.abs(v) < py / 1000) continue;
+                c.fillText(formattaTacca(v, py), Math.max(xAsse - 5, 26), sy(v));
+            }
+
+            // asintoti verticali
+            (st.vert || []).forEach(v => {
+                if (v < xmin || v > xmax) return;
+                c.save();
+                c.strokeStyle = '#B23A2F'; c.lineWidth = 1.2; c.setLineDash([4, 4]);
+                c.beginPath(); c.moveTo(sx(v), 0); c.lineTo(sx(v), A); c.stroke();
+                c.restore();
+            });
+
+            // valore limite (retta orizzontale tratteggiata)
+            if (typeof st.limite === 'number' && st.limite >= ymin && st.limite <= ymax) {
+                c.save();
+                c.strokeStyle = '#8A6212'; c.lineWidth = 1.3; c.setLineDash([5, 4]);
+                c.beginPath(); c.moveTo(0, sy(st.limite)); c.lineTo(L, sy(st.limite)); c.stroke();
+                c.setLineDash([]);
+                c.fillStyle = '#8A6212';
+                c.font = '10px "IBM Plex Mono", monospace';
+                c.textAlign = 'right'; c.textBaseline = 'bottom';
+                c.fillText('L = ' + formattaTacca(st.limite, py / 4), L - 5, sy(st.limite) - 3);
+                c.restore();
+            }
+
+            if (st.modo === 'successione') {
+                // punti staccati: e una successione, non una curva
+                c.strokeStyle = '#C9D0D6'; c.lineWidth = 1;
+                c.beginPath();
+                st.dati.forEach(([k, y]) => {
+                    if (!isFinite(y) || k < xmin || k > xmax) return;
+                    c.moveTo(sx(k), sy(Math.max(ymin, Math.min(ymax, 0))));
+                    c.lineTo(sx(k), sy(y));
+                });
+                c.stroke();
+
+                c.fillStyle = COLORI_CURVE[0];
+                st.dati.forEach(([k, y]) => {
+                    if (!isFinite(y) || k < xmin || k > xmax || y < ymin || y > ymax) return;
+                    c.beginPath(); c.arc(sx(k), sy(y), 2.8, 0, Math.PI * 2); c.fill();
+                });
+            } else {
+                const soglia = (ymax - ymin) * 2.5;
+                st.curve.forEach(cu => {
+                    c.strokeStyle = cu.colore;
+                    c.lineWidth = 2; c.lineJoin = 'round'; c.lineCap = 'round';
+                    cu.segmenti.forEach(sg => {
+                        const da = Math.max(xmin, sg.da), a = Math.min(xmax, sg.a);
+                        if (!(a > da)) return;
+                        c.beginPath();
+                        let penna = false, yPrec = null;
+                        const passi = Math.max(200, Math.floor(L * (a - da) / (xmax - xmin)));
+                        for (let k = 0; k <= passi; k++) {
+                            const x = da + (a - da) * k / passi;
+                            let y; try { y = sg.f(x); } catch (err) { y = NaN; }
+                            if (!isFinite(y) || y < ymin - soglia || y > ymax + soglia ||
+                                (yPrec !== null && Math.abs(y - yPrec) > soglia)) {
+                                penna = false; yPrec = isFinite(y) ? y : null; continue;
+                            }
+                            const X = sx(x), Y = sy(y);
+                            if (!penna) { c.moveTo(X, Y); penna = true; } else { c.lineTo(X, Y); }
+                            yPrec = y;
+                        }
+                        c.stroke();
+                    });
+                });
+            }
+
+            // pallini pieni e vuoti: dove la funzione vale e dove no
+            (st.buchi || []).forEach(b => {
+                const [bx, by, tipo] = b;
+                if (bx < xmin || bx > xmax || by < ymin || by > ymax) return;
+                c.beginPath(); c.arc(sx(bx), sy(by), 4.2, 0, Math.PI * 2);
+                if (tipo === 'vuoto') {
+                    c.fillStyle = '#FFFFFF'; c.fill();
+                    c.strokeStyle = COLORI_CURVE[0]; c.lineWidth = 2; c.stroke();
+                } else {
+                    c.fillStyle = COLORI_CURVE[0]; c.fill();
+                }
+            });
+
+            // punti notevoli
+            (st.punti || []).forEach(pt => {
+                const [ptx, pty, et] = pt;
+                if (ptx < xmin || ptx > xmax || pty < ymin || pty > ymax) return;
+                c.fillStyle = '#B23A2F';
+                c.beginPath(); c.arc(sx(ptx), sy(pty), 3.6, 0, Math.PI * 2); c.fill();
+                if (et) {
+                    c.fillStyle = '#5C6670';
+                    c.font = '10px "IBM Plex Mono", monospace';
+                    c.textAlign = 'left'; c.textBaseline = 'bottom';
+                    c.fillText(et, sx(ptx) + 6, sy(pty) - 4);
+                }
+            });
+        }
+
+        // ---------------------------------------------------------- costruzione scheda
+        function creaCartaGrafico(spec) {
+            const stato = { punti: spec.punti, vert: spec.vert, buchi: spec.buchi };
+            const etichette = [];
+            let iniziale;
+
+            if (spec.tipo === 'successione') {
+                let f;
+                try { f = compilaEspressione(spec.a); } catch (err) { console.warn('successione scartata', err.message); return null; }
+
+                const nmax = Math.min(Math.max(parseInt(spec.nmax, 10) || 30, 5), 200);
+                const dati = [];
+                let somma = 0;
+                for (let k = 1; k <= nmax; k++) {
+                    let v; try { v = f(k); } catch (err) { v = NaN; }
+                    if (spec.somme) { somma += isFinite(v) ? v : 0; dati.push([k, somma]); }
+                    else { dati.push([k, v]); }
+                }
+
+                const valori = dati.map(d => d[1]);
+                if (typeof spec.limite === 'number') valori.push(spec.limite);
+                const [ymin, ymax] = intervalloY(valori);
+
+                stato.modo = 'successione';
+                stato.dati = dati;
+                stato.limite = typeof spec.limite === 'number' ? spec.limite : undefined;
+                iniziale = { xmin: 0, xmax: nmax + 1, ymin, ymax };
+                etichette.push((spec.somme ? 'sₙ = Σ ' : 'aₙ = ') + spec.a);
+
+            } else {
+                const curve = [];
+                (spec.f || []).forEach(e => {
+                    try {
+                        curve.push({
+                            colore: COLORI_CURVE[curve.length % COLORI_CURVE.length],
+                            segmenti: [{ f: compilaEspressione(e), da: -Infinity, a: Infinity }]
+                        });
+                        etichette.push({ testo: e, colore: COLORI_CURVE[(curve.length - 1) % COLORI_CURVE.length] });
+                    } catch (err) { console.warn('espressione scartata:', e, err.message); }
+                });
+
+                // funzione definita a tratti: un solo colore, piu segmenti
+                if (Array.isArray(spec.tratti) && spec.tratti.length) {
+                    const colore = COLORI_CURVE[curve.length % COLORI_CURVE.length];
+                    const segmenti = [];
+                    spec.tratti.forEach(tr => {
+                        try {
+                            segmenti.push({
+                                f: compilaEspressione(tr.e),
+                                da: typeof tr.da === 'number' ? tr.da : -Infinity,
+                                a: typeof tr.a === 'number' ? tr.a : Infinity
+                            });
+                            etichette.push({ testo: tr.e + intervalloScritto(tr), colore: colore });
+                        } catch (err) { console.warn('tratto scartato:', tr.e, err.message); }
+                    });
+                    if (segmenti.length) curve.push({ colore: colore, segmenti: segmenti });
+                }
+
+                if (!curve.length) return null;
+
+                const xr = Array.isArray(spec.x) && spec.x.length === 2 ? spec.x : [-6, 6];
+                let ymin, ymax;
+                if (Array.isArray(spec.y) && spec.y.length === 2) { ymin = spec.y[0]; ymax = spec.y[1]; }
+                else { [ymin, ymax] = intervalloY(campionaCurve(curve, xr[0], xr[1])); }
+
+                stato.modo = 'funzione';
+                stato.curve = curve;
+                iniziale = { xmin: xr[0], xmax: xr[1], ymin, ymax };
+            }
+
+            Object.assign(stato, iniziale);
+
+            const carta = document.createElement('div');
+            carta.className = 'carta-grafico';
+            const legenda = etichette.map(e => typeof e === 'string'
+                ? `<span class="chip"><span class="tratto" style="background:${COLORI_CURVE[0]}"></span>${e}</span>`
+                : `<span class="chip"><span class="tratto" style="background:${e.colore}"></span>${e.testo}</span>`
+            ).join('');
+
+            carta.innerHTML = `
+                <header>
+                    <span class="rif">${spec.n ? 'Esercizio ' + spec.n : 'Grafico'}</span>
+                    <span class="tit">${spec.titolo || ''}</span>
+                </header>
+                <canvas></canvas>
+                <div class="carta-piede">${legenda}<button class="azzera">rimetti a posto</button></div>`;
+
+            const cv = carta.querySelector('canvas');
+            const ridisegna = () => disegnaGrafico(cv, stato);
+            const azzera = () => { Object.assign(stato, iniziale); ridisegna(); };
+
+            carta.querySelector('.azzera').onclick = azzera;
+            cv.ondblclick = azzera;
+
+            cv.addEventListener('wheel', ev => {
+                ev.preventDefault();
+                const r = cv.getBoundingClientRect();
+                const fx = (ev.clientX - r.left) / r.width, fy = (ev.clientY - r.top) / r.height;
+                const k = ev.deltaY > 0 ? 1.12 : 1 / 1.12;
+                const cx = stato.xmin + (stato.xmax - stato.xmin) * fx;
+                const cy = stato.ymax - (stato.ymax - stato.ymin) * fy;
+                stato.xmin = cx - (cx - stato.xmin) * k; stato.xmax = cx + (stato.xmax - cx) * k;
+                stato.ymin = cy - (cy - stato.ymin) * k; stato.ymax = cy + (stato.ymax - cy) * k;
+                ridisegna();
+            }, { passive: false });
+
+            let trascino = null;
+            cv.addEventListener('pointerdown', ev => {
+                trascino = { x: ev.clientX, y: ev.clientY };
+                cv.setPointerCapture(ev.pointerId);
+            });
+            cv.addEventListener('pointermove', ev => {
+                if (!trascino) return;
+                const r = cv.getBoundingClientRect();
+                const dx = (ev.clientX - trascino.x) / r.width * (stato.xmax - stato.xmin);
+                const dy = (ev.clientY - trascino.y) / r.height * (stato.ymax - stato.ymin);
+                stato.xmin -= dx; stato.xmax -= dx;
+                stato.ymin += dy; stato.ymax += dy;
+                trascino = { x: ev.clientX, y: ev.clientY };
+                ridisegna();
+            });
+            const stop = () => { trascino = null; };
+            cv.addEventListener('pointerup', stop);
+            cv.addEventListener('pointercancel', stop);
+
+            requestAnimationFrame(ridisegna);
+            return { carta: carta, ridisegna: ridisegna };
+        }
+
+        function intervalloScritto(tr) {
+            const da = typeof tr.da === 'number', a = typeof tr.a === 'number';
+            if (da && a) return `  (${tr.da} ≤ x < ${tr.a})`;
+            if (da) return `  (x ≥ ${tr.da})`;
+            if (a) return `  (x < ${tr.a})`;
+            return '';
+        }
+
+        // Un elenco per contenitore, cosi teoria ed esercizi non si sovrascrivono a vicenda.
+        const daRidisegnare = new Map();
+        let attesaResize = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(attesaResize);
+            attesaResize = setTimeout(() => daRidisegnare.forEach(lista => lista.forEach(f => f())), 150);
+        });
+
+        function mostraGrafici(contenitore, spec) {
+            contenitore.innerHTML = '';
+            const lista = [];
+            daRidisegnare.set(contenitore, lista);
+            (spec || []).forEach(sp => {
+                const esito = creaCartaGrafico(sp);
+                if (!esito) return;
+                contenitore.appendChild(esito.carta);
+                lista.push(esito.ridisegna);
+            });
+            return lista.length;
+        }
+
+        const REGOLE_GRAFICI = `
+
+Dopo il testo, aggiungi un blocco delimitato cosi (una voce per ogni esercizio rappresentabile):
+\`\`\`grafici
+[{"n":1,"titolo":"parabola","f":["x**2-4"],"x":[-5,5]}]
+\`\`\`
+
+QUANDO METTERE UN GRAFICO
+Mettilo solo dove aiuta davvero a capire: funzioni, rette, parabole, limiti, asintoti,
+continuita e discontinuita, derivate, studi di funzione, convergenza di successioni e serie.
+NON metterlo per matrici, sistemi lineari, rango, spazi vettoriali, dimostrazioni astratte
+o esercizi puramente simbolici. Se nessun esercizio e rappresentabile scrivi esattamente [].
+
+SINTASSI DELLE ESPRESSIONI
+JavaScript: * per moltiplicare, ** per le potenze, e solo le funzioni
+sin, cos, tan, arcsin, arccos, arctan, exp, log, sqrt, abs.
+La variabile e x (oppure n nelle successioni). Esempi: "3*x**2-2*x+1", "sin(x)/x", "1/(x-2)".
+
+TRE MODI DI DESCRIVERE UN GRAFICO
+
+1) Funzione normale
+{"n":1,"titolo":"...","f":["x**2-4"],"x":[-5,5]}
+Facoltativi: "y":[min,max], "punti":[[x,y,"etichetta"]], "vert":[valori degli asintoti verticali].
+
+2) Funzione definita a tratti — usala SEMPRE per continuita e punti di discontinuita
+{"n":2,"titolo":"salto in x=1","tratti":[{"e":"x+1","a":1},{"e":"x**2","da":1}],
+ "buchi":[[1,2,"vuoto"],[1,1,"pieno"]],"x":[-3,4]}
+In "tratti", "a" e l'estremo destro escluso e "da" l'estremo sinistro incluso.
+In "buchi" usa "vuoto" per il valore che la funzione NON assume e "pieno" per quello che assume:
+e cosi che si vede a colpo d'occhio se c'e un salto, e di quanto.
+Se c'e un asintoto verticale metti anche "vert":[valore].
+
+3) Successione o serie numerica
+{"n":3,"tipo":"successione","titolo":"somme parziali","a":"1/n**2","nmax":40,"somme":true,"limite":1.6449}
+"a" e il termine generale in funzione di n. Con "somme":true il grafico mostra le somme parziali,
+cioe si vede se la serie converge (i punti si appiattiscono verso il limite) o diverge (salgono
+senza fermarsi). Senza "somme" mostra i termini della successione.
+"limite" e facoltativo e disegna la retta orizzontale del valore a cui si tende.
+Per una serie usa quasi sempre "somme":true, perche e li che si legge la convergenza.`;
+
         // --- PRONTUARIO (vocabolario + schede di sopravvivenza) ---
         let vocabolario = [];
         let schedeRiferimento = [];
@@ -1056,26 +1561,39 @@ REGOLE TASSATIVE:
 
         // --- SYLLABUS & SCHEDE LOADING ---
         async function loadSyllabus() {
+            // Le basi di Matematica 0 restano sempre in elenco: sono il prerequisito di Analisi 1,
+            // non un ripiego per quando le schede non caricano.
+            const base = SYLLABUS_FALLBACK.map(g => ({
+                groupName: g.gruppo,
+                sezione: 'Basi · Matematica 0',
+                topics: g.argomenti.map(a => Object.assign({ base: true }, a))
+            }));
+
+            let corso = [];
             try {
                 const res = await fetch('schede/index.json', { cache: 'no-cache' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const data = await res.json();
-                syllabusGroups = data.gruppi.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                corso = data.gruppi.map(g => ({
+                    groupName: g.gruppo,
+                    sezione: data.titolo || 'Analisi 1',
+                    topics: g.argomenti
+                }));
                 schedeAttive = true;
-                if (data.titolo) {
-                    const sub = document.getElementById('course-subtitle');
-                    if (sub) sub.innerText = data.titolo;
-                }
             } catch (err) {
-                console.warn('schede/index.json non caricato, uso il programma di base.', err);
-                syllabusGroups = SYLLABUS_FALLBACK.map(g => ({ groupName: g.gruppo, topics: g.argomenti }));
+                console.warn('schede/index.json non caricato: resta disponibile Matematica 0.', err);
                 schedeAttive = false;
             }
+
+            syllabusGroups = base.concat(corso);
             totalModules = syllabusGroups.reduce((n, g) => n + g.topics.length, 0);
+
+            const sub = document.getElementById('course-subtitle');
+            if (sub) sub.innerText = schedeAttive ? 'Le basi, poi il corso.' : 'Solo le basi: schede non caricate.';
         }
 
         async function getScheda(topic) {
-            if (!schedeAttive || !topic) return "";
+            if (!schedeAttive || !topic || topic.base) return "";
             if (schedeCache[topic.id] !== undefined) return schedeCache[topic.id];
             try {
                 const res = await fetch('schede/' + topic.id + '.md', { cache: 'no-cache' });
@@ -1283,6 +1801,7 @@ REGOLE TASSATIVE:
             document.getElementById('workspace').classList.remove('hidden');
             document.getElementById('theory-container').classList.add('hidden');
             document.getElementById('exercises-container').classList.add('hidden');
+            document.getElementById('grafici-container').classList.add('hidden');
             document.getElementById('user-input-container').classList.add('hidden');
             document.getElementById('feedback-container').classList.add('hidden');
             document.getElementById('user-answers').value = '';
@@ -1503,13 +2022,16 @@ Struttura la risposta cosi:
 ## Come si fa, passo per passo
 ## Le formule da ricordare
 ## Un esempio svolto
-## L'errore che fanno tutti${aggancio}`;
+## L'errore che fanno tutti${aggancio}` + REGOLE_GRAFICI;
 
             const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
             if (!response) return;
 
+            const estrattoT = estraiGrafici(response);
+            mostraGrafici(document.getElementById('theory-graphs'), estrattoT.spec);
+
             const theoryContent = document.getElementById('theory-content');
-            theoryContent.innerHTML = marked.parse(response);
+            theoryContent.innerHTML = marked.parse(estrattoT.testo);
             
             if (window.MathJax) {
                 MathJax.typesetPromise([theoryContent]).catch(function (err) {
@@ -1534,16 +2056,20 @@ Struttura la risposta cosi:
             const prompt = `Genera ESATTAMENTE 10 esercizi di difficolta crescente (numerati da 1 a 10) sull'argomento: "${currentTopic.titolo}".
 ${schedaBlock(scheda)}
 Gli esercizi devono essere dello stesso tipo e livello di quelli che lo studente trovera all'esame, coerenti con la scheda del corso.
-NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.`;
+NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.` + REGOLE_GRAFICI;
 
             const response = await callAI(prompt);
             if (!response) return;
 
-            currentExercisesContext = response; 
+            const estratto = estraiGrafici(response);
+            currentExercisesContext = estratto.testo;
             updateKPIs('generate');
 
+            const quanti = mostraGrafici(document.getElementById('grafici-content'), estratto.spec);
+            document.getElementById('grafici-container').classList.toggle('hidden', quanti === 0);
+
             const exContent = document.getElementById('exercises-content');
-            exContent.innerHTML = marked.parse(response);
+            exContent.innerHTML = marked.parse(estratto.testo);
             
             if (window.MathJax) {
                 MathJax.typesetPromise([exContent]).catch(function (err) {
