@@ -4,6 +4,14 @@ Revisione completa (tecnica, visiva, logica, didattica) di Matematica-0.
 Ogni intervento è numerato, con file, punto esatto e criterio di accettazione,
 pensato per essere eseguito da modelli economici (Haiku/Sonnet) un task alla volta.
 
+**VINCOLO NON NEGOZIABILE:** le 59 schede in `schede/` rispecchiano una a una le 59
+unità didattiche del programma universitario reale di Analisi Matematica 1, generate
+dalle dispense ufficiali del corso. Nessuna scheda va aggiunta, rimossa, fusa o
+rinominata. Si può intervenire solo su: l'ORDINE in `schede/index.json`, la correzione
+di errori puntuali di merito (Fase 3.1), e la normalizzazione del campo `gruppo:` nel
+front matter. Qualunque task che sembri richiedere altro sui contenuti delle schede va
+fermato e riportato all'utente.
+
 Giudizio d'insieme: il progetto è solido e ben pensato. L'idea "un solo file, nessun
 backend, contenuto separato dal codice" è giusta ed è rispettata con coerenza. Il sistema
 visivo "quaderno a quadretti" è bello e va conservato: gli interventi visivi proposti lo
@@ -215,21 +223,17 @@ schede di sopravvivenza sono tutti corretti. Interventi puntuali:
   ("Algebra Lineare", "Calcolo Integrale", "Analisi Matematica 1 - Calcolo dei limiti"...).
   Normalizzarli ai 9 nomi della sequenza 2.4, così ogni strumento futuro li legge uguali.
 
-### 3.2 Schede sovrapposte
-Coppie/gruppi quasi duplicati (dispense diverse sullo stesso argomento):
-- 55Mercatorum ↔ combinepdfMe (estremi, induzione, topologia della retta);
-- IntImMercato ↔ EseIntImpMer (impropri: definizione vs calcolo);
-- CalRanMercat ↔ RanMat2Merca ↔ RisSis2Merca ↔ SisLinEquMer ↔ SisLinIntMer
-  (rango e sistemi, cinque varianti).
-Scelta consigliata: NON fondere i file (rispecchiano le dispense), ma etichettare nel
-titolo le schede di esercitazione ("— esercitazione") così lo studente capisce che sono
-lo stesso argomento visto due volte. In alternativa, fondere a mano le coppie più strette.
-**Accettazione:** nessun titolo apparentemente duplicato senza qualificatore.
+### 3.2 Schede su argomenti affini — NESSUNA AZIONE
+Alcune unità didattiche coprono lo stesso argomento da angolazioni diverse (es.
+IntImMercato/EseIntImpMer sugli impropri; le cinque UD su rango e sistemi): rispecchiano
+dispense distinte del corso reale, quindi restano tutte, così come sono, con i loro
+titoli. L'unico strumento per orientare lo studente è l'ordine dell'indice (Fase 2.4),
+che mette la scheda di teoria prima di quella di esercitazione.
 
-### 3.3 Possibili buchi di programma (da verificare con le dispense/il syllabus)
-Non ho trovato schede su: **numeri complessi**, **equazioni differenziali elementari**.
-Se il corso li prevede, generarne le schede; se no, nulla da fare. In Matematica 0
-mancano circonferenza e parabola nel piano (c'è solo la retta): valutare un M28.
+### 3.3 Perimetro del programma — NESSUNA AZIONE
+Il programma è definito dalle 59 UD caricate: è completo per definizione. Non vanno
+generate schede per argomenti "mancanti" (numeri complessi, equazioni differenziali,
+ecc.): se non hanno una dispensa, non sono nel corso.
 
 ### 3.4 Nuove schede di sopravvivenza (riferimenti/)
 Le due esistenti (limiti, derivate) sono ben fatte. Aggiungere con lo stesso stile:
