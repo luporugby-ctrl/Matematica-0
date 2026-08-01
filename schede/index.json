@@ -2,202 +2,152 @@
   "titolo": "Analisi 1 (L-9)",
   "gruppi": [
     {
-      "gruppo": "Algebra Lineare",
+      "gruppo": "Preliminari",
       "argomenti": [
         {
-          "id": "AlgGauMercat",
+          "id": "55Mercatorum",
           "num": "1",
-          "titolo": "Algoritmo di Gauss e rango di matrici"
+          "titolo": "Insiemi, estremi e principio di induzione"
         },
         {
-          "id": "AppLin2Merca",
+          "id": "NozioniPreli",
           "num": "2",
-          "titolo": "Applicazioni Lineari e Prodotto tra Matrici"
+          "titolo": "Nozioni preliminari: insiemi e numeri reali"
         },
         {
-          "id": "EseAppLinMer",
+          "id": "MassMinimoMe",
           "num": "3",
-          "titolo": "Applicazioni Lineari, Nucleo e Immagine"
+          "titolo": "Proprietà degli insiemi di numeri reali"
         },
         {
-          "id": "CalRanMercat",
+          "id": "combinepdfMe",
           "num": "4",
-          "titolo": "Calcolo del rango e sistemi lineari"
-        },
+          "titolo": "Topologia della retta e principio di induzione"
+        }
+      ]
+    },
+    {
+      "gruppo": "Successioni e limiti",
+      "argomenti": [
         {
-          "id": "NozSpaVetMer",
+          "id": "CalcoloMerca",
           "num": "5",
-          "titolo": "Definizioni e proprietà fondamentali degli spazi vettoriali"
+          "titolo": "Calcolo dei limiti mediante Teoremi di de l'Hôpital"
         },
         {
-          "id": "DimBasSpaVet",
+          "id": "EseLimSucMer",
           "num": "6",
-          "titolo": "Dimensione, basi e sistemi di vettori"
+          "titolo": "Calcolo di limiti di successioni numeriche"
         },
         {
-          "id": "DipIndLinSis",
+          "id": "DefinizioneM",
           "num": "7",
-          "titolo": "Indipendenza lineare e teoremi fondamentali dei vettori"
+          "titolo": "Limiti di funzioni, teorema ponte e continuità"
         },
         {
-          "id": "MatAppMercat",
+          "id": "StampaMercat",
           "num": "8",
-          "titolo": "Matrici, Applicazioni Lineari e Matrice Inversa"
+          "titolo": "Limiti di successioni ed ordini di infinito"
         },
         {
-          "id": "ProDetMercat",
+          "id": "NeperoMercat",
           "num": "9",
-          "titolo": "Proprietà del determinante e applicazioni"
+          "titolo": "Limiti di successioni, Numero di Nepero e Cauchy"
         },
         {
-          "id": "RanMat2Merca",
+          "id": "LimitiMercat",
           "num": "10",
-          "titolo": "Rango di matrici e sistemi lineari"
+          "titolo": "Limiti e proprietà delle successioni numeriche"
         },
         {
-          "id": "DipLinVet3Me",
+          "id": "NotevoliMerc",
           "num": "11",
-          "titolo": "Sistemi di vettori, dipendenza lineare e sottospazi"
-        },
-        {
-          "id": "SisLinEquMer",
-          "num": "12",
-          "titolo": "Sistemi lineari e Formula di Grassmann"
-        },
-        {
-          "id": "SisLinIntMer",
-          "num": "13",
-          "titolo": "Sistemi lineari e sottospazi vettoriali"
-        },
-        {
-          "id": "SotSpaVeMerc",
-          "num": "14",
-          "titolo": "Sottospazi di uno spazio vettoriale"
-        },
-        {
-          "id": "CalDetMercat",
-          "num": "15",
-          "titolo": "Teoria delle permutazioni e calcolo del determinante"
-        },
-        {
-          "id": "EseSpaVetMer",
-          "num": "16",
-          "titolo": "Verifica di sottospazi vettoriali in $\\mathbb{R}^n$"
-        }
-      ]
-    },
-    {
-      "gruppo": "Algebra lineare",
-      "argomenti": [
-        {
-          "id": "RisSis2Merca",
-          "num": "17",
-          "titolo": "Riduzione a scala e sistemi lineari"
-        }
-      ]
-    },
-    {
-      "gruppo": "Analisi Matematica - Proprietà delle funzioni",
-      "argomenti": [
-        {
-          "id": "ContinuitaMe",
-          "num": "18",
-          "titolo": "Continuità e invertibilità di funzioni monotone"
-        }
-      ]
-    },
-    {
-      "gruppo": "Analisi Matematica 1",
-      "argomenti": [
-        {
-          "id": "GraficoMerca",
-          "num": "19",
-          "titolo": "Dominio e trasformazioni grafiche di funzioni"
-        },
-        {
-          "id": "TeoremaMerca",
-          "num": "20",
-          "titolo": "Funzioni continue, Teorema Zeri e Bisezione"
+          "titolo": "Limiti notevoli di funzioni trigonometriche"
         },
         {
           "id": "PotenzeMerca",
-          "num": "21",
+          "num": "12",
           "titolo": "Limiti notevoli di potenze, esponenziali e logaritmi"
         }
       ]
     },
     {
-      "gruppo": "Analisi Matematica 1 - Calcolo dei limiti",
+      "gruppo": "Serie numeriche",
       "argomenti": [
         {
-          "id": "NotevoliMerc",
-          "num": "22",
-          "titolo": "Limiti notevoli di funzioni trigonometriche"
+          "id": "IntroMercato",
+          "num": "13",
+          "titolo": "Introduzione alle serie numeriche"
+        },
+        {
+          "id": "SerieMercato",
+          "num": "14",
+          "titolo": "Serie numeriche a termini positivi"
+        },
+        {
+          "id": "EseSerNumMer",
+          "num": "15",
+          "titolo": "Studio di convergenza di serie numeriche"
+        },
+        {
+          "id": "TerminiMerca",
+          "num": "16",
+          "titolo": "Studio di serie a termini di segno variabile"
         }
       ]
     },
     {
-      "gruppo": "Analisi Matematica: Limiti e Continuità",
+      "gruppo": "Funzioni, continuita e limiti di funzione",
       "argomenti": [
         {
           "id": "FunzioniMerc",
-          "num": "23",
+          "num": "17",
           "titolo": "Classificazione dei punti di discontinuità"
-        }
-      ]
-    },
-    {
-      "gruppo": "Analisi delle funzioni",
-      "argomenti": [
+        },
         {
-          "id": "Trigonometri",
-          "num": "24",
-          "titolo": "Funzioni reali elementari: Trigonometria"
-        }
-      ]
-    },
-    {
-      "gruppo": "Analisi delle funzioni di una variabile reale",
-      "argomenti": [
+          "id": "ContinuitaMe",
+          "num": "18",
+          "titolo": "Continuità e invertibilità di funzioni monotone"
+        },
+        {
+          "id": "DerivFunz3Me",
+          "num": "19",
+          "titolo": "Continuità, derivate di funzioni composte e inverse"
+        },
+        {
+          "id": "GraficoMerca",
+          "num": "20",
+          "titolo": "Dominio e trasformazioni grafiche di funzioni"
+        },
+        {
+          "id": "TeoremaMerca",
+          "num": "21",
+          "titolo": "Funzioni continue, Teorema Zeri e Bisezione"
+        },
         {
           "id": "WeierstrassM",
-          "num": "25",
+          "num": "22",
           "titolo": "Funzioni continue: teoremi di esistenza e Weierstrass"
-        }
-      ]
-    },
-    {
-      "gruppo": "Analisi delle funzioni reali di variabile reale",
-      "argomenti": [
+        },
         {
           "id": "Esponenziali",
-          "num": "26",
+          "num": "23",
           "titolo": "Funzioni elementari, valore assoluto e funzioni a tratti"
-        }
-      ]
-    },
-    {
-      "gruppo": "Calcolo Integrale",
-      "argomenti": [
-        {
-          "id": "EseIntImpMer",
-          "num": "27",
-          "titolo": "Integrali Impropri: Calcolo e Convergenza"
         },
         {
-          "id": "IntImMercato",
-          "num": "28",
-          "titolo": "Integrali Impropri: Definizione e Convergenza"
+          "id": "FunzRealiMer",
+          "num": "24",
+          "titolo": "Funzioni reali elementari"
         },
         {
-          "id": "IntRieMercat",
-          "num": "29",
-          "titolo": "Introduzione all'Integrale di Riemann"
+          "id": "Trigonometri",
+          "num": "25",
+          "titolo": "Funzioni reali elementari: Trigonometria"
         },
         {
-          "id": "ProIntMercat",
-          "num": "30",
-          "titolo": "Proprietà dell'integrale di Riemann"
+          "id": "DeriMercator",
+          "num": "26",
+          "titolo": "Uniforme continuità e Teorema Fondamentale del Calcolo"
         }
       ]
     },
@@ -206,53 +156,43 @@
       "argomenti": [
         {
           "id": "FormulaMerca",
-          "num": "31",
+          "num": "27",
           "titolo": "Approssimazione polinomiale e Formula di Taylor"
         },
         {
-          "id": "CalcoloMerca",
-          "num": "32",
-          "titolo": "Calcolo dei limiti mediante Teoremi di de l'Hôpital"
-        },
-        {
           "id": "FunzElMercat",
-          "num": "33",
+          "num": "28",
           "titolo": "Calcolo delle derivate di funzioni elementari"
         },
         {
-          "id": "DerivFunz3Me",
-          "num": "34",
-          "titolo": "Continuità, derivate di funzioni composte e inverse"
-        },
-        {
           "id": "DerivataMerc",
-          "num": "35",
+          "num": "29",
           "titolo": "Definizione e proprietà fondamentali della derivata"
         },
         {
           "id": "AppForMercat",
-          "num": "36",
+          "num": "30",
           "titolo": "Formula di Taylor e applicazioni allo studio locale"
         },
         {
-          "id": "DefinizioneM",
-          "num": "37",
-          "titolo": "Limiti di funzioni, teorema ponte e continuità"
-        },
+          "id": "TeoremiMerca",
+          "num": "31",
+          "titolo": "Teoremi di Fermat, Rolle e Lagrange"
+        }
+      ]
+    },
+    {
+      "gruppo": "Studio di funzione",
+      "argomenti": [
         {
           "id": "Criteri2Merc",
-          "num": "38",
+          "num": "32",
           "titolo": "Studio di monotonia, convessità e flessi"
         },
         {
           "id": "StuGraFunMer",
-          "num": "39",
+          "num": "33",
           "titolo": "Studio qualitativo del grafico di funzioni"
-        },
-        {
-          "id": "TeoremiMerca",
-          "num": "40",
-          "titolo": "Teoremi di Fermat, Rolle e Lagrange"
         }
       ]
     },
@@ -260,134 +200,144 @@
       "gruppo": "Calcolo integrale",
       "argomenti": [
         {
+          "id": "EseIntImpMer",
+          "num": "34",
+          "titolo": "Integrali Impropri: Calcolo e Convergenza"
+        },
+        {
+          "id": "IntImMercato",
+          "num": "35",
+          "titolo": "Integrali Impropri: Definizione e Convergenza"
+        },
+        {
           "id": "FunRazMercat",
-          "num": "41",
+          "num": "36",
           "titolo": "Integrazione di funzioni razionali fratte"
         },
         {
           "id": "SosSpeMercat",
-          "num": "42",
+          "num": "37",
           "titolo": "Integrazione per sostituzione e sostituzioni speciali"
         },
         {
+          "id": "IntRieMercat",
+          "num": "38",
+          "titolo": "Introduzione all'Integrale di Riemann"
+        },
+        {
           "id": "IntIndMercat",
-          "num": "43",
+          "num": "39",
           "titolo": "Introduzione all'integrale indefinito"
         },
         {
+          "id": "ProIntMercat",
+          "num": "40",
+          "titolo": "Proprietà dell'integrale di Riemann"
+        },
+        {
           "id": "IntParMercat",
-          "num": "44",
+          "num": "41",
           "titolo": "Tecniche di integrazione: per parti e sostituzione"
+        }
+      ]
+    },
+    {
+      "gruppo": "Matrici, determinanti e sistemi lineari",
+      "argomenti": [
+        {
+          "id": "AlgGauMercat",
+          "num": "42",
+          "titolo": "Algoritmo di Gauss e rango di matrici"
         },
         {
-          "id": "DeriMercator",
+          "id": "CalRanMercat",
+          "num": "43",
+          "titolo": "Calcolo del rango e sistemi lineari"
+        },
+        {
+          "id": "MatAppMercat",
+          "num": "44",
+          "titolo": "Matrici, Applicazioni Lineari e Matrice Inversa"
+        },
+        {
+          "id": "ProDetMercat",
           "num": "45",
-          "titolo": "Uniforme continuità e Teorema Fondamentale del Calcolo"
-        }
-      ]
-    },
-    {
-      "gruppo": "Fondamenti di Analisi Matematica",
-      "argomenti": [
+          "titolo": "Proprietà del determinante e applicazioni"
+        },
         {
-          "id": "55Mercatorum",
+          "id": "RanMat2Merca",
           "num": "46",
-          "titolo": "Insiemi, estremi e principio di induzione"
+          "titolo": "Rango di matrici e sistemi lineari"
         },
         {
-          "id": "NozioniPreli",
+          "id": "RisSis2Merca",
           "num": "47",
-          "titolo": "Nozioni preliminari: insiemi e numeri reali"
+          "titolo": "Riduzione a scala e sistemi lineari"
         },
         {
-          "id": "combinepdfMe",
+          "id": "SisLinEquMer",
           "num": "48",
-          "titolo": "Topologia della retta e principio di induzione"
+          "titolo": "Sistemi lineari e Formula di Grassmann"
+        },
+        {
+          "id": "SisLinIntMer",
+          "num": "49",
+          "titolo": "Sistemi lineari e sottospazi vettoriali"
+        },
+        {
+          "id": "CalDetMercat",
+          "num": "50",
+          "titolo": "Teoria delle permutazioni e calcolo del determinante"
         }
       ]
     },
     {
-      "gruppo": "Funzioni di una variabile reale",
+      "gruppo": "Spazi vettoriali e applicazioni lineari",
       "argomenti": [
         {
-          "id": "FunzRealiMer",
-          "num": "49",
-          "titolo": "Funzioni reali elementari"
-        }
-      ]
-    },
-    {
-      "gruppo": "Geometria vettoriale",
-      "argomenti": [
+          "id": "AppLin2Merca",
+          "num": "51",
+          "titolo": "Applicazioni Lineari e Prodotto tra Matrici"
+        },
+        {
+          "id": "EseAppLinMer",
+          "num": "52",
+          "titolo": "Applicazioni Lineari, Nucleo e Immagine"
+        },
+        {
+          "id": "NozSpaVetMer",
+          "num": "53",
+          "titolo": "Definizioni e proprietà fondamentali degli spazi vettoriali"
+        },
+        {
+          "id": "DimBasSpaVet",
+          "num": "54",
+          "titolo": "Dimensione, basi e sistemi di vettori"
+        },
+        {
+          "id": "DipIndLinSis",
+          "num": "55",
+          "titolo": "Indipendenza lineare e teoremi fondamentali dei vettori"
+        },
         {
           "id": "VetGeo2Merca",
-          "num": "50",
-          "titolo": "Introduzione ai vettori geometrici"
-        }
-      ]
-    },
-    {
-      "gruppo": "Numeri reali, estremi e proprietà topologiche elementari",
-      "argomenti": [
-        {
-          "id": "MassMinimoMe",
-          "num": "51",
-          "titolo": "Proprietà degli insiemi di numeri reali"
-        }
-      ]
-    },
-    {
-      "gruppo": "Successioni e limiti",
-      "argomenti": [
-        {
-          "id": "EseLimSucMer",
-          "num": "52",
-          "titolo": "Calcolo di limiti di successioni numeriche"
-        },
-        {
-          "id": "StampaMercat",
-          "num": "53",
-          "titolo": "Limiti di successioni ed ordini di infinito"
-        },
-        {
-          "id": "NeperoMercat",
-          "num": "54",
-          "titolo": "Limiti di successioni, Numero di Nepero e Cauchy"
-        },
-        {
-          "id": "LimitiMercat",
-          "num": "55",
-          "titolo": "Limiti e proprietà delle successioni numeriche"
-        }
-      ]
-    },
-    {
-      "gruppo": "Successioni e serie",
-      "argomenti": [
-        {
-          "id": "IntroMercato",
           "num": "56",
-          "titolo": "Introduzione alle serie numeriche"
-        }
-      ]
-    },
-    {
-      "gruppo": "Successioni e serie numeriche",
-      "argomenti": [
+          "titolo": "Introduzione ai vettori geometrici"
+        },
         {
-          "id": "SerieMercato",
+          "id": "DipLinVet3Me",
           "num": "57",
-          "titolo": "Serie numeriche a termini positivi"
+          "titolo": "Sistemi di vettori, dipendenza lineare e sottospazi"
         },
         {
-          "id": "EseSerNumMer",
+          "id": "SotSpaVeMerc",
           "num": "58",
-          "titolo": "Studio di convergenza di serie numeriche"
+          "titolo": "Sottospazi di uno spazio vettoriale"
         },
         {
-          "id": "TerminiMerca",
+          "id": "EseSpaVetMer",
           "num": "59",
-          "titolo": "Studio di serie a termini di segno variabile"
+          "titolo": "Verifica di sottospazi vettoriali in $\\mathbb{R}^n$"
         }
       ]
     }
