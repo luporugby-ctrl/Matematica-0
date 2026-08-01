@@ -28,7 +28,7 @@ Conoscenza della definizione di limite di una successione, teorema dei carabinie
 ## Errori tipici da segnalare allo studente
 - Confondere una successione limitata (che ammette sottosuccessioni convergenti) con una successione convergente (che ammette limite unico).
 - Errata applicazione del limite notevole quando $x_n \to 0$ anziché $x_n \to \infty$.
-- Non riconoscere che una successione non convergente, ma limitata, può comunque essere di Cauchy solo se il suo comportamento asintotico tende alla stazionarietà (ma per il criterio di Cauchy, se non converge, non può essere di Cauchy).
+- Pensare che una successione limitata ma non convergente possa comunque essere di Cauchy: in $\mathbb{R}$ vale l'equivalenza Cauchy $\Leftrightarrow$ convergente, quindi se non converge non è di Cauchy. La sola limitatezza garantisce solo l'esistenza di una sottosuccessione convergente (Bolzano-Weierstrass), non la convergenza dell'intera successione.
 - Dimenticare che la proprietà di Cauchy è una condizione *necessaria e sufficiente* per la convergenza in $\mathbb{R}$.
 
 ## Tipologie di esercizio da generare

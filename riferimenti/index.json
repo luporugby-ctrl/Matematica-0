@@ -2,6 +2,9 @@
   "nota": "Elenco delle schede di sopravvivenza. Per aggiungerne una: crea il .md in questa cartella e aggiungi una riga qui.",
   "schede": [
     { "file": "sopravvivenza-limiti.md", "titolo": "Limiti e trigonometria" },
-    { "file": "sopravvivenza-derivate.md", "titolo": "Derivate" }
+    { "file": "sopravvivenza-serie.md", "titolo": "Serie: quale criterio uso?" },
+    { "file": "sopravvivenza-derivate.md", "titolo": "Derivate" },
+    { "file": "sopravvivenza-studio-funzione.md", "titolo": "Studio di funzione: la checklist" },
+    { "file": "sopravvivenza-primitive.md", "titolo": "Primitive immediate" }
   ]
 }

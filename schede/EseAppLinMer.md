@@ -1,6 +1,6 @@
 ---
 titolo: Applicazioni Lineari, Nucleo e Immagine
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Applicazioni Lineari
 

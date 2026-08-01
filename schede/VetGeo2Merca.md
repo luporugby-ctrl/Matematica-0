@@ -1,6 +1,6 @@
 ---
 titolo: Introduzione ai vettori geometrici
-gruppo: Geometria vettoriale
+gruppo: Spazi vettoriali
 ---
 # Introduzione ai vettori geometrici
 

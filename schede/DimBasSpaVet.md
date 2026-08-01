@@ -1,6 +1,6 @@
 ---
 titolo: Dimensione, basi e sistemi di vettori
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Dimensione e basi di spazi vettoriali
 

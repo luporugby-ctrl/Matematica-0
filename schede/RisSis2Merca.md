@@ -1,6 +1,6 @@
 ---
 titolo: Riduzione a scala e sistemi lineari
-gruppo: Algebra lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Riduzione a scala e sistemi lineari
 

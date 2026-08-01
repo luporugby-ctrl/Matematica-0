@@ -1,6 +1,6 @@
 ---
 titolo: Classificazione dei punti di discontinuità
-gruppo: Analisi Matematica: Limiti e Continuità
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Classificazione dei punti di discontinuità
 

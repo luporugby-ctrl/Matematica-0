@@ -1,6 +1,6 @@
 ---
 titolo: Topologia della retta e principio di induzione
-gruppo: Fondamenti di Analisi Matematica
+gruppo: Preliminari
 ---
 # Topologia della retta reale e induzione
 

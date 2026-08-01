@@ -1,6 +1,6 @@
 ---
 titolo: Funzioni reali elementari: Trigonometria
-gruppo: Analisi delle funzioni
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Funzioni reali elementari: Trigonometria
 

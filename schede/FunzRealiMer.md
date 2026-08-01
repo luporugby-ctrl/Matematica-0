@@ -1,6 +1,6 @@
 ---
 titolo: Funzioni reali elementari
-gruppo: Funzioni di una variabile reale
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Funzioni reali elementari
 

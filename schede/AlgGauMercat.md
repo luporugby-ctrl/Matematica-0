@@ -1,6 +1,6 @@
 ---
 titolo: Algoritmo di Gauss e rango di matrici
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Algoritmo di Gauss e rango di matrici
 

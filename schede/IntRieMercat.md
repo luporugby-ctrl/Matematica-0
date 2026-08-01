@@ -1,6 +1,6 @@
 ---
 titolo: Introduzione all'Integrale di Riemann
-gruppo: Calcolo Integrale
+gruppo: Calcolo integrale
 ---
 # Introduzione all'Integrale di Riemann
 

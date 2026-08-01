@@ -1,6 +1,6 @@
 ---
 titolo: Applicazioni Lineari e Prodotto tra Matrici
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Applicazioni Lineari e Prodotto tra Matrici
 

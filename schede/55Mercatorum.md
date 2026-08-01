@@ -1,6 +1,6 @@
 ---
 titolo: Insiemi, estremi e principio di induzione
-gruppo: Fondamenti di Analisi Matematica
+gruppo: Preliminari
 ---
 # Insiemi, estremi e principio di induzione
 

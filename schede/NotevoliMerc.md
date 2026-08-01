@@ -1,6 +1,6 @@
 ---
 titolo: Limiti notevoli di funzioni trigonometriche
-gruppo: Analisi Matematica 1 - Calcolo dei limiti
+gruppo: Successioni e limiti
 ---
 # Limiti notevoli di funzioni trigonometriche
 

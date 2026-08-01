@@ -1,6 +1,6 @@
 ---
 titolo: Funzioni elementari, valore assoluto e funzioni a tratti
-gruppo: Analisi delle funzioni reali di variabile reale
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Funzioni elementari, valore assoluto e funzioni a tratti
 

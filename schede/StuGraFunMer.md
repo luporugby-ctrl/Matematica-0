@@ -1,6 +1,6 @@
 ---
 titolo: Studio qualitativo del grafico di funzioni
-gruppo: Calcolo differenziale
+gruppo: Studio di funzione
 ---
 # Studio qualitativo del grafico di funzioni
 

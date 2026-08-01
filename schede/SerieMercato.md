@@ -1,6 +1,6 @@
 ---
 titolo: Serie numeriche a termini positivi
-gruppo: Successioni e serie numeriche
+gruppo: Serie numeriche
 ---
 # Serie numeriche a termini positivi
 

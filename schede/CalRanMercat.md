@@ -1,6 +1,6 @@
 ---
 titolo: Calcolo del rango e sistemi lineari
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Calcolo del rango e sistemi lineari
 

@@ -1,6 +1,6 @@
 ---
 titolo: Sistemi lineari e sottospazi vettoriali
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Sistemi Lineari e Sottospazi
 

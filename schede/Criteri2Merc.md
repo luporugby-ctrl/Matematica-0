@@ -1,6 +1,6 @@
 ---
 titolo: Studio di monotonia, convessità e flessi
-gruppo: Calcolo differenziale
+gruppo: Studio di funzione
 ---
 # Studio di monotonia, convessità e flessi
 

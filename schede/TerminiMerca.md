@@ -1,6 +1,6 @@
 ---
 titolo: Studio di serie a termini di segno variabile
-gruppo: Successioni e serie numeriche
+gruppo: Serie numeriche
 ---
 # Studio di serie a termini di segno variabile
 

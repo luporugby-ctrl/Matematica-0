@@ -1,6 +1,6 @@
 ---
 titolo: Introduzione alle serie numeriche
-gruppo: Successioni e serie
+gruppo: Serie numeriche
 ---
 # Serie numeriche: definizioni, convergenza e proprietà
 

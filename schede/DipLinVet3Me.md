@@ -1,6 +1,6 @@
 ---
 titolo: Sistemi di vettori, dipendenza lineare e sottospazi
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Dipendenza lineare e sottospazi generati
 

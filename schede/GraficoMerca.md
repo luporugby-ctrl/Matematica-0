@@ -1,6 +1,6 @@
 ---
 titolo: Dominio e trasformazioni grafiche di funzioni
-gruppo: Analisi Matematica 1
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Dominio e trasformazioni grafiche di funzioni
 

@@ -1,6 +1,6 @@
 ---
 titolo: Sottospazi di uno spazio vettoriale
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Sottospazi di uno spazio vettoriale
 
