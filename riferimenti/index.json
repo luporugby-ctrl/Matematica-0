@@ -1,6 +1,7 @@
 {
   "nota": "Elenco delle schede di sopravvivenza. Per aggiungerne una: crea il .md in questa cartella e aggiungi una riga qui.",
   "schede": [
-    { "file": "sopravvivenza-limiti.md", "titolo": "Limiti e trigonometria" }
+    { "file": "sopravvivenza-limiti.md", "titolo": "Limiti e trigonometria" },
+    { "file": "sopravvivenza-derivate.md", "titolo": "Derivate" }
   ]
 }
