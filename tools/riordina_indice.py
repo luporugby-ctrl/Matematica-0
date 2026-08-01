@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Riordina schede/index.json raggruppando gli argomenti in macro-aree coerenti.
+Raggruppa le schede in macro-aree coerenti, come base di partenza per schede/index.json.
 
 Uso:
     python3 tools/riordina_indice.py            # riscrive schede/index.json
@@ -11,7 +11,12 @@ ogni scheda si e scelta il proprio nome di gruppo. Il risultato sono decine di g
 da uno o due argomenti. Qui ogni scheda viene ricondotta a una macro-area del programma,
 guardando titolo, gruppo dichiarato e nome del file.
 
-Le schede non vengono modificate: cambia solo l'indice.
+STRUMENTO UNA-TANTUM: dentro ogni area ordina gli argomenti alfabeticamente, che non e
+l'ordine in cui si studiano (es. mette "de l'Hopital" prima della definizione di derivata).
+schede/index.json e curato a mano ed e la fonte di verita per l'ordine didattico: non
+rilanciare questo script su un indice gia' sistemato, se non per ripartire da zero dopo
+aver aggiunto molte schede nuove insieme. Le schede non vengono mai modificate: cambia
+solo l'indice.
 """
 
 import argparse
@@ -19,6 +24,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 
 CARTELLA = "schede"
 
@@ -87,8 +93,11 @@ RESIDUO = "Da ordinare"
 
 
 def senza_accenti(t):
-    tab = str.maketrans("àèéìòùÀÈÉÌÒÙ", "aeeiouAEEIOU")
-    return t.translate(tab)
+    # NFD scompone ogni lettera accentata in lettera base + segno diacritico (categoria
+    # Unicode Mn), che qui si scarta. Copre anche le lettere che la vecchia tabella fissa
+    # non prevedeva, come la o accentata di "Hopital" o le vocali di provenienza francese.
+    scomposto = unicodedata.normalize("NFD", t)
+    return "".join(c for c in scomposto if unicodedata.category(c) != "Mn")
 
 
 def leggi_front_matter(percorso):

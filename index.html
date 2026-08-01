@@ -1714,7 +1714,7 @@ che lo studente vede.`;
                 const data = await res.json();
                 corso = data.gruppi.map(g => ({
                     groupName: g.gruppo,
-                    sezione: data.titolo || 'Analisi 1',
+                    sezione: g.sezione || data.titolo || 'Analisi 1',
                     topics: g.argomenti
                 }));
                 schedeAttive = true;
