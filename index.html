@@ -337,6 +337,33 @@ a{color:var(--inchiostro)}
 
 /* ---------------------------------------------------------- pannelli tematici */
 .pannello-teoria{background:#FDFAF2;border-color:#EFE4CC}
+.chiedi{margin-top:20px;padding-top:16px;border-top:1px solid #EFE4CC}
+.chiedi-riga{display:flex;gap:9px}
+.chiedi-riga input{
+  flex:1;padding:10px 12px;border:1px solid #E4D8BC;border-radius:8px;
+  font-size:13.5px;background:#fff;transition:border-color .15s,box-shadow .15s;
+}
+.chiedi-riga input:focus{outline:none;border-color:var(--ambra);box-shadow:0 0 0 3px #F7EBD2}
+.scambio{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.domanda{
+  align-self:flex-end;max-width:85%;background:#fff;border:1px solid #E4D8BC;
+  border-radius:9px;padding:9px 12px;font-size:13.5px;
+}
+.risposta{
+  background:#fff;border:1px solid #EFE4CC;border-radius:9px;padding:12px 14px;
+  animation:entra .28s cubic-bezier(.4,0,.2,1) both;
+}
+.chi{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ambra);display:block;margin-bottom:5px;
+}
+.domanda .chi{color:var(--grafite-3)}
+.suggerimenti{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.suggerimento{
+  font-size:11.5px;color:var(--ambra);background:#fff;border:1px solid #EFE4CC;
+  padding:5px 11px;border-radius:99px;transition:background .15s;
+}
+.suggerimento:hover{background:#FBF3E0}
 .pannello-teoria h3 i{color:var(--ambra)}
 .pannello-feedback{background:#F7F7FD;border-color:#DFDDF3}
 .pannello-feedback h3 i{color:var(--inchiostro)}
@@ -592,6 +619,23 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
                 <h3><i class="fas fa-lightbulb"></i> La teoria, in parole semplici</h3>
                 <div id="theory-content" class="math-content tex2jax_process"></div>
                 <div id="theory-graphs" class="griglia-grafici" style="margin-top:18px"></div>
+
+                <div class="chiedi">
+                    <label class="etichetta" style="display:block;margin-bottom:8px">Non ti torna qualcosa?</label>
+                    <div class="chiedi-riga">
+                        <input type="text" id="theory-question" placeholder="Chiedi un chiarimento su questa spiegazione"
+                               onkeydown="if(event.key==='Enter') chiediChiarimento()">
+                        <button class="btn btn-ambra" onclick="chiediChiarimento()">
+                            <i class="fas fa-paper-plane"></i> Chiedi
+                        </button>
+                    </div>
+                    <div class="suggerimenti">
+                        <button class="suggerimento" onclick="chiediChiarimento('Puoi rifare l\'esempio con numeri diversi?')">Rifai l'esempio</button>
+                        <button class="suggerimento" onclick="chiediChiarimento('Puoi spiegarmelo in modo ancora piu semplice?')">Piu semplice</button>
+                        <button class="suggerimento" onclick="chiediChiarimento('Perche funziona cosi? Da dove viene questa regola?')">Perche funziona</button>
+                    </div>
+                    <div id="theory-chat" class="scambio"></div>
+                </div>
             </section>
 
             <section id="exercises-container" class="pannello hidden">
@@ -941,10 +985,10 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
         };
 
         const baseSystemInstruction = `Sei un tutor di Analisi Matematica 1 per uno studente universitario di Ingegneria Gestionale (L-9), paziente e chiarissimo.
-Lo studente viene da un diploma alberghiero e ha ricostruito le basi da zero (Matematica 0). Ha bisogno di spiegazioni semplici, concrete, senza gergo tecnico o aziendale.
+Lo studente ha ricostruito le basi da zero e ha bisogno di spiegazioni semplici e concrete, senza gergo tecnico o aziendale. Non commentare mai il suo percorso di studi ne il suo livello: vai dritto al contenuto.
 
 REGOLE TASSATIVE:
-1. Quando generi esercizi, fanne SEMPRE ESATTAMENTE 10, a difficolta crescente. Non uno in meno, non uno in piu.
+1. Quando ti viene chiesto di generare esercizi, fanne SEMPRE ESATTAMENTE 10, a difficolta crescente. Non uno in meno, non uno in piu. Se invece stai spiegando la teoria, non produrre esercizi.
 2. NON fornire mai risultati o soluzioni durante la generazione degli esercizi.
 3. Se lo studente sbaglia, spiega il concetto in modo elementare ma NON dargli il risultato corretto. Chiedigli di riprovare quel passaggio.
 4. Usa parole semplici, metafore quotidiane molto basilari (dividere una torta, pesi su una bilancia, tagliare una mela) e spezza i concetti difficili in mattoncini.
@@ -1793,6 +1837,7 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('workspace').classList.remove('hidden');
             document.getElementById('theory-container').classList.add('hidden');
+            theoryContext = ""; theoryChat = []; renderTheoryChat();
             document.getElementById('exercises-container').classList.add('hidden');
             document.getElementById('grafici-container').classList.add('hidden');
             document.getElementById('user-input-container').classList.add('hidden');
@@ -1991,6 +2036,71 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
 
         // --- WORKFLOW EXECUTION ---
 
+        // La teoria non e a senso unico: si puo continuare a chiedere sulla stessa spiegazione.
+        let theoryContext = "";
+        let theoryChat = [];
+
+        async function chiediChiarimento(testoPreimpostato) {
+            const campo = document.getElementById('theory-question');
+            const domanda = (testoPreimpostato || campo.value).trim();
+            if (!domanda) return;
+            if (!theoryContext) { showToast("Chiedi prima una spiegazione della teoria."); return; }
+
+            campo.value = '';
+            theoryChat.push({ chi: 'tu', testo: domanda });
+            renderTheoryChat();
+
+            const storico = theoryChat.slice(0, -1)
+                .map(m => (m.chi === 'tu' ? 'Studente: ' : 'Tutor: ') + m.testo)
+                .join('\n\n');
+
+            const prompt = `Lo studente ha appena letto questa spiegazione dell'argomento "${currentTopic.titolo}":
+
+<Spiegazione>
+${theoryContext}
+</Spiegazione>
+${storico ? '\nScambio precedente:\n' + storico + '\n' : ''}
+Ora chiede: "${domanda}"
+
+Rispondi solo a questa domanda, restando su questa spiegazione. Sii breve: pochi paragrafi.
+Usa il LaTeX per le formule. Non generare esercizi e non riscrivere tutta la teoria da capo.`;
+
+            theoryChat.push({ chi: 'tutor', testo: null });
+            renderTheoryChat();
+
+            const risposta = await callAI(prompt, "Stai rispondendo a un dubbio su una spiegazione appena data. Vai dritto al punto.");
+
+            theoryChat.pop();
+            if (risposta) {
+                theoryChat.push({ chi: 'tutor', testo: risposta });
+            } else {
+                theoryChat.pop();
+            }
+            renderTheoryChat();
+        }
+
+        function renderTheoryChat() {
+            const box = document.getElementById('theory-chat');
+            box.innerHTML = '';
+            theoryChat.forEach(m => {
+                const el = document.createElement('div');
+                if (m.chi === 'tu') {
+                    el.className = 'domanda';
+                    el.innerHTML = `<span class="chi">Tu</span>${m.testo}`;
+                } else if (m.testo === null) {
+                    el.className = 'risposta';
+                    el.innerHTML = `<span class="chi">Tutor</span><div class="puntini"><i></i><i></i><i></i></div>`;
+                } else {
+                    el.className = 'risposta math-content tex2jax_process';
+                    el.innerHTML = `<span class="chi">Tutor</span>${marked.parse(m.testo)}`;
+                }
+                box.appendChild(el);
+            });
+            if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
+            const ultimo = box.lastElementChild;
+            if (ultimo) setTimeout(() => ultimo.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+        }
+
         async function explainTheory() {
             if (!currentTopic) return;
             
@@ -1999,29 +2109,41 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             const scheda = await getScheda(currentTopic);
 
             // Sugli argomenti di base la teoria deve sempre agganciarsi all'uso in Analisi 1.
+            // Sugli argomenti di base la sezione finale e obbligatoria: sta nell'elenco
+            // delle sezioni, non come nota in coda, perche li veniva spesso saltata.
             const aggancio = currentTopic.base
-                ? `\nQuesto e un argomento di base (Matematica 0). Chiudi la spiegazione con una sezione
-"## A cosa ti serve in Analisi 1" in cui indichi 2 o 3 punti concreti del programma di Analisi 1
-in cui questa tecnica viene data per scontata (per esempio: nel calcolo di un limite, in una
-derivata, nella scomposizione prima di un integrale), con un mini esempio per ciascuno.`
+                ? `
+## A cosa ti serve in Analisi 1
+(sezione OBBLIGATORIA perche questo e un argomento di base: indica 2 o 3 punti concreti del
+programma di Analisi 1 in cui questa tecnica viene data per scontata, per esempio nel calcolo di
+un limite, in una derivata, nella scomposizione prima di un integrale, con un mini esempio ciascuno)`
                 : "";
 
             const prompt = `Spiega la teoria dell'argomento: "${currentTopic.titolo}".
 ${schedaBlock(scheda)}
 Spiegalo come se parlassi a un ragazzo che non studia matematica da molto tempo. Usa paragoni facilissimi, nessuna parola difficile. Fai un paio di esempi numerici facilissimi. La lunghezza deve essere media, divisa in paragrafi chiari. Usa il LaTeX per le formule matematiche.
 
-Struttura la risposta cosi:
+Entra subito nel merito: niente saluti, niente incoraggiamenti, niente commenti sul percorso di studi dello studente.
+
+NON generare esercizi: qui si spiega soltanto. Gli esercizi hanno un pulsante dedicato.
+Non chiudere invitando lo studente a rispondere o a scriverti: la spiegazione finisce e basta.
+
+Struttura la risposta con queste sezioni, tutte obbligatorie:
 ## L'idea in due righe
 ## Come si fa, passo per passo
 ## Le formule da ricordare
 ## Un esempio svolto
 ## L'errore che fanno tutti${aggancio}` + REGOLE_GRAFICI;
 
-            const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo, accogliente e facilissimo da capire.");
+            const response = await callAI(prompt, "Sei in modalita 'Spiegazione Teoria'. Parla in modo calmo e facilissimo da capire. In questa modalita non si generano esercizi.");
             if (!response) return;
 
             const estrattoT = estraiGrafici(response);
             mostraGrafici(document.getElementById('theory-graphs'), estrattoT.spec);
+
+            theoryContext = estrattoT.testo;
+            theoryChat = [];
+            renderTheoryChat();
 
             const theoryContent = document.getElementById('theory-content');
             theoryContent.innerHTML = marked.parse(estrattoT.testo);
