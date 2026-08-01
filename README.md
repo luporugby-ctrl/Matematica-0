@@ -88,7 +88,13 @@ python3 tools/genera_schede.py ~/dispense --provider gemini             # genera
 
 Lo script riconosce i PDF con testo, i PDF scansionati e gli archivi ZIP di immagini.
 Si puo' interrompere in qualsiasi momento: al rilancio salta le schede gia' scritte.
-Alla fine `schede/index.json` viene ricostruito raggruppando gli argomenti per macro-area.
+
+`schede/index.json` e' curato a mano ed e' la fonte di verita' per l'ordine in cui gli
+argomenti compaiono nell'app: rispecchia la sequenza didattica del corso, non l'ordine
+alfabetico. Lo script non lo riscrive mai da capo. Se non esiste ancora lo crea,
+raggruppando le schede per macro-area; se esiste gia', aggiunge in coda al gruppo
+"Da ordinare" solo le schede davvero nuove, senza toccare l'ordine di quelle gia'
+sistemate. Sposta a mano le nuove voci nel punto giusto del programma.
 
 Rileggi le schede prima di commettere: il modello puo' sbagliare un titolo o mettere un
 argomento nel gruppo sbagliato, e correggere un file di 2 KB costa dieci secondi.

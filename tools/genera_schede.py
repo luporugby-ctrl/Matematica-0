@@ -44,6 +44,8 @@ MODELLI = {
     "anthropic": "claude-haiku-4-5-20251001",
 }
 
+RESIDUO = "Da ordinare"
+
 PROMPT = """Ricevi le pagine di una dispensa universitaria di Analisi Matematica 1.
 
 Scrivi una SCHEDA di studio sintetica che servira' a un tutor AI per generare
@@ -224,22 +226,70 @@ def id_da_nome(nome, usati):
     return ident
 
 
-def scrivi_indice(cartella, voci):
+def costruisci_indice_da_zero(cartella):
+    """Nessun index.json esistente: raggruppa TUTTE le schede della cartella per il loro
+    gruppo dichiarato nel front matter, ordine alfabetico. E' solo un punto di partenza:
+    l'ordine didattico va sistemato a mano in seguito (vedi tools/riordina_indice.py e la
+    nota su schede/index.json come fonte di verita curata a mano)."""
+    file_md = sorted(f for f in os.listdir(cartella) if f.endswith(".md"))
     gruppi = {}
-    for v in voci:
-        gruppi.setdefault(v["gruppo"], []).append(v)
+    for nome in file_md:
+        ident = nome[:-3]
+        testo = open(os.path.join(cartella, nome), encoding="utf-8").read()
+        meta, _ = separa_front_matter(testo)
+        gruppo = meta.get("gruppo") or RESIDUO
+        gruppi.setdefault(gruppo, []).append({"id": ident, "titolo": meta.get("titolo", ident)})
 
-    out = {"titolo": "Analisi 1 (L-9)", "gruppi": []}
+    indice = {"titolo": "Analisi 1 (L-9)", "gruppi": []}
     n = 1
     for nome_gruppo in sorted(gruppi):
         argomenti = []
         for v in sorted(gruppi[nome_gruppo], key=lambda x: x["titolo"]):
             argomenti.append({"id": v["id"], "num": str(n), "titolo": v["titolo"]})
             n += 1
-        out["gruppi"].append({"gruppo": nome_gruppo, "argomenti": argomenti})
+        indice["gruppi"].append({"gruppo": nome_gruppo, "argomenti": argomenti})
+    return indice
 
-    with open(os.path.join(cartella, "index.json"), "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
+
+def id_gia_indicizzati(indice):
+    presenti = set()
+    for g in indice.get("gruppi", []):
+        for a in g.get("argomenti", []):
+            presenti.add(a["id"])
+    return presenti
+
+
+def prossimo_numero(indice):
+    n = 0
+    for g in indice.get("gruppi", []):
+        for a in g.get("argomenti", []):
+            try:
+                n = max(n, int(a.get("num", 0)))
+            except ValueError:
+                pass
+    return n + 1
+
+
+def aggiungi_voci_nuove(indice, voci_nuove):
+    """schede/index.json e curato a mano: non lo si ricostruisce mai da capo. Le schede
+    davvero nuove (non ancora presenti in nessun gruppo) finiscono in coda al gruppo
+    'Da ordinare', senza toccare l'ordine di quelle gia' sistemate."""
+    presenti = id_gia_indicizzati(indice)
+    da_aggiungere = [v for v in voci_nuove if v["id"] not in presenti]
+    if not da_aggiungere:
+        return indice, 0
+
+    n = prossimo_numero(indice)
+    gruppo_residuo = next((g for g in indice["gruppi"] if g["gruppo"] == RESIDUO), None)
+    if gruppo_residuo is None:
+        gruppo_residuo = {"gruppo": RESIDUO, "argomenti": []}
+        indice["gruppi"].append(gruppo_residuo)
+
+    for v in sorted(da_aggiungere, key=lambda x: x["titolo"]):
+        gruppo_residuo["argomenti"].append({"id": v["id"], "num": str(n), "titolo": v["titolo"]})
+        n += 1
+
+    return indice, len(da_aggiungere)
 
 
 # ----------------------------------------------------------------- main
@@ -270,7 +320,7 @@ def main():
 
     print(f"{len(file_dispense)} dispense, provider {args.provider}, modello {modello}\n")
 
-    voci, usati, falliti = [], set(), []
+    voci_nuove, usati, falliti = [], set(), []
 
     for i, nome in enumerate(file_dispense, 1):
         percorso = os.path.join(args.cartella_dispense, nome)
@@ -281,10 +331,8 @@ def main():
         print(f"[{i}/{len(file_dispense)}] {nome}", end=" ... ", flush=True)
 
         if os.path.exists(destinazione):
-            meta, _ = separa_front_matter(open(destinazione, encoding="utf-8").read())
-            voci.append({"id": ident,
-                         "titolo": meta.get("titolo", ident),
-                         "gruppo": meta.get("gruppo", "Da ordinare")})
+            # Scheda gia' scritta in un run precedente: non tocca l'indice, che e'
+            # curato a mano (vedi aggiungi_voci_nuove piu sotto).
             print("gia' fatta, salto")
             continue
 
@@ -321,17 +369,33 @@ def main():
         meta, corpo = separa_front_matter(risposta)
         with open(destinazione, "w", encoding="utf-8") as f:
             f.write(f"---\ntitolo: {meta.get('titolo', ident)}\n"
-                    f"gruppo: {meta.get('gruppo', 'Da ordinare')}\n---\n{corpo}\n")
+                    f"gruppo: {meta.get('gruppo', RESIDUO)}\n---\n{corpo}\n")
 
-        voci.append({"id": ident,
-                     "titolo": meta.get("titolo", ident),
-                     "gruppo": meta.get("gruppo", "Da ordinare")})
+        voci_nuove.append({"id": ident, "titolo": meta.get("titolo", ident)})
         print("scheda scritta")
         time.sleep(PAUSA)
 
-    if voci:
-        scrivi_indice(args.out, voci)
-        print(f"\n{len(voci)} schede in {args.out}/, index.json aggiornato.")
+    percorso_indice = os.path.join(args.out, "index.json")
+    if os.path.exists(percorso_indice):
+        # L'indice esiste gia' ed e' curato a mano: si tocca solo per aggiungere le
+        # schede davvero nuove, mai per riordinare quelle gia' sistemate.
+        with open(percorso_indice, encoding="utf-8") as f:
+            indice = json.load(f)
+        indice, quante_nuove = aggiungi_voci_nuove(indice, voci_nuove)
+        if quante_nuove:
+            with open(percorso_indice, "w", encoding="utf-8") as f:
+                json.dump(indice, f, ensure_ascii=False, indent=2)
+                f.write("\n")
+            print(f"\n{quante_nuove} schede nuove aggiunte in coda a \"{RESIDUO}\" in {percorso_indice}.")
+            print("L'ordine delle schede gia' presenti non e stato toccato: spostale a mano.")
+        else:
+            print(f"\nNessuna scheda nuova: {percorso_indice} lasciato invariato.")
+    elif voci_nuove:
+        indice = costruisci_indice_da_zero(args.out)
+        with open(percorso_indice, "w", encoding="utf-8") as f:
+            json.dump(indice, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        print(f"\n{percorso_indice} creato da zero (nessuno esisteva prima).")
 
     if falliti:
         print("\nNon riuscite:")
