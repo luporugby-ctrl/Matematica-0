@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Generatore di esercizi con tutor AI per Matematica 0 e Analisi 1, basato sulle dispense del corso.">
 <title>Matematica 0 e Analisi 1</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FAFAF7'/%3E%3Ctext x='50' y='74' font-family='Georgia, serif' font-size='72' text-anchor='middle' fill='%233A34A8'%3E%E2%88%AB%3C/text%3E%3C/svg%3E">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -461,8 +463,12 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 #loading-text{font-size:14px;color:var(--grafite-2)}
 
 /* ---------------------------------------------------------- toast */
-.toast{
+/* pila di toast: il piu recente arriva vicino all'angolo, i precedenti salgono */
+.toast-stack{
   position:fixed;bottom:22px;right:22px;z-index:70;
+  display:flex;flex-direction:column-reverse;align-items:flex-end;gap:10px;
+}
+.toast{
   background:var(--grafite);color:#fff;padding:11px 16px;border-radius:9px;
   font-size:13px;display:flex;align-items:center;gap:9px;
   box-shadow:0 12px 30px -10px rgba(0,0,0,.45);
@@ -481,6 +487,10 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 .math-content strong{font-weight:600}
 .math-content code{font-family:"IBM Plex Mono",monospace;font-size:.9em;background:#F2F3F0;padding:1px 5px;border-radius:4px}
 .math-content hr{border:none;border-top:1px solid var(--bordo);margin:1.4rem 0}
+
+/* una formula display lunga (matrici, sistemi) scorre nel suo riquadro invece di
+   sfondare il pannello sugli schermi stretti */
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%}
 
 .testo-md{font-size:14px;line-height:1.65}
 .testo-md h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:25px;margin-bottom:.8rem}
@@ -1783,7 +1793,6 @@ che lo studente vede.`;
             renderModelOptions(provider, localStorage.getItem('tutor_model_' + provider));
             const savedKey = localStorage.getItem('tutor_key_' + provider) || '';
             document.getElementById('api-key-input').value = savedKey;
-            updateKeyStatus(!!savedKey);
             aggiornaConfigUI();
             document.getElementById('connection-test-result').classList.add('hidden');
         }
@@ -1831,18 +1840,14 @@ che lo studente vede.`;
 
             if (key) {
                 localStorage.setItem('tutor_key_' + provider, key);
-                updateKeyStatus(true);
                 showToast("Impostazioni salvate.");
                 chiudiConfig();
             } else {
                 localStorage.removeItem('tutor_key_' + provider);
-                updateKeyStatus(false);
                 showToast("Chiave rimossa.");
             }
             aggiornaConfigUI();
         }
-
-        function updateKeyStatus(hasKey) { aggiornaConfigUI(); }
 
         function getApiKey() {
             return document.getElementById('api-key-input').value.trim();
@@ -2039,10 +2044,17 @@ che lo studente vede.`;
         }
 
         function showToast(message) {
+            let pila = document.getElementById('toast-stack');
+            if (!pila) {
+                pila = document.createElement('div');
+                pila.id = 'toast-stack';
+                pila.className = 'toast-stack';
+                document.body.appendChild(pila);
+            }
             const toast = document.createElement('div');
             toast.className = "toast";
             toast.innerHTML = `<i class="fas fa-circle-info"></i> ${message}`;
-            document.body.appendChild(toast);
+            pila.appendChild(toast);
             setTimeout(() => toast.remove(), 3500);
         }
 
