@@ -1,6 +1,6 @@
 ---
 titolo: Verifica di sottospazi vettoriali in $\mathbb{R}^n$
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Verifica di sottospazi vettoriali
 

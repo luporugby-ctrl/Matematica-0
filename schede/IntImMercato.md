@@ -1,6 +1,6 @@
 ---
 titolo: Integrali Impropri: Definizione e Convergenza
-gruppo: Calcolo Integrale
+gruppo: Calcolo integrale
 ---
 # Integrali Impropri
 

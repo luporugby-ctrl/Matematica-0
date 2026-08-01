@@ -8,7 +8,7 @@ gruppo: Successioni e limiti
 Conoscenza basilare dell'insieme dei numeri naturali $\mathbb{N}$ e reali $\mathbb{R}$, valore assoluto, manipolazione algebrica di espressioni polinomiali e razionali, concetto di funzione.
 
 ## Definizioni e notazione del corso
-- **Successione:** Funzione $a_n: \mathbb{N} \to \mathbb{R}$.
+- **Successione:** Funzione $a: \mathbb{N} \to \mathbb{R}$, $n \mapsto a_n$. Il simbolo $a_n$ indica il valore che la successione assume in $n$, non la funzione stessa.
 - **Limite finito ($a_n \to a$):** $\forall \epsilon > 0, \exists n_0 \in \mathbb{N} : |a_n - a| < \epsilon, \forall n > n_0$.
 - **Limite infinito:** 
   - $a_n \to +\infty$ se $\forall M > 0, \exists n_0 \in \mathbb{N} : a_n > M, \forall n > n_0$.

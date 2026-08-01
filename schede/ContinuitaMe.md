@@ -1,6 +1,6 @@
 ---
 titolo: Continuità e invertibilità di funzioni monotone
-gruppo: Analisi Matematica - Proprietà delle funzioni
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Continuità e funzioni monotone
 

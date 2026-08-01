@@ -1,6 +1,6 @@
 ---
 titolo: Funzioni continue: teoremi di esistenza e Weierstrass
-gruppo: Analisi delle funzioni di una variabile reale
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Funzioni continue: Teoremi di esistenza e Weierstrass
 

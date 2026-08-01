@@ -1,6 +1,6 @@
 ---
 titolo: Teoria delle permutazioni e calcolo del determinante
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Teoria delle permutazioni e calcolo del determinante
 

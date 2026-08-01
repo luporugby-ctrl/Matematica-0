@@ -1,6 +1,6 @@
 ---
 titolo: Proprietà degli insiemi di numeri reali
-gruppo: Numeri reali, estremi e proprietà topologiche elementari
+gruppo: Preliminari
 ---
 # Proprietà degli insiemi di numeri reali
 

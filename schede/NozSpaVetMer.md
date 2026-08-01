@@ -1,6 +1,6 @@
 ---
 titolo: Definizioni e proprietà fondamentali degli spazi vettoriali
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Definizioni e proprietà fondamentali degli spazi vettoriali
 

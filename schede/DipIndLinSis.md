@@ -1,6 +1,6 @@
 ---
 titolo: Indipendenza lineare e teoremi fondamentali dei vettori
-gruppo: Algebra Lineare
+gruppo: Spazi vettoriali
 ---
 # Indipendenza Lineare di Sistemi di Vettori
 

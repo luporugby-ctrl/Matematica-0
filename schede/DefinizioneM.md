@@ -1,6 +1,6 @@
 ---
 titolo: Limiti di funzioni, teorema ponte e continuità
-gruppo: Calcolo differenziale
+gruppo: Successioni e limiti
 ---
 # Limiti di funzioni, teorema ponte e continuità
 

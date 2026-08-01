@@ -1,6 +1,6 @@
 ---
 titolo: Matrici, Applicazioni Lineari e Matrice Inversa
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Matrici, Applicazioni Lineari e Matrice Inversa
 

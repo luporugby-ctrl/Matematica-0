@@ -1,6 +1,6 @@
 ---
 titolo: Sistemi lineari e Formula di Grassmann
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Sistemi lineari e Formula di Grassmann
 

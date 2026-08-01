@@ -1,6 +1,6 @@
 ---
 titolo: Proprietà del determinante e applicazioni
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Proprietà del determinante e applicazioni
 

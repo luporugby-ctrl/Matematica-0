@@ -1145,6 +1145,14 @@ REGOLE TASSATIVE:
             return window.DOMPurify ? DOMPurify.sanitize(html) : html;
         }
 
+        // Lo script MathJax e' caricato con 'async': l'oggetto window.MathJax esiste gia'
+        // (e' il config impostato inline in testa alla pagina) prima ancora che la libreria
+        // finisca di caricarsi, quindi controllare solo che window.MathJax esista non basta:
+        // .typesetPromise() puo' non essere ancora definita e far esplodere la chiamata.
+        function mathJaxPronto() {
+            return !!(window.MathJax && typeof MathJax.typesetPromise === 'function');
+        }
+
         function passoGriglia(ampiezza) {
             const grezzo = ampiezza / 10;
             const decade = Math.pow(10, Math.floor(Math.log10(grezzo)));
@@ -1679,7 +1687,7 @@ che lo studente vede.`;
                 </div>
             `).join('');
 
-            if (window.MathJax) MathJax.typesetPromise([lista]).catch(e => console.warn(e.message));
+            if (mathJaxPronto()) MathJax.typesetPromise([lista]).catch(e => console.warn(e.message));
         }
 
         async function caricaSchedaRiferimento() {
@@ -1691,7 +1699,7 @@ che lo studente vede.`;
                 const res = await fetch('riferimenti/' + file, { cache: 'no-cache' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 box.innerHTML = renderMarkdownConMatematica(await res.text());
-                if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
+                if (mathJaxPronto()) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
             } catch (err) {
                 box.innerHTML = '<p class="vuoto">Scheda non trovata. Controlla che il file sia in <code>riferimenti/</code> e registrato in <code>riferimenti/index.json</code>.</p>';
             }
@@ -2265,7 +2273,7 @@ Usa il LaTeX per le formule. Non generare esercizi e non riscrivere tutta la teo
                 }
                 box.appendChild(el);
             });
-            if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
+            if (mathJaxPronto()) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
             const ultimo = box.lastElementChild;
             if (ultimo) setTimeout(() => ultimo.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
         }
@@ -2317,7 +2325,7 @@ Struttura la risposta con queste sezioni, tutte obbligatorie:
             const theoryContent = document.getElementById('theory-content');
             theoryContent.innerHTML = renderMarkdownConMatematica(estrattoT.testo);
             
-            if (window.MathJax) {
+            if (mathJaxPronto()) {
                 MathJax.typesetPromise([theoryContent]).catch(function (err) {
                     console.warn('MathJax typesetting warning: ' + err.message);
                 });
@@ -2358,7 +2366,7 @@ NON fornire assolutamente i risultati o i passaggi risolutivi nel testo degli es
             const exContent = document.getElementById('exercises-content');
             exContent.innerHTML = renderMarkdownConMatematica(estratto.testo);
             
-            if (window.MathJax) {
+            if (mathJaxPronto()) {
                 MathJax.typesetPromise([exContent]).catch(function (err) {
                     console.warn('MathJax typesetting warning: ' + err.message);
                 });
@@ -2401,7 +2409,7 @@ Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato
             const fbContent = document.getElementById('feedback-content');
             fbContent.innerHTML = renderMarkdownConMatematica(estrattoF.testo);
             
-            if (window.MathJax) {
+            if (mathJaxPronto()) {
                 MathJax.typesetPromise([fbContent]).catch(function (err) {
                     console.warn('MathJax feedback typesetting warning: ' + err.message);
                 });
@@ -2505,7 +2513,7 @@ Usa termini quotidiani. Mantieni formattazione LaTeX.`;
                 historyEl.appendChild(bubble);
             });
 
-            if (window.MathJax) {
+            if (mathJaxPronto()) {
                 MathJax.typesetPromise([historyEl]).catch(function (err) {
                     console.warn('MathJax chat typesetting warning: ' + err.message);
                 });

@@ -1,6 +1,6 @@
 ---
 titolo: Proprietà dell'integrale di Riemann
-gruppo: Calcolo Integrale
+gruppo: Calcolo integrale
 ---
 # Proprietà dell'integrale di Riemann
 

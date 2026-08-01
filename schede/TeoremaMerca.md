@@ -1,6 +1,6 @@
 ---
 titolo: Funzioni continue, Teorema Zeri e Bisezione
-gruppo: Analisi Matematica 1
+gruppo: Funzioni, continuita e limiti di funzione
 ---
 # Funzioni continue: Teorema degli Zeri e Bisezione
 

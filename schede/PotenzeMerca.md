@@ -1,6 +1,6 @@
 ---
 titolo: Limiti notevoli di potenze, esponenziali e logaritmi
-gruppo: Analisi Matematica 1
+gruppo: Successioni e limiti
 ---
 # Limiti notevoli di potenze, esponenziali e logaritmi
 

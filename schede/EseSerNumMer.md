@@ -1,6 +1,6 @@
 ---
 titolo: Studio di convergenza di serie numeriche
-gruppo: Successioni e serie numeriche
+gruppo: Serie numeriche
 ---
 # Studio di convergenza di serie numeriche
 

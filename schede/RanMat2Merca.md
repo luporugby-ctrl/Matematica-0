@@ -1,6 +1,6 @@
 ---
 titolo: Rango di matrici e sistemi lineari
-gruppo: Algebra Lineare
+gruppo: Matrici, determinanti, sistemi lineari e applicazioni lineari
 ---
 # Rango di matrici e sistemi lineari
 

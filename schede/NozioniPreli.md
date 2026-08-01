@@ -1,6 +1,6 @@
 ---
 titolo: Nozioni preliminari: insiemi e numeri reali
-gruppo: Fondamenti di Analisi Matematica
+gruppo: Preliminari
 ---
 # Nozioni preliminari: insiemi e numeri reali
 
