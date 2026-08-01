@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>
 window.MathJax = {
@@ -367,6 +368,9 @@ a{color:var(--inchiostro)}
 .pannello-teoria h3 i{color:var(--ambra)}
 .pannello-feedback{background:#F7F7FD;border-color:#DFDDF3}
 .pannello-feedback h3 i{color:var(--inchiostro)}
+.pannello-errore{background:var(--rossa-tenue);border-color:#F0D5D1}
+.pannello-errore h3{color:var(--rossa);border:none;padding:0;margin:0}
+.pannello-errore h3 i{color:var(--rossa)}
 
 textarea#user-answers{
   width:100%;padding:14px;border:1px solid var(--bordo);border-radius:8px;
@@ -578,6 +582,16 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 
     <div class="foglio" id="main-content-area">
 
+        <div id="error-panel-wrap" class="colonna-testo hidden">
+            <section class="pannello pannello-errore">
+                <div class="guida-testa">
+                    <h3><i class="fas fa-triangle-exclamation"></i> Il modello non ha risposto</h3>
+                    <button class="chiudi" style="color:var(--rossa)" onclick="chiudiErrorPanel()" aria-label="Chiudi">&times;</button>
+                </div>
+                <p id="error-panel-text" class="nota" style="margin:12px 0 0"></p>
+            </section>
+        </div>
+
         <section id="welcome-screen" class="benvenuto">
             <div class="glifo">∫</div>
             <h3>Un mattoncino alla volta</h3>
@@ -715,6 +729,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
     <div id="loading-overlay" class="velo-attesa hidden">
         <div class="puntini"><i></i><i></i><i></i></div>
         <p id="loading-text">Sto lavorando...</p>
+        <button class="link-azione" onclick="annullaRichiesta()"><i class="fas fa-xmark"></i> Annulla</button>
     </div>
 
 </main>
@@ -970,6 +985,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 
         let currentTopic = null;
         let currentExercisesContext = "";
+        let currentSolutions = [];  // riservate: mai mostrate, servono solo a correggere e guidare
         let completedModules = new Set();
         
         let guidedState = {
@@ -1000,8 +1016,18 @@ REGOLE TASSATIVE:
             loadSavedSettings();
             await loadSyllabus();
             loadProgress();
+            loadStats();
             renderSidebar();
+            renderKPIs();
         };
+
+        function renderKPIs() {
+            document.getElementById('kpi-generated').innerText = stats.generated;
+            document.getElementById('kpi-correct').innerText = stats.correct;
+            const efficiency = stats.totalSubmissions > 0
+                ? Math.round((stats.correct / stats.totalSubmissions) * 100) : 0;
+            document.getElementById('kpi-efficiency').innerText = `${efficiency}%`;
+        }
 
         // ============================================================
         // GRAFICI — piano cartesiano disegnato su canvas
@@ -1089,6 +1115,24 @@ REGOLE TASSATIVE:
                 console.warn('blocco grafici non leggibile', err);
             }
             return { testo: testo.replace(m[0], '').trim(), spec: spec };
+        }
+
+        // marked interpreta _ e * dentro le formule come corsivo/grassetto, prima ancora
+        // che MathJax le veda: si mascherano i blocchi di matematica, si passa il testo a
+        // marked, poi si ripristinano. Il risultato passa da DOMPurify prima di innerHTML.
+        function renderMarkdownConMatematica(testo) {
+            const blocchi = [];
+            const maschera = (str) => str.replace(
+                /\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\$[^\$\n]+?\$|\\\([\s\S]*?\\\)/g,
+                m => { blocchi.push(m); return '@@MATH' + (blocchi.length - 1) + '@@'; }
+            );
+            const smaschera = (html) => html.replace(
+                /@@MATH(\d+)@@/g, (m, i) => blocchi[+i] !== undefined ? blocchi[+i] : m
+            );
+
+            const mascherato = maschera(String(testo));
+            const html = smaschera(marked.parse(mascherato));
+            return window.DOMPurify ? DOMPurify.sanitize(html) : html;
         }
 
         function passoGriglia(ampiezza) {
@@ -1475,6 +1519,64 @@ senza fermarsi). Senza "somme" mostra i termini della successione.
 "limite" e facoltativo e disegna la retta orizzontale del valore a cui si tende.
 Per una serie usa quasi sempre "somme":true, perche e li che si legge la convergenza.`;
 
+        const REGOLE_ESITI = `
+
+Dopo il feedback, aggiungi un blocco cosi (un esito per ogni esercizio del set, anche
+per quelli che lo studente non ha svolto):
+\`\`\`esiti
+[{"n":1,"esito":"giusto"},{"n":2,"esito":"sbagliato"},{"n":3,"esito":"non_svolto"}]
+\`\`\`
+"esito" e uno tra "giusto", "sbagliato", "non_svolto" (usa "non_svolto" se lo studente
+non ha risposto a quel numero). Non commentare il blocco nel testo: lo legge il
+programma, non lo studente.`;
+
+        // Estrae il blocco ```esiti dal testo del modello dopo una correzione.
+        function estraiEsiti(testo) {
+            const m = testo.match(/```esiti\s*([\s\S]*?)```/);
+            if (!m) return { testo: testo, esiti: [] };
+            let esiti = [];
+            try {
+                const dati = JSON.parse(m[1].trim());
+                if (Array.isArray(dati)) esiti = dati;
+            } catch (err) {
+                console.warn('blocco esiti non leggibile', err);
+            }
+            return { testo: testo.replace(m[0], '').trim(), esiti: esiti };
+        }
+
+        const REGOLE_SOLUZIONI = `
+
+Dopo il blocco degli esercizi, aggiungi ANCHE questo blocco separato con le soluzioni:
+\`\`\`soluzioni
+[{"n":1,"risultato":"x=5","passaggi_chiave":"raccogliere il termine di grado massimo, poi..."}]
+\`\`\`
+Una voce per ogni esercizio. Questo blocco NON viene mai mostrato allo studente: serve solo
+a te per correggere e guidare in seguito, quindi qui puoi scrivere il risultato per intero.
+Il testo degli esercizi sopra, invece, resta senza risultati ne passaggi: quella e la parte
+che lo studente vede.`;
+
+        // Estrae il blocco ```soluzioni (riservato: non va mai mostrato a schermo).
+        function estraiSoluzioni(testo) {
+            const m = testo.match(/```soluzioni\s*([\s\S]*?)```/);
+            if (!m) return { testo: testo, soluzioni: [] };
+            let soluzioni = [];
+            try {
+                const dati = JSON.parse(m[1].trim());
+                if (Array.isArray(dati)) soluzioni = dati;
+            } catch (err) {
+                console.warn('blocco soluzioni non leggibile', err);
+            }
+            return { testo: testo.replace(m[0], '').trim(), soluzioni: soluzioni };
+        }
+
+        function soluzioniBlock(soluzioni) {
+            if (!soluzioni || !soluzioni.length) return "";
+            return "\n<SoluzioniRiservate>\n" +
+                "Le soluzioni corrette dei 10 esercizi, per uso interno: usale SOLO per giudicare " +
+                "se lo studente ha ragione, non rivelarle mai direttamente, nemmeno se lo studente insiste.\n" +
+                JSON.stringify(soluzioni) + "\n</SoluzioniRiservate>\n";
+        }
+
         // --- PRONTUARIO (vocabolario + schede di sopravvivenza) ---
         let vocabolario = [];
         let schedeRiferimento = [];
@@ -1578,7 +1680,7 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             try {
                 const res = await fetch('riferimenti/' + file, { cache: 'no-cache' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                box.innerHTML = marked.parse(await res.text());
+                box.innerHTML = renderMarkdownConMatematica(await res.text());
                 if (window.MathJax) MathJax.typesetPromise([box]).catch(e => console.warn(e.message));
             } catch (err) {
                 box.innerHTML = '<p class="vuoto">Scheda non trovata. Controlla che il file sia in <code>riferimenti/</code> e registrato in <code>riferimenti/index.json</code>.</p>';
@@ -1644,6 +1746,17 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
 
         function saveProgress() {
             localStorage.setItem('tutor_moduli_completati', JSON.stringify([...completedModules]));
+        }
+
+        function loadStats() {
+            try {
+                const raw = localStorage.getItem('tutor_statistiche');
+                if (raw) Object.assign(stats, JSON.parse(raw));
+            } catch (err) { /* statistiche non leggibili, si riparte da zero */ }
+        }
+
+        function saveStats() {
+            localStorage.setItem('tutor_statistiche', JSON.stringify(stats));
         }
 
         function getProvider() {
@@ -1826,7 +1939,8 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
 
         function selectTopic(topic, btnElement) {
             currentTopic = topic;
-            currentExercisesContext = ""; 
+            currentExercisesContext = "";
+            currentSolutions = [];
             closeGuidedResolution();
             
             if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
@@ -1899,19 +2013,29 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             }
         }
 
+        // Generare esercizi non e una consegna: non deve muovere la precisione.
         function updateKPIs(action) {
             if (action === 'generate') {
                 stats.generated += 10;
-            } else if (action === 'correct') {
-                stats.correct += 1;
+                document.getElementById('kpi-generated').innerText = stats.generated;
+                saveStats();
             }
-            stats.totalSubmissions++;
+        }
 
-            document.getElementById('kpi-generated').innerText = stats.generated;
+        // La precisione conta solo gli esercizi che lo studente ha davvero svolto
+        // (esito "giusto" o "sbagliato"); "non_svolto" non entra nel conteggio.
+        function registraEsitiCorrezione(esiti) {
+            const valutati = (esiti || []).filter(e => e.esito === 'giusto' || e.esito === 'sbagliato');
+            const giusti = valutati.filter(e => e.esito === 'giusto').length;
+
+            stats.correct += giusti;
+            stats.totalSubmissions += valutati.length;
+
             document.getElementById('kpi-correct').innerText = stats.correct;
-            
-            const efficiency = stats.generated > 0 ? Math.round((stats.correct / stats.totalSubmissions) * 100) : 0;
+            const efficiency = stats.totalSubmissions > 0
+                ? Math.round((stats.correct / stats.totalSubmissions) * 100) : 0;
             document.getElementById('kpi-efficiency').innerText = `${efficiency}%`;
+            saveStats();
         }
 
         function showToast(message) {
@@ -1923,6 +2047,24 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
         }
 
         // --- AI ENGINE (Gemini + Anthropic) ---
+        let richiestaCorrente = null;  // AbortController della fetch in corso, per il bottone Annulla
+
+        function mostraErrore(messaggio) {
+            document.getElementById('error-panel-text').innerText = messaggio;
+            const wrap = document.getElementById('error-panel-wrap');
+            wrap.classList.remove('hidden');
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function chiudiErrorPanel() {
+            document.getElementById('error-panel-wrap').classList.add('hidden');
+        }
+
+        function annullaRichiesta() {
+            if (richiestaCorrente) richiestaCorrente.abort();
+            hideLoading();
+        }
+
         async function callAI(userPrompt, systemPromptExtension = "") {
             const provider = getProvider();
             const key = getApiKey();
@@ -1935,42 +2077,55 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
             }
 
             const system = baseSystemInstruction + "\n" + systemPromptExtension;
+            const controller = new AbortController();
+            richiestaCorrente = controller;
 
             try {
-                const text = provider === 'anthropic'
-                    ? await callAnthropic(key, model, system, userPrompt)
-                    : await callGemini(key, model, system, userPrompt);
-                if (!text) throw new Error("Il modello ha risposto senza testo.");
-                return text;
+                const esito = provider === 'anthropic'
+                    ? await callAnthropic(key, model, system, userPrompt, controller.signal)
+                    : await callGemini(key, model, system, userPrompt, controller.signal);
+                if (!esito.text) throw new Error("Il modello ha risposto senza testo.");
+                if (esito.troncato) {
+                    showToast("Risposta troncata: rigenera o scegli un modello piu capiente.");
+                }
+                return esito.text;
             } catch (error) {
-                console.error('Chiamata AI fallita:', error);
                 hideLoading();
-                alert("Il modello " + model + " non ha risposto.\n\nDettaglio: " + error.message +
-                      "\n\nSe leggi un errore 404 il modello e stato dismesso: scegline un altro dal menu a sinistra. Se leggi 401 o 403 la chiave non e valida. Se leggi 429 hai finito la quota gratuita, riprova tra qualche minuto.");
+                if (error.name === 'AbortError') return null;  // annullata dallo studente, nessun errore da mostrare
+                console.error('Chiamata AI fallita:', error);
+                mostraErrore("Il modello " + model + " non ha risposto. Dettaglio: " + error.message +
+                    " — Se leggi 404 il modello e stato dismesso: scegline un altro dal menu a sinistra. " +
+                    "Se leggi 401 o 403 la chiave non e valida. Se leggi 429 hai finito la quota, riprova tra qualche minuto.");
                 return null;
+            } finally {
+                richiestaCorrente = null;
             }
         }
 
-        async function callGemini(key, model, system, userPrompt) {
+        async function callGemini(key, model, system, userPrompt, signal) {
             const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
                 body: JSON.stringify({
                     contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-                    systemInstruction: { parts: [{ text: system }] }
-                })
+                    systemInstruction: { parts: [{ text: system }] },
+                    generationConfig: { maxOutputTokens: 8000 }
+                }),
+                signal: signal
             });
             if (!res.ok) {
                 const err = await res.json().catch(() => ({}));
                 throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
             }
             const data = await res.json();
-            const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-            return parts.map(p => p.text).filter(Boolean).join("\n").trim();
+            const cand = data.candidates && data.candidates[0];
+            const parts = (cand && cand.content && cand.content.parts) || [];
+            const text = parts.map(p => p.text).filter(Boolean).join("\n").trim();
+            return { text: text, troncato: !!cand && cand.finishReason === 'MAX_TOKENS' };
         }
 
-        async function callAnthropic(key, model, system, userPrompt) {
+        async function callAnthropic(key, model, system, userPrompt, signal) {
             const res = await fetch("https://api.anthropic.com/v1/messages", {
                 method: 'POST',
                 headers: {
@@ -1981,17 +2136,19 @@ Per una serie usa quasi sempre "somme":true, perche e li che si legge la converg
                 },
                 body: JSON.stringify({
                     model: model,
-                    max_tokens: 4000,
+                    max_tokens: 8000,
                     system: system,
                     messages: [{ role: 'user', content: userPrompt }]
-                })
+                }),
+                signal: signal
             });
             if (!res.ok) {
                 const err = await res.json().catch(() => ({}));
                 throw new Error((err.error && err.error.message) || ("HTTP " + res.status));
             }
             const data = await res.json();
-            return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join("\n").trim();
+            const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join("\n").trim();
+            return { text: text, troncato: data.stop_reason === 'max_tokens' };
         }
 
         // --- CONNECTION TESTER ---
@@ -2092,7 +2249,7 @@ Usa il LaTeX per le formule. Non generare esercizi e non riscrivere tutta la teo
                     el.innerHTML = `<span class="chi">Tutor</span><div class="puntini"><i></i><i></i><i></i></div>`;
                 } else {
                     el.className = 'risposta math-content tex2jax_process';
-                    el.innerHTML = `<span class="chi">Tutor</span>${marked.parse(m.testo)}`;
+                    el.innerHTML = `<span class="chi">Tutor</span>${renderMarkdownConMatematica(m.testo)}`;
                 }
                 box.appendChild(el);
             });
@@ -2146,7 +2303,7 @@ Struttura la risposta con queste sezioni, tutte obbligatorie:
             renderTheoryChat();
 
             const theoryContent = document.getElementById('theory-content');
-            theoryContent.innerHTML = marked.parse(estrattoT.testo);
+            theoryContent.innerHTML = renderMarkdownConMatematica(estrattoT.testo);
             
             if (window.MathJax) {
                 MathJax.typesetPromise([theoryContent]).catch(function (err) {
@@ -2171,12 +2328,15 @@ Struttura la risposta con queste sezioni, tutte obbligatorie:
             const prompt = `Genera ESATTAMENTE 10 esercizi di difficolta crescente (numerati da 1 a 10) sull'argomento: "${currentTopic.titolo}".
 ${schedaBlock(scheda)}
 Gli esercizi devono essere dello stesso tipo e livello di quelli che lo studente trovera all'esame, coerenti con la scheda del corso.
-NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo matematico degli esercizi.` + REGOLE_GRAFICI;
+NON fornire assolutamente i risultati o i passaggi risolutivi nel testo degli esercizi. Solo il testo matematico degli esercizi.` + REGOLE_GRAFICI + REGOLE_SOLUZIONI;
 
             const response = await callAI(prompt);
             if (!response) return;
 
-            const estratto = estraiGrafici(response);
+            const estrattoS = estraiSoluzioni(response);
+            currentSolutions = estrattoS.soluzioni;
+
+            const estratto = estraiGrafici(estrattoS.testo);
             currentExercisesContext = estratto.testo;
             updateKPIs('generate');
 
@@ -2184,7 +2344,7 @@ NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo mat
             document.getElementById('grafici-container').classList.toggle('hidden', quanti === 0);
 
             const exContent = document.getElementById('exercises-content');
-            exContent.innerHTML = marked.parse(estratto.testo);
+            exContent.innerHTML = renderMarkdownConMatematica(estratto.testo);
             
             if (window.MathJax) {
                 MathJax.typesetPromise([exContent]).catch(function (err) {
@@ -2203,7 +2363,7 @@ NON fornire assolutamente i risultati o i passaggi risolutivi. Solo il testo mat
         async function checkAnswers() {
             const userAnswers = document.getElementById('user-answers').value.trim();
             if (!userAnswers) {
-                alert("Fornisci almeno un tentativo di risposta o spiegazione dei passaggi.");
+                showToast("Fornisci almeno un tentativo di risposta o spiegazione dei passaggi.");
                 return;
             }
 
@@ -2218,19 +2378,16 @@ ${currentExercisesContext}
 ${userAnswers}
 </RisposteFornite>
 
-Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere il risultato corretto. Invita lo studente a riprovare usando parole di incoraggiamento.`;
+Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato, spiega in modo elementare dove si è bloccato, ma NON scrivere il risultato corretto. Invita lo studente a riprovare usando parole di incoraggiamento.` + REGOLE_ESITI;
 
-            const response = await callAI(prompt, "Correggi con infinita pazienza. Non regalare le soluzioni se sbaglia." + schedaBlock(await getScheda(currentTopic)));
+            const response = await callAI(prompt, "Correggi con infinita pazienza. Usa le soluzioni riservate per giudicare con esattezza, ma non regalarle mai allo studente." + soluzioniBlock(currentSolutions) + schedaBlock(await getScheda(currentTopic)));
             if (!response) return;
 
-            if (response.toLowerCase().includes("perfetto") || response.toLowerCase().includes("eccellente") || response.toLowerCase().includes("esatto")) {
-                updateKPIs('correct');
-            } else {
-                updateKPIs('attempt'); 
-            }
+            const estrattoF = estraiEsiti(response);
+            registraEsitiCorrezione(estrattoF.esiti);
 
             const fbContent = document.getElementById('feedback-content');
-            fbContent.innerHTML = marked.parse(response);
+            fbContent.innerHTML = renderMarkdownConMatematica(estrattoF.testo);
             
             if (window.MathJax) {
                 MathJax.typesetPromise([fbContent]).catch(function (err) {
@@ -2246,7 +2403,7 @@ Fornisci feedback dettagliato e facilissimo da capire. Se un esercizio è errato
         // --- STEP-BY-STEP GUIDED RESOLUTION LOGIC ---
         function activateGuidedResolutionPanel() {
             if (!currentExercisesContext) {
-                alert("Genera prima i 10 esercizi per attivare la guida passo-passo.");
+                showToast("Genera prima i 10 esercizi per attivare la guida passo-passo.");
                 return;
             }
             const panel = document.getElementById('guided-resolution-container');
@@ -2278,7 +2435,7 @@ ${currentExercisesContext}
 Isola solo quell'esercizio. Qual è il primissimo, minuscolo passo da fare? (es. trovare un denominatore, o riconoscere il limite notevole).
 Fai una domanda semplice allo studente su quel passo e aspetta la sua risposta. Tono amichevole. NON dare calcoli pronti.`;
 
-            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi.` + schedaBlock(await getScheda(currentTopic)));
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Procedi a passettini minuscoli e semplicissimi. Usa la soluzione riservata dell'esercizio ${exNum} per sapere dove condurre lo studente, ma non rivelarla mai direttamente.` + soluzioniBlock(currentSolutions) + schedaBlock(await getScheda(currentTopic)));
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
@@ -2312,7 +2469,7 @@ Valuta l'ultima risposta.
 - Se è sbagliata, spiegagli dolcemente e semplicemente perché c'è un errore e chiedigli di riprovare quel piccolo calcolo, SENZA svelare il risultato esatto.
 Usa termini quotidiani. Mantieni formattazione LaTeX.`;
 
-            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita.`);
+            const response = await callAI(prompt, `Sei in modalita 'Guida Passo-Passo'. Un solo passettino alla volta. Pazienza infinita. Usa la soluzione riservata dell'esercizio ${guidedState.exerciseNum} per giudicare ogni passaggio, ma non rivelarla mai direttamente.` + soluzioniBlock(currentSolutions));
             if (!response) return;
 
             guidedState.chatHistory.push({ role: 'tutor', text: response });
@@ -2328,7 +2485,7 @@ Usa termini quotidiani. Mantieni formattazione LaTeX.`;
                 const bubble = document.createElement('div');
                 if (msg.role === 'tutor') {
                     bubble.className = "bolla bolla-tutor tex2jax_process math-content";
-                    bubble.innerHTML = `<span class="bolla-chi">Tutor</span>${marked.parse(msg.text)}`;
+                    bubble.innerHTML = `<span class="bolla-chi">Tutor</span>${renderMarkdownConMatematica(msg.text)}`;
                 } else {
                     bubble.className = "bolla bolla-tu";
                     bubble.innerHTML = `<span class="bolla-chi">Tu</span>${msg.text}`;
