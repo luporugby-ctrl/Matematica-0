@@ -519,7 +519,7 @@ textarea#user-answers:focus{outline:none;border-color:var(--inchiostro);box-shad
 .tab.attiva{background:var(--inchiostro);color:#fff}
 .tab.attiva:hover{background:var(--inchiostro)}
 
-#tab-vocabolario,#tab-schede{flex:1;flex-direction:column;overflow:hidden}
+#tab-vocabolario,#tab-teoremi,#tab-schede{flex:1;flex-direction:column;overflow:hidden}
 .cerca-riga{padding:14px 18px;border-bottom:1px solid var(--bordo)}
 .lista-voci{flex:1;overflow-y:auto;padding:6px 18px 20px}
 
@@ -884,6 +884,7 @@ mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%}
         <div class="finestra-testa">
             <div style="display:flex;gap:5px">
                 <button id="tab-btn-vocabolario" class="tab" onclick="mostraTab('vocabolario')">Vocabolario</button>
+                <button id="tab-btn-teoremi" class="tab" onclick="mostraTab('teoremi')">Teoremi</button>
                 <button id="tab-btn-schede" class="tab" onclick="mostraTab('schede')">Schede di sopravvivenza</button>
             </div>
             <button class="chiudi" style="color:var(--grafite-3)" onclick="chiudiProntuario()" aria-label="Chiudi">&times;</button>
@@ -896,6 +897,15 @@ mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%}
                        oninput="filtraVocabolario()">
             </div>
             <div id="vocab-list" class="lista-voci"></div>
+        </div>
+
+        <div id="tab-teoremi" class="hidden">
+            <div class="cerca-riga">
+                <input id="teoremi-search" class="campo" style="margin:0" type="text"
+                       placeholder="Cerca un teorema per nome o parola chiave"
+                       oninput="filtraTeoremi()">
+            </div>
+            <div id="teoremi-list" class="lista-voci"></div>
         </div>
 
         <div id="tab-schede" class="hidden">
@@ -1845,6 +1855,7 @@ che lo studente vede.`;
 
         // --- PRONTUARIO (vocabolario + schede di sopravvivenza) ---
         let vocabolario = [];
+        let teoremi = [];
         let schedeRiferimento = [];
         let prontuarioCaricato = false;
 
@@ -1907,7 +1918,7 @@ che lo studente vede.`;
         }
 
         function mostraTab(nome) {
-            const tabs = ['vocabolario', 'schede'];
+            const tabs = ['vocabolario', 'teoremi', 'schede'];
             tabs.forEach(t => {
                 const pannello = document.getElementById('tab-' + t);
                 const bottone = document.getElementById('tab-btn-' + t);
@@ -1924,6 +1935,12 @@ che lo studente vede.`;
                 if (res.ok) vocabolario = (await res.json()).voci || [];
             } catch (err) { console.warn('vocabolario non caricato', err); }
             filtraVocabolario();
+
+            try {
+                const res = await fetch('riferimenti/teoremi.json', { cache: 'no-cache' });
+                if (res.ok) teoremi = (await res.json()).voci || [];
+            } catch (err) { console.warn('teoremi non caricati', err); }
+            filtraTeoremi();
 
             try {
                 const res = await fetch('riferimenti/index.json', { cache: 'no-cache' });
@@ -1946,14 +1963,14 @@ che lo studente vede.`;
         }
 
         function filtraVocabolario() {
-            const q = (document.getElementById('vocab-search').value || '').toLowerCase().trim();
+            const q = normalizza(document.getElementById('vocab-search').value).trim();
             const lista = document.getElementById('vocab-list');
 
             const risultati = vocabolario.filter(v =>
                 !q ||
-                v.termine.toLowerCase().includes(q) ||
-                (v.simbolo || '').toLowerCase().includes(q) ||
-                v.significato.toLowerCase().includes(q)
+                normalizza(v.termine).includes(q) ||
+                normalizza(v.simbolo).includes(q) ||
+                normalizza(v.significato).includes(q)
             );
 
             if (!risultati.length) {
@@ -1969,6 +1986,37 @@ che lo studente vede.`;
                     </div>
                     <p class="lemma-significato">${v.significato}</p>
                     ${v.esempio ? `<p class="lemma-esempio">${v.esempio}</p>` : ''}
+                </div>
+            `).join('');
+
+            if (mathJaxPronto()) MathJax.typesetPromise([lista]).catch(e => console.warn(e.message));
+        }
+
+        function filtraTeoremi() {
+            const q = normalizza(document.getElementById('teoremi-search').value).trim();
+            const lista = document.getElementById('teoremi-list');
+
+            const risultati = teoremi.filter(t =>
+                !q ||
+                normalizza(t.nome).includes(q) ||
+                normalizza(t.ipotesi).includes(q) ||
+                normalizza(t.tesi).includes(q) ||
+                normalizza(t.nota).includes(q)
+            );
+
+            if (!risultati.length) {
+                lista.innerHTML = '<p class="vuoto">Nessun teorema con questa parola. Puoi aggiungerlo in <code>riferimenti/teoremi.json</code>.</p>';
+                return;
+            }
+
+            lista.innerHTML = risultati.map(t => `
+                <div class="lemma tex2jax_process">
+                    <div class="lemma-testa">
+                        <span class="lemma-termine">${t.nome}</span>
+                    </div>
+                    <p class="lemma-significato"><strong>Ipotesi:</strong> ${t.ipotesi}</p>
+                    <p class="lemma-significato"><strong>Tesi:</strong> ${t.tesi}</p>
+                    ${t.nota ? `<p class="lemma-esempio">${t.nota}</p>` : ''}
                 </div>
             `).join('');
 

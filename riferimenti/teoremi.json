@@ -1,0 +1,116 @@
+{
+  "nota": "Teoremi con nome proprio del corso. Ogni voce: nome, ipotesi, tesi, nota (opzionale). Aggiungi voci qui, l'app le carica da sola.",
+  "voci": [
+    {
+      "nome": "Teorema di unicità del limite",
+      "ipotesi": "Una successione (o una funzione) ammette limite.",
+      "tesi": "Il limite, se esiste, è unico."
+    },
+    {
+      "nome": "Teorema della permanenza del segno",
+      "ipotesi": "$a_n \\to a$ con $a > 0$ (oppure $f(x) \\to \\ell$ per $x \\to x_0$ con $\\ell > 0$).",
+      "tesi": "La successione è definitivamente strettamente positiva: esiste $n_0$ oltre il quale $a_n > 0$ (per le funzioni, esiste un intorno di $x_0$ in cui $f(x) > 0$)."
+    },
+    {
+      "nome": "Teorema dei carabinieri (del confronto)",
+      "ipotesi": "$a_n \\leq b_n \\leq c_n$ definitivamente, con $a_n \\to \\ell$ e $c_n \\to \\ell$.",
+      "tesi": "Anche $b_n \\to \\ell$.",
+      "nota": "Utile quando $b_n$ è difficile da trattare direttamente ma si lascia stringere tra due successioni note."
+    },
+    {
+      "nome": "Teorema ponte",
+      "ipotesi": "$f$ definita in un intorno di $x_0$, al più escluso $x_0$.",
+      "tesi": "$\\lim_{x \\to x_0} f(x) = \\ell$ se e solo se per ogni successione $x_n \\to x_0$ (con $x_n \\neq x_0$ nel dominio) risulta $f(x_n) \\to \\ell$.",
+      "nota": "Si usa spesso al contrario: per negare l'esistenza di un limite basta trovare due successioni che danno limiti diversi."
+    },
+    {
+      "nome": "Teorema di Bolzano-Weierstrass",
+      "ipotesi": "Una successione è limitata.",
+      "tesi": "Ammette almeno una sottosuccessione convergente."
+    },
+    {
+      "nome": "Criterio di convergenza di Cauchy",
+      "ipotesi": "$a_n$ è una successione di Cauchy: $\\forall \\varepsilon > 0\\, \\exists n_0 : |a_j - a_k| < \\varepsilon\\ \\forall j,k > n_0$.",
+      "tesi": "In $\\mathbb{R}$, $a_n$ è di Cauchy se e solo se è convergente.",
+      "nota": "Una successione limitata ma non convergente non è mai di Cauchy: la limitatezza da sola garantisce solo una sottosuccessione convergente (Bolzano-Weierstrass)."
+    },
+    {
+      "nome": "Teorema degli zeri",
+      "ipotesi": "$f:[a,b] \\to \\mathbb{R}$ continua, con $f(a) \\cdot f(b) < 0$.",
+      "tesi": "Esiste almeno un $x_0 \\in (a,b)$ tale che $f(x_0) = 0$.",
+      "nota": "Garantisce l'esistenza di uno zero, non l'unicità: per l'unicità serve in più la stretta monotonia."
+    },
+    {
+      "nome": "Teorema di Weierstrass",
+      "ipotesi": "$f$ continua su un intervallo chiuso e limitato $[a,b]$.",
+      "tesi": "$f$ ammette massimo e minimo assoluti in $[a,b]$.",
+      "nota": "Chiuso e limitato sono entrambe ipotesi indispensabili: tolta una delle due il teorema può fallire (es. $f(x)=1/x$ su $(0,1]$)."
+    },
+    {
+      "nome": "Teorema dei valori intermedi",
+      "ipotesi": "$f$ continua su $[a,b]$.",
+      "tesi": "$f$ assume tutti i valori compresi tra $f(a)$ e $f(b)$; combinato con Weierstrass, l'immagine di $f$ è esattamente l'intervallo $[m,M]$ tra minimo e massimo assoluti."
+    },
+    {
+      "nome": "Criterio di continuità e invertibilità delle funzioni monotone",
+      "ipotesi": "$f:[a,b] \\to \\mathbb{R}$ monotona.",
+      "tesi": "$f$ è continua se e solo se $f([a,b])$ è l'intervallo di estremi $f(a)$ e $f(b)$. Se inoltre $f$ è continua e strettamente monotona, allora è invertibile e $f^{-1}$ è anch'essa continua."
+    },
+    {
+      "nome": "Teorema di Fermat",
+      "ipotesi": "$f$ definita in $[a,b]$, $x_0 \\in (a,b)$ punto di massimo o minimo relativo, $f$ derivabile in $x_0$.",
+      "tesi": "$f'(x_0) = 0$.",
+      "nota": "Non vale il viceversa: $f'(x_0)=0$ non implica che $x_0$ sia un estremo relativo, es. $f(x)=x^3$ in $x_0=0$."
+    },
+    {
+      "nome": "Teorema di Rolle",
+      "ipotesi": "$f$ continua in $[a,b]$, derivabile in $(a,b)$, $f(a) = f(b)$.",
+      "tesi": "Esiste $x_0 \\in (a,b)$ tale che $f'(x_0) = 0$."
+    },
+    {
+      "nome": "Teorema di Lagrange (del valor medio)",
+      "ipotesi": "$f$ continua in $[a,b]$, derivabile in $(a,b)$.",
+      "tesi": "Esiste $x_0 \\in (a,b)$ tale che $f'(x_0) = \\dfrac{f(b)-f(a)}{b-a}$.",
+      "nota": "Rolle è il caso particolare di Lagrange in cui $f(a)=f(b)$, cioè la secante è orizzontale."
+    },
+    {
+      "nome": "Teorema di Cauchy (valor medio generalizzato)",
+      "ipotesi": "$f,g$ continue in $[a,b]$, derivabili in $(a,b)$, con $g'(x) \\neq 0$.",
+      "tesi": "Esiste $x_0 \\in (a,b)$ tale che $\\dfrac{f(b)-f(a)}{g(b)-g(a)} = \\dfrac{f'(x_0)}{g'(x_0)}$.",
+      "nota": "È il risultato su cui si basa la dimostrazione dei teoremi di de l'Hôpital."
+    },
+    {
+      "nome": "Teoremi di de l'Hôpital",
+      "ipotesi": "$f,g$ continue e derivabili in un intorno di $x_0$ (al più escluso $x_0$), $g' \\neq 0$, e $f,g \\to 0$ oppure entrambe $\\to \\infty$ per $x \\to x_0$.",
+      "tesi": "Se esiste $\\lim_{x \\to x_0} \\dfrac{f'(x)}{g'(x)} = L$, allora anche $\\lim_{x \\to x_0} \\dfrac{f(x)}{g(x)} = L$.",
+      "nota": "Si applica solo alle forme indeterminate $0/0$ o $\\infty/\\infty$, mai a un limite già determinato. Se il rapporto delle derivate è ancora indeterminato, si può riapplicare."
+    },
+    {
+      "nome": "Teorema di Heine-Cantor",
+      "ipotesi": "$f$ continua su un intervallo chiuso e limitato $[a,b]$.",
+      "tesi": "$f$ è uniformemente continua in $[a,b]$: il $\\delta$ della continuità si può scegliere uguale per tutto l'intervallo, non solo punto per punto."
+    },
+    {
+      "nome": "Teorema Fondamentale del Calcolo Integrale",
+      "ipotesi": "$f$ continua in $[a,b]$; $F(x) = \\int_a^x f(t)\\,dt$ è la sua funzione integrale.",
+      "tesi": "$F$ è derivabile e $F'(x) = f(x)$ per ogni $x \\in [a,b]$. Di conseguenza, per ogni primitiva $G$ di $f$: $\\int_a^b f(x)\\,dx = G(b) - G(a)$."
+    },
+    {
+      "nome": "Teorema di Rouché-Capelli",
+      "ipotesi": "Sistema lineare $A\\mathbf{x} = \\mathbf{c}$, con $B = [A \\mid \\mathbf{c}]$ matrice completa.",
+      "tesi": "Il sistema è compatibile se e solo se $rk(A) = rk(B)$. Se inoltre $rk(A) = rk(B) = n$ (numero di incognite), la soluzione è unica.",
+      "nota": "Verifica sempre la compatibilità prima di cercare le soluzioni: risparmia calcoli su sistemi impossibili."
+    },
+    {
+      "nome": "Formula di Grassmann",
+      "ipotesi": "$V_1, V_2$ sottospazi vettoriali finitamente generati di uno stesso spazio.",
+      "tesi": "$\\dim V_1 + \\dim V_2 = \\dim(V_1+V_2) + \\dim(V_1 \\cap V_2)$."
+    },
+    {
+      "nome": "Teorema nullità più rango",
+      "ipotesi": "$L: \\mathbb{R}^n \\to \\mathbb{R}^m$ applicazione lineare.",
+      "tesi": "$\\dim(\\mathbb{R}^n) = \\dim(\\ker L) + \\dim(\\mathrm{Im}\\,L)$.",
+      "nota": "$\\dim(\\mathrm{Im}\\,L)$ coincide con il rango della matrice associata a $L$."
+    }
+  ]
+}

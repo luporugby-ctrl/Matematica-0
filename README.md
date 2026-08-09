@@ -145,12 +145,18 @@ producono grafici, ed e il modello stesso a ometterli.
 ## Prontuario e vocabolario
 
 Il pulsante **Prontuario e vocabolario** in alto apre un pannello di consultazione, sempre
-raggiungibile qualunque argomento sia selezionato. Contiene due schede:
+raggiungibile qualunque argomento sia selezionato. Contiene tre schede:
 
 - **Vocabolario**: i termini e i simboli del corso, con la ricerca. Il contenuto sta in
   `riferimenti/vocabolario.json`. Per aggiungere una voce basta una riga:
   `{ "termine": "...", "simbolo": "...", "significato": "...", "esempio": "..." }`
   (`simbolo` ed `esempio` sono facoltativi). La ricerca guarda anche dentro i significati.
+- **Teoremi**: i teoremi con nome proprio del corso (Weierstrass, Bolzano, Rolle, Lagrange,
+  de l'Hôpital, Rouché-Capelli...), con ipotesi e tesi separate e ricerca. Il contenuto sta in
+  `riferimenti/teoremi.json`. Per aggiungere una voce:
+  `{ "nome": "...", "ipotesi": "...", "tesi": "...", "nota": "..." }`
+  (`nota` e' facoltativa, utile per un errore tipico o un caso limite). La ricerca guarda anche
+  dentro ipotesi, tesi e nota.
 - **Schede di sopravvivenza**: i formulari veloci, in Markdown con LaTeX. Per aggiungerne una,
   crea il file in `riferimenti/` e registralo in `riferimenti/index.json`.
 
