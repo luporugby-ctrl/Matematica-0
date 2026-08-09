@@ -86,6 +86,12 @@
       "nota": "Si applica solo alle forme indeterminate $0/0$ o $\\infty/\\infty$, mai a un limite già determinato. Se il rapporto delle derivate è ancora indeterminato, si può riapplicare."
     },
     {
+      "nome": "Formula di Taylor (con resto di Peano)",
+      "ipotesi": "$f$ derivabile $n$ volte in $x_0$.",
+      "tesi": "$f(x) = \\displaystyle\\sum_{k=0}^{n} \\dfrac{f^{(k)}(x_0)}{k!}(x-x_0)^k + R_n(x)$, con resto $R_n(x) = o((x-x_0)^n)$ per $x \\to x_0$.",
+      "nota": "Il caso $x_0=0$ si chiama sviluppo di Maclaurin. Per calcolare un limite in forma indeterminata, si sostituisce ogni funzione con il proprio polinomio di Taylor troncato all'ordine necessario a eliminare l'indeterminazione — un'alternativa a de l'Hôpital, spesso più rapida con più applicazioni in cascata."
+    },
+    {
       "nome": "Teorema di Heine-Cantor",
       "ipotesi": "$f$ continua su un intervallo chiuso e limitato $[a,b]$.",
       "tesi": "$f$ è uniformemente continua in $[a,b]$: il $\\delta$ della continuità si può scegliere uguale per tutto l'intervallo, non solo punto per punto."
