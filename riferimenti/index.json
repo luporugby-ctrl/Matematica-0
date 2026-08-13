@@ -4,6 +4,7 @@
     { "file": "sopravvivenza-limiti.md", "titolo": "Limiti e trigonometria" },
     { "file": "sopravvivenza-serie.md", "titolo": "Serie: quale criterio uso?" },
     { "file": "sopravvivenza-derivate.md", "titolo": "Derivate" },
+    { "file": "sopravvivenza-maclaurin.md", "titolo": "Sviluppi di Maclaurin" },
     { "file": "sopravvivenza-studio-funzione.md", "titolo": "Studio di funzione: la checklist" },
     { "file": "sopravvivenza-primitive.md", "titolo": "Primitive immediate" }
   ]
